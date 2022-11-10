@@ -23,17 +23,3 @@ class RegisterUserForm(UserCreationForm):
 		self.fields['password1'].widget.attrs['class'] = 'form-control'
 		self.fields['password2'].widget.attrs['class'] = 'form-control'
 
-class UserEditForm(UsernameField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-
-        self.helper.layout = Layout(
-            IconField("username", icon_prepend="user"),
-        )
-
-    username = forms.CharField(
-        label="Username",
-        required=True,
-    )
