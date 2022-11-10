@@ -1,0 +1,59 @@
+
+{% extends 'base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container py-5">
+    <!-- <h3>Logowanie do panelu pacjenta</h3>
+    <form method="POST">
+      {% csrf_token %}
+      {{ login_form|crispy }}
+      <button class="btn btn-primary" type="submit">Zaloguj</button>
+    </form>
+    <p class="text-center">Nie masz jeszcze konta pacjenta ? <a href="/register">Utwórz konto</a>.</p> -->
+
+
+
+    <div class="card mb-3 col-md-5 mx-auto ">
+        <div class="card-body">
+            <div class="pt-4 pb-2">
+                <h5 class="card-title text-center pb-0 fs-4">Zaloguj się do swojego konta pacjenta</h5>
+                <p class="text-center small">Wpisz nazwę użytkownika &amp; i hasło aby się zalogować.</p>
+            </div>
+            <form class="row g-3 needs-validation" novalidate="" method="POST">
+                {% csrf_token %}
+               
+                <div class="col-12"> 
+                    <label for="yourUsername" class="form-label">Nazwa użytkownika</label>
+                    <div class="input-group has-validation"> 
+                        <span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" name="username" class="form-control" id="yourUsername" required="">
+                        <div class="invalid-feedback">Please enter your username.</div>
+                    </div>
+                </div>
+                <div class="col-12"> 
+                    <label for="yourPassword" class="form-label">Hasło</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text"><i class="bi bi-file-earmark-lock2"></i></i></span>
+                        <input type="password" name="password" class="form-control" id="yourPassword" required="">
+                        <div class="invalid-feedback">Please enter your password!</div>
+                    </div>
+
+
+                </div>
+                <div class="col-12">
+                    <div class="form-check"> 
+                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe"> 
+                        <label class="form-check-label" for="rememberMe">Zapamiętaj mnie</label>
+                    </div>
+                </div>
+                <div class="col-12"> 
+                    <button class="btn btn-primary w-100" type="submit">Zaloguj</button>
+                </div>
+                <div class="col-12">
+                    <p class="small mb-0">Nie masz jeszce konta ? <a href="/register">Utwórz konto pacjenta</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+{% endblock %}

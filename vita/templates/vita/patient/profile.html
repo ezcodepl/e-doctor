@@ -1,0 +1,71 @@
+{% extends 'base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container py-5">
+            <h2 style="color:#32AFC7"> Moje Dane</h2>
+            <br>
+            {% if user.is_authenticated %}
+    
+
+                <div class="row">
+                    <div class="col-md-11 mx-auto " style="color:#32AFC7">
+                        <form>
+                            <div class="form-group row p-2">
+                                <div class="col-sm-6">
+                                    <label for="inputFirstname" class="p-1"><b>Nazwa użytkonika / login</b></label>
+                                    <input type="text" class="form-control" id="inputFirstname" value="{{ user.username }}">
+                                </div>
+                            </div>
+                            <div class="form-group row p-2">
+                                <div class="col-sm-6">
+                                    <label for="inputFirstname" class="p-1">Imię</label>
+                                    <input type="text" class="form-control" id="inputFirstname" value="{{ user.first_name }}">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="inputLastname" class="p-1">Nazwisko</label>
+                                    <input type="text" class="form-control" id="inputLastname" value="{{ user.last_name }}">
+                                </div>
+                            </div>
+                            <div class="form-group row p-2">
+                                <div class="col-sm-6">
+                                    <label for="inputAddressLine1" class="p-1">Address</label>
+                                    <input type="text" class="form-control" id="inputAddressLine1" placeholder="Street Address">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="inputAddressLine2" class="p-1">Address (Line 2)</label>
+                                    <input type="text" class="form-control" id="inputAddressLine2" placeholder="Line 2">
+                                </div>
+                            </div>
+                            <div class="form-group row p-2">
+                                <div class="col-sm-6">
+                                    <label for="inputCity" class="p-1">City</label>
+                                    <input type="text" class="form-control" id="inputCity" placeholder="City">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="inputState" class="p-1">State</label>
+                                    <input type="text" class="form-control" id="inputState" placeholder="State">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="inputPostalCode" class="p-1">Postal Code</label>
+                                    <input type="text" class="form-control" id="inputPostalCode" placeholder="Postal Code">
+                                </div>
+                            </div>
+                            <div class="form-group row p-2">
+                                <div class="col-sm-6">
+                                    <label for="inputContactNumber" class="p-1">Contact Number</label>
+                                    <input type="number" class="form-control" id="inputContactNumber" placeholder="Contact Number">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="inputWebsite" class="p-1">Website</label>
+                                    <input type="text" class="form-control" id="inputWebsite" placeholder="Website">
+                                </div>
+                            </div>
+                            <br>
+                            <button type="button" class="btn btn-success px-5 float-right ">Zapisz zmiany</button>
+                        </form>
+                    </div>
+                </div>
+
+        {% endif %}    
+</div>
+{% endblock %}

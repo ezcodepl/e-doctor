@@ -1,0 +1,82 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<!--Register-->
+<!--<div class="container py-5">-->
+<!--	<h1>Register</h1>-->
+<!--	<form method="POST">-->
+<!--		{% csrf_token %}-->
+<!--		{{ register_form|crispy }} -->
+<!--		<button class="btn btn-primary" type="submit">Register</button>-->
+<!--	</form>-->
+<!--	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>-->
+<!--</div>-->
+{% include 'vita/messages.html' %}
+<div class="card mb-3 col-md-5 mx-auto">
+	<div class="card-body">
+		<div class="pt-4 pb-2">
+			<h5 class="card-title text-center pb-0 fs-4">Uwtórz konto pacjenta</h5>
+			<p class="text-center small">Wpisz swoje dane aby utworzyć konto</p>
+		</div>
+		<form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'register_user' %}">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<div class="col-12">
+				<div class="form-check">
+					<input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms" required="">
+					<label class="form-check-label" for="acceptTerms">Zgadzam się i akceptuję <a href="#">regulamin</a></label>
+					<div class="invalid-feedback">Musisz zaakceptować regulamin aby utworzyć konto.</div>
+				</div>
+			</div>
+			<div class="col-12">
+				<button class="btn btn-primary w-100" type="submit">Utwórz konto</button>
+			</div>
+			<div class="col-12"><p class="small mb-0">Masz już konto pacjęta ? <a href="/login">Zaloguj się</a></p>
+			</div>
+<!--			<div class="col-12">-->
+<!--				<label for="yourName" class="form-label">Imię</label>-->
+<!--				<input type="text" name="name" class="form-control" id="yourName" required="">-->
+<!--				<div class="invalid-feedback">Please, enter your name!</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<label for="yourEmail" class="form-label">E-mail</label>-->
+<!--				<input type="email" name="email" class="form-control" id="yourEmail" required="">-->
+<!--				<div class="invalid-feedback">Please enter a valid Email adddress!</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<label for="yourUsername" class="form-label">Nazwa użytkownika</label>-->
+<!--				<div class="input-group has-validation">-->
+<!--					<span class="input-group-text" id="inputGroupPrepend">@</span>-->
+<!--					<input type="text" name="username" class="form-control" id="yourUsername" required="">-->
+<!--					<div class="invalid-feedback">Please choose a username.</div>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<label for="yourPassword" class="form-label">Hasło</label>-->
+<!--				<input type="password" name="password" class="form-control" id="yourPassword" required="">-->
+<!--				<div class="invalid-feedback">Please enter your password!</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<label for="reyourPassword" class="form-label">Powtórz hasło</label>-->
+<!--				<input type="password" name="password1" class="form-control" id="reyourPassword" required="">-->
+<!--				<div class="invalid-feedback">Please enter your password!</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<div class="form-check">-->
+<!--					<input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms" required="">-->
+<!--					<label class="form-check-label" for="acceptTerms">Zgadzam się i akceptuję <a href="#">regulamin</a></label>-->
+<!--					<div class="invalid-feedback">Musisz zaakceptować regulamin aby utworzyć konto.</div>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--			<div class="col-12">-->
+<!--				<button class="btn btn-primary w-100" type="submit">Utwórz konto</button>-->
+<!--			</div>-->
+<!--			<div class="col-12"><p class="small mb-0">Masz już konto pacjęta ? <a href="/login">Zaloguj się</a></p>-->
+<!--			</div>-->
+		</form>
+	</div>
+</div>
+
+{% endblock %}
