@@ -1209,8 +1209,8 @@ section {
 .about h3 {
   color: var(--color-secondary);
   font-family: var(--font-secondary);
-  font-weight: 300;
-  font-size: 32px;
+  font-weight: 400;
+  font-size: 21px;
   margin-bottom: 20px;
 }
 

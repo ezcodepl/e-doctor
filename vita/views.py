@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, UserEditForm, RegisterUserForm
+from .forms import UserCreationForm, RegisterUserForm
 from .models import News
 
 
