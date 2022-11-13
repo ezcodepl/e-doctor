@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
 from django import forms
+from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
+from .models import Patient
 
 
 # Create your forms here.
@@ -22,4 +24,11 @@ class RegisterUserForm(UserCreationForm):
 		self.fields['username'].widget.attrs['class'] = 'form-control'
 		self.fields['password1'].widget.attrs['class'] = 'form-control'
 		self.fields['password2'].widget.attrs['class'] = 'form-control'
+
+class PatientUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['user','id_patient','city', 'post_code', 'street', 'phone', 'pesel']
+
+
 

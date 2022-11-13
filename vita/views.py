@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm
-from .models import News
-
+from .forms import UserCreationForm, RegisterUserForm, PatientUpdateForm
+from .models import News, Patient
+from django.contrib.auth.models import User
+import datetime
 
 # Create your views here.
 
@@ -67,4 +68,49 @@ def logout_request(request):
 
 
 def profile(request):
-    return render(request, "vita/patient/profile.html")
+    patients = Patient.objects.all().values()
+
+    if request.method == "POST":
+        form = PatientUpdateForm(request.POST)
+        user = request.user
+        #form = PatientUpdateForm(request.POST, instance=user)
+        first = request.POST['first_name']
+        username = request.POST['username']
+        first_name = request.POST['first_name']
+
+        patient_user_id = Patient.objects.values_list('user')
+
+        for p in patient_user_id:
+            if user.id == p[0]:
+                pu_id = p[0]
+
+            if form.is_valid():
+
+                form.save()
+
+    return render(request, "vita/patient/profile.html", {'patients': patients})
+
+def update_profile(request):
+    print('kurwa nie dziala')
+
+    context = {}
+    #
+    # # fetch the object related to passed id
+    user_id = request.user.id
+    print(user_id)
+    #obj = get_object_or_404(Patient, id=user_id)
+    #
+    # # pass the object as instance in form
+    form = PatientUpdateForm(request.POST or None)
+    #
+    # # save the data from the form and
+    # # redirect to detail_view
+    if form.is_valid():
+        form.save()
+        return redirect("/patient/profile")
+    #
+    # # add form dictionary to context
+    context["form"] = form
+    #
+    # return render(request, "vita/patient/update.html", context)
+    return render(request, "vita/patient/update.html", context)

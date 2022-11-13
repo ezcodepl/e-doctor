@@ -5,67 +5,76 @@
             <h2 style="color:#32AFC7"> Moje Dane</h2>
             <br>
             {% if user.is_authenticated %}
-    
+                {% for patient in patients %}
+                    {% if user.id == patient.user_id %}
 
                 <div class="row">
                     <div class="col-md-11 mx-auto " style="color:#32AFC7">
-                        <form>
+                        <form action="profile/update" method="POST">
+                            {% csrf_token %}
+
+
                             <div class="form-group row p-2">
                                 <div class="col-sm-6">
-                                    <label for="inputFirstname" class="p-1"><b>Nazwa użytkonika / login</b></label>
-                                    <input type="text" class="form-control" id="inputFirstname" value="{{ user.username }}">
+                                    <label for="inputUsername" class="p-1"><b>Nazwa użytkonika / login</b></label>
+                                    <input type="text" name="username" class="form-control" id="inputUsername" value="{{ user.username }}">
+                                </div>
+                                 <div class="col-sm-6">
+                                    <label for="inputEmail" class="p-1">E-mail</label>
+                                    <input type="text" name="email" class="form-control" id="inputEmail" value="{{user.email}}">
                                 </div>
                             </div>
-                            <div class="form-group row p-2">
+                            <div class="form-group row p-2" style="margin-top: 30px;">
                                 <div class="col-sm-6">
                                     <label for="inputFirstname" class="p-1">Imię</label>
-                                    <input type="text" class="form-control" id="inputFirstname" value="{{ user.first_name }}">
+                                    <input type="text" name="first_name" class="form-control" id="inputFirstname" value="{{ user.first_name }}">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="inputLastname" class="p-1">Nazwisko</label>
-                                    <input type="text" class="form-control" id="inputLastname" value="{{ user.last_name }}">
+                                    <input type="text" name="last_name" class="form-control" id="inputLastname" value="{{ user.last_name }}">
                                 </div>
                             </div>
                             <div class="form-group row p-2">
                                 <div class="col-sm-6">
-                                    <label for="inputAddressLine1" class="p-1">Address</label>
-                                    <input type="text" class="form-control" id="inputAddressLine1" placeholder="Street Address">
-                                </div>
-                                <div class="col-sm-6">
-                                    <label for="inputAddressLine2" class="p-1">Address (Line 2)</label>
-                                    <input type="text" class="form-control" id="inputAddressLine2" placeholder="Line 2">
-                                </div>
-                            </div>
-                            <div class="form-group row p-2">
-                                <div class="col-sm-6">
-                                    <label for="inputCity" class="p-1">City</label>
-                                    <input type="text" class="form-control" id="inputCity" placeholder="City">
+                                    <label for="inputAddress" class="p-1">Adres</label>
+                                    <input type="text" name="street" class="form-control" id="inputAddress" value="{{patient.street}}">
                                 </div>
                                 <div class="col-sm-3">
-                                    <label for="inputState" class="p-1">State</label>
-                                    <input type="text" class="form-control" id="inputState" placeholder="State">
+                                    <label for="inputCity" class="p-1">Miejscowość</label>
+                                    <input type="text" name="city" class="form-control" id="inputCity" value="{{patient.city}}">
                                 </div>
                                 <div class="col-sm-3">
-                                    <label for="inputPostalCode" class="p-1">Postal Code</label>
-                                    <input type="text" class="form-control" id="inputPostalCode" placeholder="Postal Code">
+                                    <label for="inputPostalCode" class="p-1">Kod pocztowy</label>
+                                    <input type="text" name="post_code" class="form-control" id="inputPostalCode" value="{{patient.post_code}}">
                                 </div>
                             </div>
                             <div class="form-group row p-2">
-                                <div class="col-sm-6">
-                                    <label for="inputContactNumber" class="p-1">Contact Number</label>
-                                    <input type="number" class="form-control" id="inputContactNumber" placeholder="Contact Number">
+                                 <div class="col-sm-3">
+                                    <label for="inputPesel" class="p-1">PESEL</label>
+                                    <input type="text" name="pesel" class="form-control" id="inputPesel" value="{{patient.pesel}}">
                                 </div>
-                                <div class="col-sm-6">
-                                    <label for="inputWebsite" class="p-1">Website</label>
-                                    <input type="text" class="form-control" id="inputWebsite" placeholder="Website">
+                                <div class="col-sm-3">
+                                    <label for="inputPhone" class="p-1">Telefon</label>
+                                    <input type="text" name="phone" class="form-control" id="inputPhone" value="{{patient.phone}}">
+                                </div>
+                                <div class="col-sm-3">
+                                      <input class="form-check-input" name="sms" type="checkbox" value="{{patient.sms}}"
+                                             id="flexCheckDefault" style="margin-top:35px;"
+                                             {% if patient.sms == 1 %} checked {% else %}  {% endif %}>
+                                      <label class="form-check-label" for="flexCheckDefault" style="margin-top:32px;margin-left: 10px;">
+                                        Powiadomienie SMS
+                                      </label>
                                 </div>
                             </div>
+
                             <br>
-                            <button type="button" class="btn btn-success px-5 float-right ">Zapisz zmiany</button>
+                            <input type="hidden" name="id_patient" value="{{ patient.id_patient }}" />
+                            <button type="submit" name="save" value="submit" class="btn btn-success px-5 float-right ">Zapisz zmiany</button>
                         </form>
                     </div>
                 </div>
-
+                {% endif %}
+            {% endfor %}
         {% endif %}    
 </div>
 {% endblock %}
