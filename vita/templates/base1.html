@@ -79,8 +79,7 @@
         </div>
       </header>
       <div style="margin-top: 150px;min-height: 400px;">
-  
-        
+
             {% block content %}
 
             {% endblock %}
@@ -158,6 +157,12 @@
     <script async src='https://www.googletagmanager.com/gtag/js?id=G-P7JSYB1CSP'></script>
     <script>
         if( window.self == window.top ) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-P7JSYB1CSP'); }
+    </script>
+    <script>
+        var alertList = document.querySelectorAll('.alert')
+        alertList.forEach(function (alert) {
+          new bootstrap.Alert(alert)
+        })
     </script>
 </body>
 </html>

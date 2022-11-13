@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'vita',
     'crispy_forms',
-    # 'crispy_bulma',
+    'crispy_bulma',
 ]
 
 MIDDLEWARE = [
@@ -147,6 +147,4 @@ MESSAGE_TAGS = {
         messages.ERROR: 'alert-danger',
  }
 
-# CRISPY_ALLOWED_TEMPLATE_PACKS = ("bulma",)
-#
-# CRISPY_TEMPLATE_PACK = "bulma"
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
