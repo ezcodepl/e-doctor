@@ -34,7 +34,7 @@ class PatientRegisterForm(forms.ModelForm):
     phone = forms.CharField(required=True, label='Telefon')
     class Meta:
         model = Patient
-        fields = ['street', 'city', 'post_code', 'phone' ]
+        fields = ['street', 'city', 'post_code', 'phone']
 
 class Dupa(forms.ModelForm):
     class Meta:

@@ -30,7 +30,8 @@ def register_user(request):
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
         last_id_patient = Patient.objects.all().values('id_patient')
-        next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+
 
         if form.is_valid() and pp_form.is_valid():
             form.save()
@@ -39,7 +40,16 @@ def register_user(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
-            pp_form.save(user_id=user.id)
+
+            if last_id_patient[0]['id_patient']:
+                next_id_patient = last_id_patient[0]['id_patient'] + 1
+            else:
+                next_id_patient = 1
+
+            pp_form_obj = pp_form.save(commit=False)
+            pp_form_obj.user = request.user
+            pp_form_obj.id_patient = next_id_patient
+            pp_form_obj.save()
             #messages.success(request, ("Registration Successful!"))
             return redirect('patient/profile')
     else:
