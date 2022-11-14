@@ -22,7 +22,9 @@
 		</div>
 		<form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'register_user' %}">
 			{% csrf_token %}
-			{{ form.as_p }}
+			{{ form|crispy }}
+			{{ pp_form|crispy }}
+<!--			<input type="hidden" name="id_patient" id="id_patient" value="" />-->
 			<div class="col-12">
 				<div class="form-check">
 					<input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms" required="">
@@ -77,6 +79,7 @@
 <!--			</div>-->
 		</form>
 	</div>
+
 </div>
 
 {% endblock %}

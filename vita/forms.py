@@ -13,8 +13,8 @@ from crispy_forms.layout import Layout, Fieldset, Submit
 
 class RegisterUserForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=50, label='Nazwisko', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
@@ -27,6 +27,19 @@ class RegisterUserForm(UserCreationForm):
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['class'] = 'form-control'
 
+class PatientRegisterForm(forms.ModelForm):
+    street = forms.CharField(required=True, label='Adres')
+    post_code = forms.CharField(required=True, label='Kod pocztowy')
+    city = forms.CharField(required=True, label='Miejscowość')
+    phone = forms.CharField(required=True, label='Telefon')
+    class Meta:
+        model = Patient
+        fields = ['street', 'city', 'post_code', 'phone' ]
+
+class Dupa(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['city']
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()

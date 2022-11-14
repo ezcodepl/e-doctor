@@ -1,7 +1,22 @@
 {% extends 'base1.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
     <div>test</div>
+    <form method="POST" enctype="multipart/form-data">
+                 {% csrf_token %}
+
+                  <fieldset class="form-group">
+                       <div class="row align-items-start">
+                          <div class="col"></div>
+                          <div class="col">{{ pp_form|crispy }}</div>
+                       </div>
+
+                  </fieldset>
+                  <div class="form-group align-items-center">
+                      <button class="btn btn-success" type="submit">Zapisz dane</button>
+                  </div>
+
+              </form>
 </div>
 {% endblock %}

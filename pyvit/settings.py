@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'vita',
     'crispy_forms',
-    'crispy_bulma',
 ]
 
 MIDDLEWARE = [
