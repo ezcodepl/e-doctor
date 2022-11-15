@@ -5,18 +5,20 @@
      <h2 style="color:#32AFC7;padding-bottom: 30px;"> Aktualności</h2>
 
           {% for news in all_news %}
-              <div class="row">
-                    <div class="col-md-12">
-                         <div class="d-flex align-items-start mb-5 pe-md-4">
-                              <div class="icon-text">
-                              <h5 class="h4 h3-md fw-bold"><i class="bi bi-info-circle" style="color:#32AFC7;"></i> {{news.temat}}</h5>
-                              <p class="mb-0">{{news.tresc}}</p>
-                              <div class="mt-2 text-secondary" style="color:#32AFC7;font-size:12px;"><i>Data publikacji: {{news.data_wpisu}}</i></div>
-                              </div>
 
-                         </div>
-                    </div>
-              </div>
+                  <div class="row">
+                        <div class="col-md-12">
+                             <div class="d-flex align-items-start mb-5 pe-md-4">
+                                  <div class="icon-text">
+                                  <h5 class="h4 h3-md fw-bold"><i class="bi bi-info-circle" style="color:#32AFC7;"></i> {{news.temat}}</h5>
+                                  <p class="mb-0">{{news.tresc}}</p>
+                                  <div class="mt-2 text-secondary" style="color:#32AFC7;font-size:12px;"><i>Data publikacji: {{news.data_wpisu}}</i></div>
+                                  </div>
+
+                             </div>
+                        </div>
+                  </div>
+
           {% endfor %}
 
 </div>

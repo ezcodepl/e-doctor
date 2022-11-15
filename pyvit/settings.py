@@ -147,3 +147,4 @@ MESSAGE_TAGS = {
  }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+

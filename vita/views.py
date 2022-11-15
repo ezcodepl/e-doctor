@@ -9,15 +9,30 @@ from django.contrib.auth.models import User
 import datetime
 from django.contrib.auth.decorators import login_required
 
+
 # Create your views here.
 
 
 def home(request):
     return render(request, "vita/home.html")
 
+
 def test(request):
     pp_form = Dupa(request.POST)
     return render(request, "vita/test.html")
+
+
+def new_visit(request):
+    return render(request, "vita/patient/new_visit.html")
+
+
+def appointments(request):
+    return render(request, "vita/patient/appointments.html")
+
+
+def history(request):
+    return render(request, "vita/patient/history.html")
+
 
 def news(request):
     all_news = News.objects.all().order_by('-data_wpisu').values()
@@ -30,10 +45,10 @@ def register_user(request):
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
 
-        last_id_patient = Patient.objects.all().values('id_patient') #check id_patient
+        last_id_patient = Patient.objects.all().values('id_patient')  # check id_patient
 
         if form.is_valid() and pp_form.is_valid():
-            form.save() #save user form
+            form.save()  # save user form
 
             # login user
             username = form.cleaned_data['username']
@@ -51,14 +66,14 @@ def register_user(request):
             pp_form_obj.user = request.user
             pp_form_obj.id_patient = next_id_patient
             pp_form_obj.save()
-            #messages.success(request, ("Registration Successful!"))
+            # messages.success(request, ("Registration Successful!"))
             return redirect('patient/profile')
     else:
         form = RegisterUserForm()
         pp_form = PatientRegisterForm()
 
     return render(request, 'vita/register.html', {
-        'form': form, 'pp_form':pp_form
+        'form': form, 'pp_form': pp_form
     })
 
 
@@ -85,12 +100,11 @@ def login_request(request):
 
 def logout_request(request):
     logout(request)
-    #messages.info(request, "You have successfully logged out.")
+    # messages.info(request, "You have successfully logged out.")
     return redirect("/")
 
 
 def profile(request):
-
     if request.method == 'POST':
         patient = Patient.objects.all().values()
         u_form = UserUpdateForm(request.POST, instance=request.user)
@@ -115,4 +129,3 @@ def profile(request):
     }
 
     return render(request, 'vita/patient/profile.html', context)
-
