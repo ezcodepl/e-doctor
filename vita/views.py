@@ -29,22 +29,23 @@ def register_user(request):
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
-        last_id_patient = Patient.objects.all().values('id_patient')
 
-
+        last_id_patient = Patient.objects.all().values('id_patient') #check id_patient
 
         if form.is_valid() and pp_form.is_valid():
-            form.save()
+            form.save() #save user form
 
+            # login user
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
 
-            if last_id_patient[0]['id_patient']:
-                next_id_patient = last_id_patient[0]['id_patient'] + 1
-            else:
+            # set next id_patient number
+            if last_id_patient is not None:
                 next_id_patient = 1
+            else:
+                next_id_patient = last_id_patient[0]['id_patient'] + 1
 
             pp_form_obj = pp_form.save(commit=False)
             pp_form_obj.user = request.user
@@ -54,7 +55,7 @@ def register_user(request):
             return redirect('patient/profile')
     else:
         form = RegisterUserForm()
-        pp_form = PatientRegisterForm(request.POST)
+        pp_form = PatientRegisterForm()
 
     return render(request, 'vita/register.html', {
         'form': form, 'pp_form':pp_form
