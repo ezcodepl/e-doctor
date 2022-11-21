@@ -1,3 +1,6 @@
+import calendar
+from itertools import groupby
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,7 +11,9 @@ from .models import News, Patient
 from django.contrib.auth.models import User
 import datetime
 from django.contrib.auth.decorators import login_required
-import calendar
+from calendar import HTMLCalendar
+
+
 
 
 # Create your views here.
@@ -17,11 +22,16 @@ import calendar
 def home(request):
     return render(request, "vita/home.html")
 def panel(request):
-    m=11
-    y=2022
-    cal = calendar.month(y, m)
+    today = datetime.date.today()
+    month = calendar.month(today.year, today.month)
+    obj = calendar.Calendar()
+
+    calendars = obj.itermonthdays(today.year, today.month)
+
     context = {
-       'cal': cal
+        'today' : today,
+        'month' : month,
+        'calendars' : calendars
     }
     return render(request, "vita/panel/admbase.html", context)
 
