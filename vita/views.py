@@ -8,6 +8,7 @@ from .models import News, Patient
 from django.contrib.auth.models import User
 import datetime
 from django.contrib.auth.decorators import login_required
+import calendar
 
 
 # Create your views here.
@@ -15,7 +16,14 @@ from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, "vita/home.html")
-
+def panel(request):
+    m=11
+    y=2022
+    cal = calendar.month(y, m)
+    context = {
+       'cal': cal
+    }
+    return render(request, "vita/panel/admbase.html", context)
 
 def test(request):
     pp_form = Dupa(request.POST)
@@ -88,6 +96,8 @@ def login_request(request):
                 login(request, user)
                 if username == 'admin':
                     return redirect("/admin")
+                elif username == 'lekarz':
+                    return redirect('/panel/panel')
                 else:
                     return redirect("/")
             else:
