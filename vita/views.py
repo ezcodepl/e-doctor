@@ -27,11 +27,14 @@ def panel(request):
     obj = calendar.Calendar()
 
     calendars = obj.itermonthdays(today.year, today.month)
-
+    tc = calendar.HTMLCalendar(firstweekday=0)
+    cal = tc.formatmonth(today.year, today.month)
+    print(cal)
     context = {
         'today' : today,
         'month' : month,
-        'calendars' : calendars
+        'calendars' : calendars,
+        'cal' : cal
     }
     return render(request, "vita/panel/admbase.html", context)
 

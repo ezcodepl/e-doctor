@@ -185,12 +185,19 @@
                                     <h3>Plan dzienny {{ today }}</h3>
                                 </div>
                                 <div>
+                                    {{ cal }}
 
                                     {% for day in calendars %}
                                         {% if day != 0 %}
-                                           {{ today.year }}-{{today.month}}-{{ day }}<br>
+                                            {% if day < 10 %}
+                                               <a href="#?{{ today.year }}-{{today.month}}-0{{ day }}">{{ today.year }}-{{today.month}}-0{{ day }}</a><br>
+                                            {% else %}
+                                                <a href="#?{{ today.year }}-{{today.month}}-{{ day }}">{{ today.year }}-{{today.month}}-{{ day }}</a><br>
+                                            {% endif %}
+
                                         {% endif %}
                                     {% endfor %}
+
                                 </div>
                             </div>
                         </div>
