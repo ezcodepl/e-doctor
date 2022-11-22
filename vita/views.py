@@ -9,7 +9,7 @@ from django.contrib import messages
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, Dupa
 from .models import News, Patient
 from django.contrib.auth.models import User
-import datetime
+import datetime, time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 
@@ -27,9 +27,10 @@ def panel(request):
     obj = calendar.Calendar()
 
     calendars = obj.itermonthdays(today.year, today.month)
+
     tc = calendar.HTMLCalendar(firstweekday=0)
     cal = tc.formatmonth(today.year, today.month)
-    print(cal)
+
     context = {
         'today' : today,
         'month' : month,
