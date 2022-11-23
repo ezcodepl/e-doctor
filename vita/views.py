@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, Dupa
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsSchedule
 from .models import News, Patient
 from django.contrib.auth.models import User
 import datetime
@@ -18,9 +18,17 @@ from calendar import HTMLCalendar
 
 # Create your views here.
 
-
+# Home links
+################################################################################################
 def home(request):
     return render(request, "vita/home.html")
+
+def terminarz(request):
+    sch_form = DoctorsSchedule(request.POST)
+    context = {
+        'sch_form': sch_form
+    }
+    return render(request, "vita/panel/terminarz.html", context)
 def panel(request):
     today = datetime.date.today()
     month = calendar.month(today.year, today.month)
@@ -36,7 +44,7 @@ def panel(request):
     return render(request, "vita/panel/admbase.html", context)
 
 def test(request):
-    pp_form = Dupa(request.POST)
+
     return render(request, "vita/test.html")
 
 
@@ -57,6 +65,14 @@ def news(request):
 
     return render(request, "vita/news.html", {'all_news': all_news})
 
+def laseroterapia(request):
+    return render(request, "vita/laseroterapia.html")
+
+def elektroterapia(request):
+    return render(request, "vita/elektroterapia.html")
+
+def krioterapia(request):
+    return render(request, "vita/krioterapia.html")
 
 def register_user(request):
     if request.method == "POST":
@@ -115,6 +131,7 @@ def login_request(request):
         else:
             messages.error(request, "Nieprawidłowa nazwa użytkownika lub hasło.")
     form = AuthenticationForm()
+
     return render(request, "vita/login.html", {"login_form": form})
 
 
@@ -149,3 +166,13 @@ def profile(request):
     }
 
     return render(request, 'vita/patient/profile.html', context)
+
+def contact(request):
+    if request.method == 'POST':
+
+        contact = User(request.POST)
+        context = {
+            'contact': contact
+        }
+
+    return redirect('/news', request,  context)

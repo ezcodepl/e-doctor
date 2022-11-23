@@ -64,3 +64,29 @@ class Patient(models.Model):
 
     def __str__(self):
         return f'{self.user.username} Pacjent'
+
+class DoctorSchedule(models.Model):
+
+    DAY_TYPE = [
+        ('0', 'WOLNY'),
+        ('1', 'PRACUJĄCY'),
+    ]
+
+    SCHEME = [
+       ('10', '10'),
+       ('15', '15'),
+       ('20', '20'),
+       ('30', '30'),
+    ]
+
+    id = models.AutoField(primary_key=True, unique=True)
+    date = models.DateField(blank=True, null=True, default='')
+    day_type = models.CharField(max_length=255, blank=True, null=True, choices=DAY_TYPE, default='1')
+    work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
+    scheme = models.CharField(max_length=255, blank=True, null=True, choices=SCHEME, default='20')
+    official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
+
+    def __str__(self):
+        return self.day_type
+
+

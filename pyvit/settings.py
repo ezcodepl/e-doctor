@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'vita',
     'crispy_forms',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -148,3 +149,7 @@ MESSAGE_TAGS = {
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# Set recaptcha keys
+RECAPTCHA_PUBLIC_KEY = '6LddA3kgAAAAAPf1mAJmEc7Ku0cssbD5QMha09NT'
+RECAPTCHA_PRIVATE_KEY = '6LddA3kgAAAAAJY-2-Q0J3QX83DFJwFR1hXqmN8q'
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

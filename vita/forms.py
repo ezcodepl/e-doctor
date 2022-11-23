@@ -4,17 +4,18 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Patient
+from .models import Patient, DoctorSchedule
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
-
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 
 # Create your forms here.
 
 class RegisterUserForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    first_name = forms.CharField(max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=50, label='Nazwisko', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(required=True, max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(required=True, max_length=50, label='Nazwisko', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
@@ -32,14 +33,10 @@ class PatientRegisterForm(forms.ModelForm):
     post_code = forms.CharField(required=True, label='Kod pocztowy')
     city = forms.CharField(required=True, label='Miejscowość')
     phone = forms.CharField(required=True, label='Telefon')
+    #captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
     class Meta:
         model = Patient
         fields = ['street', 'city', 'post_code', 'phone']
-
-class Dupa(forms.ModelForm):
-    class Meta:
-        model = Patient
-        fields = ['city']
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
@@ -58,18 +55,10 @@ class PatientUpdateForm(forms.ModelForm):
 
         fields = ['city','street','post_code','phone','pesel','sms']
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.helper = FormHelper()
-    #     self.helper.layout = Layout(
-    #         Fieldset(
-    #             'first arg is the legend of the fieldset',
-    #             'like_website',
-    #             'favorite_number',
-    #             'favorite_color',
-    #             'favorite_food',
-    #             'notes'
-    #         ),
-    #         Submit('submit', 'Submit', css_class='btn btn-danger'),
-    #     )
+class DoctorsSchedule(forms.ModelForm):
+    work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
+    official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
+    class Meta:
+        model = DoctorSchedule
 
+        fields = ['date', 'day_type', 'work_hours', 'scheme', 'official_hours']

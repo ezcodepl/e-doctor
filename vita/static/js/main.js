@@ -137,18 +137,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /**
-   * Auto generate the hero carousel indicators
+   * Auto generate the hero carousel indicators - disabled now
    */
   let heroCarouselIndicators = document.querySelector('#hero .carousel-indicators');
   if (heroCarouselIndicators) {
     let heroCarouselItems = document.querySelectorAll('#hero .carousel-item')
 
     heroCarouselItems.forEach((item, index) => {
-      if (index === 0) {
-        heroCarouselIndicators.innerHTML += `<li data-bs-target="#hero" data-bs-slide-to="${index}" class="active"></li>`;
-      } else {
-        heroCarouselIndicators.innerHTML += `<li data-bs-target="#hero" data-bs-slide-to="${index}"></li>`;
-      }
+//      if (index === 0) {
+//        heroCarouselIndicators.innerHTML += `<li data-bs-target="#hero" data-bs-slide-to="${index}" class="active"></li>`;
+//      } else {
+//        heroCarouselIndicators.innerHTML += `<li data-bs-target="#hero" data-bs-slide-to="${index}"></li>`;
+//      }
     });
   }
 
