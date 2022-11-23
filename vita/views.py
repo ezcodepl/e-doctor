@@ -9,7 +9,7 @@ from django.contrib import messages
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsSchedule
 from .models import News, Patient
 from django.contrib.auth.models import User
-import datetime
+import datetime, time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 
@@ -36,10 +36,14 @@ def panel(request):
 
     calendars = obj.itermonthdays(today.year, today.month)
 
+    tc = calendar.HTMLCalendar(firstweekday=0)
+    cal = tc.formatmonth(today.year, today.month)
+
     context = {
         'today' : today,
         'month' : month,
-        'calendars' : calendars
+        'calendars' : calendars,
+        'cal' : cal
     }
     return render(request, "vita/panel/admbase.html", context)
 
