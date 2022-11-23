@@ -209,13 +209,14 @@
                                     <div class="row p-3">
                                          {% include 'vita/messages.html' %}
                                         {% for month in months %}
+
                                           <div class="col">
                                               <a href="/panel/terminarz"><b>{{ month|upper }}</b></a>
                                           </div>
                                         {% endfor %}
                                     </div>
                                        <table class="table table-striped table-sm">
-                                        <thead>
+                                        <thead class="text-light" style="background: #26396F;">
                                           <tr>
                                             <th>Data</th>
                                             <th>Dzień pracy</th>
@@ -231,7 +232,7 @@
                                           <tr>
                                             <td class="p-1">
                                                 <a href="/panel/{{today.year}}-{{today.month}}-{% if x < 10 %}0{{x}}{% else %}{{x}}{% endif %}">
-                                                    {{ today.year }}-{{today.month}}-{% if x < 10 %}0{{x}}{% else %}{{x}}{% endif %}
+                                                    {{ today.year }}-{{today.month}}-{% if x < 10 %}0{{ x  }}{% else %}{{ x }}{% endif %}
                                                 </a>
                                             </td>
                                             <td class="p-1"><select><option>Pracujący</option><option>Wolny</option></select></td>
@@ -243,7 +244,7 @@
                                         {% endfor %}
                                         </tbody>
                                     </table>
-
+                                    <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
                                 </div>
                             </div>
                         </section>

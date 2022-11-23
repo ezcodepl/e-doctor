@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from .models import Patient, DoctorSchedule
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Checkbox
+# from captcha.fields import ReCaptchaField
+# from captcha.widgets import ReCaptchaV2Checkbox
 
 # Create your forms here.
 

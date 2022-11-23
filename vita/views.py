@@ -35,9 +35,11 @@ def terminarz(request):
     if get_schedule:
         calendars = obj.itermonthdays(today.year, today.month)
     else:
-        messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
-        calendars = ''
+        #messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
+        calendars = obj.itermonthdays(today.year, today.month)
     months = calendar.month_name[1:]
+
+    months_number = [1,2,3,4,5,6,7,8,9,10,11,12]
 
     tc = calendar.HTMLCalendar(firstweekday=0)
     cal = tc.formatmonth(today.year, today.month)
@@ -46,7 +48,8 @@ def terminarz(request):
         'today': today,
         'months': months,
         'calendars': calendars,
-        'cal': cal
+        'cal': cal,
+        'months_number': months_number
     }
     return render(request, "vita/panel/terminarz.html", context)
 def panel(request, date):
