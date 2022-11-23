@@ -67,6 +67,18 @@ class Patient(models.Model):
 
 class DoctorSchedule(models.Model):
 
+    DAY_TYPE = [
+        ('0', 'WOLNY'),
+        ('1', 'PRACUJĄCY'),
+    ]
+
+    SCHEME = [
+       ('10', '10'),
+       ('15', '15'),
+       ('20', '20'),
+       ('30', '30'),
+    ]
+
     id = models.AutoField(primary_key=True, unique=True)
     date = models.DateField(blank=True, null=True, default='')
     day_type = models.CharField(max_length=255, blank=True, null=True, choices=DAY_TYPE, default='1')
