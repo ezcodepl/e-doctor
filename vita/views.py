@@ -9,7 +9,7 @@ from django.contrib import messages
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsSchedule
 from .models import News, Patient
 from django.contrib.auth.models import User
-import datetime, time
+from datetime import date, datetime
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 
@@ -24,26 +24,34 @@ def home(request):
     return render(request, "vita/home.html")
 
 def terminarz(request):
-    sch_form = DoctorsSchedule(request.POST)
-    context = {
-        'sch_form': sch_form
-    }
-    return render(request, "vita/panel/terminarz.html", context)
-def panel(request):
-    today = datetime.date.today()
+    today = date.today()
     month = calendar.month(today.year, today.month)
     obj = calendar.Calendar()
 
     calendars = obj.itermonthdays(today.year, today.month)
+    months = calendar.month_name[1:]
 
     tc = calendar.HTMLCalendar(firstweekday=0)
     cal = tc.formatmonth(today.year, today.month)
 
     context = {
-        'today' : today,
-        'month' : month,
-        'calendars' : calendars,
-        'cal' : cal
+        'today': today,
+        'months': months,
+        'calendars': calendars,
+        'cal': cal
+    }
+    return render(request, "vita/panel/terminarz.html", context)
+def panel(request, date):
+
+    today = today = date.today()
+    full_path = request.get_full_path()
+    current_path = full_path[full_path.index('/', 1):]
+
+    get_date = current_path.replace('/', '')
+
+    context = {
+        'today': today,
+        'get_date': get_date
     }
     return render(request, "vita/panel/admbase.html", context)
 
@@ -118,6 +126,7 @@ def register_user(request):
 def login_request(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
+        today = date.today()
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -127,7 +136,7 @@ def login_request(request):
                 if username == 'admin':
                     return redirect("/admin")
                 elif username == 'lekarz':
-                    return redirect('/panel/panel')
+                    return redirect(f'/panel/{today}')
                 else:
                     return redirect("/")
             else:

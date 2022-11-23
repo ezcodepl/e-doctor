@@ -14,9 +14,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, register_converter
+from datetime import date, datetime
+from vita.views import panel
+
+class DateConverter:
+    regex = r"\d{4}-\d{1,2}-\d{1,2}"
+    format = "%Y-%m-%d"
+
+    def to_python(self, value: str) -> date:
+        return datetime.strptime(value, self.format).date()
+
+    def to_url(self, value: date) -> str:
+        return value.strftime(self.format)
+
+
+register_converter(DateConverter, "date")
+
+date = date.today()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('vita.urls')),
+    path('panel/<date:date>/', panel , name="panel"),
 ]
