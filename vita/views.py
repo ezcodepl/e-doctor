@@ -1,4 +1,5 @@
 import calendar
+import locale
 from itertools import groupby
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsSchedule
-from .models import News, Patient
+from .models import News, Patient, DoctorSchedule
 from django.contrib.auth.models import User
 from datetime import date, datetime
 from django.contrib.auth.decorators import login_required
@@ -27,8 +28,15 @@ def terminarz(request):
     today = date.today()
     month = calendar.month(today.year, today.month)
     obj = calendar.Calendar()
+    locale.setlocale(locale.LC_TIME, 'pl_PL')
 
-    calendars = obj.itermonthdays(today.year, today.month)
+    get_schedule = DoctorSchedule.objects.all()
+
+    if get_schedule:
+        calendars = obj.itermonthdays(today.year, today.month)
+    else:
+        messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
+        calendars = ''
     months = calendar.month_name[1:]
 
     tc = calendar.HTMLCalendar(firstweekday=0)
