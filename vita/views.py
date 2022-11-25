@@ -11,8 +11,10 @@ from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUp
 from .models import News, Patient, DoctorSchedule
 from django.contrib.auth.models import User
 from datetime import date, datetime
+import time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
+from calendar import monthrange
 
 
 
@@ -25,33 +27,41 @@ def home(request):
     return render(request, "vita/home.html")
 
 def terminarz(request):
-    today = date.today()
-    month = calendar.month(today.year, today.month)
-    obj = calendar.Calendar()
+    get_month = request.GET.get('month')
+    print(get_month)
+
+    months = {'1':'Styczeń', '2':'Luty','3':'Marzec','4':'Kwiecień','5':'Maj','6':'Czerwiec','7':'Lipiec',
+              '8':'Sierpień', '9':'Wrzesień','10':'Październik','11':'Listopad','12':'Grudzień'}
+
+    today = datetime.now()
+
     locale.setlocale(locale.LC_TIME, 'pl_PL')
 
     get_schedule = DoctorSchedule.objects.all()
 
-    if get_schedule:
-        calendars = obj.itermonthdays(today.year, today.month)
-    else:
-        #messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
-        calendars = obj.itermonthdays(today.year, today.month)
-    months = calendar.month_name[1:]
+    # if get_schedule:
+    #     calendars = obj.itermonthdays(today.year, get_month)
+    # else:
+    #     #messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
+    #     calendars = obj.itermonthdays(today.year, get_month)
 
-    months_number = [1,2,3,4,5,6,7,8,9,10,11,12]
 
-    tc = calendar.HTMLCalendar(firstweekday=0)
-    cal = tc.formatmonth(today.year, today.month)
+    ##################### days of month list ######################################
+    y = today.year
+    m = int(get_month)
+    def allDays(y, m):
+        return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+
+    date_list = allDays(y,m)
+    ###############################################################################
 
     context = {
         'today': today,
         'months': months,
-        'calendars': calendars,
-        'cal': cal,
-        'months_number': months_number
+        'date_list': date_list,
     }
     return render(request, "vita/panel/terminarz.html", context)
+
 def panel(request, date):
 
     today = today = date.today()

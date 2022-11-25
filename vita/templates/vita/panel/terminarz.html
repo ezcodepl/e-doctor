@@ -208,10 +208,9 @@
                                 <div class="card-body">
                                     <div class="row p-3">
                                          {% include 'vita/messages.html' %}
-                                        {% for month in months %}
-
+                                        {% for nr, month in months.items %}
                                           <div class="col">
-                                              <a href="/panel/terminarz"><b>{{ month|upper }}</b></a>
+                                              <button class="btn btn-primary" onclick="window.location='terminarz?month={{nr}}';" name="month">{{month|upper}}</button>
                                           </div>
                                         {% endfor %}
                                     </div>
@@ -227,12 +226,11 @@
                                         </thead>
                                         <tbody>
 
-                                        {% for x in calendars %}
-                                         {% if x != 0 %}
+                                        {% for date in date_list %}
                                           <tr>
                                             <td class="p-1">
-                                                <a href="/panel/{{today.year}}-{{today.month}}-{% if x < 10 %}0{{x}}{% else %}{{x}}{% endif %}">
-                                                    {{ today.year }}-{{today.month}}-{% if x < 10 %}0{{ x  }}{% else %}{{ x }}{% endif %}
+                                                <a href="/panel/{{ date }}">
+                                                    {{ date }}
                                                 </a>
                                             </td>
                                             <td class="p-1"><select><option>Pracujący</option><option>Wolny</option></select></td>
@@ -240,7 +238,6 @@
                                             <td class="p-1"><input type="text" value="8:00" />-<input type="text" value="21:00" /></td>
                                             <td class="p-1">0</td>
                                           </tr>
-                                         {% endif %}
                                         {% endfor %}
                                         </tbody>
                                     </table>
