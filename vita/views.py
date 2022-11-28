@@ -27,8 +27,7 @@ def home(request):
     return render(request, "vita/home.html")
 
 def terminarz(request):
-    get_month = request.GET.get('month')
-    print(get_month)
+
 
     months = {'1':'Styczeń', '2':'Luty','3':'Marzec','4':'Kwiecień','5':'Maj','6':'Czerwiec','7':'Lipiec',
               '8':'Sierpień', '9':'Wrzesień','10':'Październik','11':'Listopad','12':'Grudzień'}
@@ -47,18 +46,47 @@ def terminarz(request):
 
 
     ##################### days of month list ######################################
-    y = today.year
-    m = int(get_month)
-    def allDays(y, m):
-        return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+    today_year_1 = today.year + 1
+    today_year_2 = today.year + 2
 
-    date_list = allDays(y,m)
-    ###############################################################################
+    get_year = today.year
+    get_month = today.month
+
+    if request.GET.get('year') and request.GET.get('month'):
+
+        y = int(request.GET.get('year'))
+        m = int(request.GET.get('month'))
+        btn_y = int(request.GET.get('year'))
+
+    else:
+
+        y = today.year
+        m = today.month
+        btn_y = today.year
+
+
+    def allDays(y, m):
+         return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+
+    date_list = allDays(y, m)
+
+    print(date_list)
+
+
+    ################### end days of month list #################################
+    btn_today = today.year
+    btn_today_1 = today.year + 1
+    btn_today_2 = today.year + 2
+
 
     context = {
         'today': today,
         'months': months,
         'date_list': date_list,
+        'btn_today': btn_today,
+        'btn_today_1': btn_today_1,
+        'btn_today_2': btn_today_2,
+        'btn_y': btn_y
     }
     return render(request, "vita/panel/terminarz.html", context)
 

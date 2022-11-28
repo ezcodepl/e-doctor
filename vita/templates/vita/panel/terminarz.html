@@ -195,7 +195,7 @@
                         <div class="page-title">
                             <div class="row mb-2">
                                 <div class="col-12 col-md-6 order-md-1 order-last">
-                                    <h3>Terminarz gabinetu lekarskiego - na miesiąc {{today.month}}-{{today.year}}</h3>
+                                    <h3>Terminarz gabinetu lekarskiego</h3>
                                 </div>
                             </div>
                         </div>
@@ -207,10 +207,22 @@
 
                                 <div class="card-body">
                                     <div class="row p-3">
-                                         {% include 'vita/messages.html' %}
+                                        {% include 'vita/messages.html' %}
+                                        <div class="text-center p-2">
+                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{btn_today}}';">{{ btn_today }}</button>
+                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{ btn_today_1 }}';">{{ btn_today_1 }}</button>
+                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{ btn_today_2 }}';">{{ btn_today_2 }}</button>
+                                        </div>
                                         {% for nr, month in months.items %}
-                                          <div class="col">
-                                              <button class="btn btn-primary" onclick="window.location='terminarz?month={{nr}}';" name="month">{{month|upper}}</button>
+                                          <div class="col text-center">
+                                              {% if btn_y == btn_today_1 %}
+                                                 <a role="button" class="btn btn-primary" href="terminarz?month={{nr}}&year={{btn_today_1}}">{{month|upper}}</a>
+                                              {% elif btn_y == btn_today_2 %}
+                                                 <a role="button" class="btn btn-primary" href="terminarz?month={{nr}}&year={{btn_today_2}}">{{month|upper}}</a>
+                                              {% else %}
+                                                 <a role="button" class="btn btn-primary" href="terminarz?month={{nr}}&year={{btn_today}}">{{month|upper}}</a>
+                                              {% endif %}
+
                                           </div>
                                         {% endfor %}
                                     </div>
@@ -238,6 +250,7 @@
                                             <td class="p-1"><input type="text" value="8:00" />-<input type="text" value="21:00" /></td>
                                             <td class="p-1">0</td>
                                           </tr>
+
                                         {% endfor %}
                                         </tbody>
                                     </table>
