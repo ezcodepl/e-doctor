@@ -56,8 +56,8 @@ class PatientUpdateForm(forms.ModelForm):
         fields = ['city','street','post_code','phone','pesel','sms']
 
 class DoctorsSchedule(forms.ModelForm):
-    work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
-    official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
+    # work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
+    # official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
     class Meta:
         model = DoctorSchedule
 

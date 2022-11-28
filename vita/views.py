@@ -28,6 +28,17 @@ def home(request):
 
 def terminarz(request):
 
+    # if request.method == "POST":
+    #     form = DoctorsSchedule(request.POST)
+    #
+    #     if form.is_valid():
+    #
+    #         form.save()
+    #     else:
+    #         print(form.is_valid()) # form contains data and errors
+    #         print(form.errors)
+    #         form = DoctorsSchedule()
+
 
     months = {'1':'Styczeń', '2':'Luty','3':'Marzec','4':'Kwiecień','5':'Maj','6':'Czerwiec','7':'Lipiec',
               '8':'Sierpień', '9':'Wrzesień','10':'Październik','11':'Listopad','12':'Grudzień'}
@@ -36,14 +47,6 @@ def terminarz(request):
     now = date.today()
 
     locale.setlocale(locale.LC_TIME, 'pl_PL')
-
-    get_schedule = DoctorSchedule.objects.all()
-
-    # if get_schedule:
-    #     calendars = obj.itermonthdays(today.year, get_month)
-    # else:
-    #     #messages.warning(request, ("Nie znaleziono terminarza na wybrany miesiąc"))
-    #     calendars = obj.itermonthdays(today.year, get_month)
 
 
     ##################### days of month list ######################################
@@ -65,25 +68,11 @@ def terminarz(request):
         m = today.month
         btn_y = today.year
 
-
-    # def allDays(y, m):
-    #      return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
-    #
-    # date_list = allDays(y, m)
-    #
-    # print(date_list)
-
-    # def allDays(y, m):
-    #     return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
-    #
-    # date_list = allDays(y, m)
-
     date_list = {}
     for d in range(1, monthrange(y, m)[1] + 1):
         x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
         dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
         date_list[x] = calendar.day_name[dayName].capitalize()
-
 
     ################### end days of month list #################################
     btn_today = today.year

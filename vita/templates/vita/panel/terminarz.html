@@ -203,8 +203,10 @@
 <!--                                </div>-->
 
                                 <div class="card-body">
-                                     {% csrf_token %}
-<!--                                  <form  method="POST">-->
+
+                                  <form  method="POST" enctype="multipart/form-data">
+                                      {% csrf_token %}
+
                                     <div class="row p-3 text-center">
                                         {% include 'vita/messages.html' %}
                                         <div class="text-center p-2">
@@ -248,15 +250,16 @@
                                                         <span class="text-success">{{ day }}</span>
                                                      {% endif %}
                                                 </a>
+                                                <input type="hidden" name="date" value="{{date}}" />
                                             </td>
                                             <td class="p-1">
-                                                <select>
+                                                <select name="day_type">
                                                     {% if day == 'Sobota' or day == 'Niedziela'  %}
-                                                        <option selected>Wolny</option>
-                                                        <option >Pracujący</option>
+                                                        <option value="Wolny" selected>Wolny</option>
+                                                        <option value="Pracujący">Pracujący</option>
                                                     {% else %}
-                                                        <option selected>Pracujący</option>
-                                                        <option >Wolny</option>
+                                                        <option value="Pracujący" selected>Pracujący</option>
+                                                        <option value="Wolny" >Wolny</option>
                                                     {% endif %}
 
                                                 </select>
@@ -267,10 +270,10 @@
                                                 <td></td>
                                                 <td></td>
                                                {% else %}
-                                                <td class="p-1 text-center"><input type="time" value="08:00" />-<input type="time" value="19:00" /></td>
-                                                <td class="p-1 text-center"><input type="time" value="08:00" />-<input type="time" value="21:00" /></td>
+                                                <td class="p-1 text-center"><input name="official_hours_start" type="time" value="08:00" />-<input name="official_hours_end" type="time" value="19:00" /></td>
+                                                <td class="p-1 text-center"><input name="work_hours_start" type="time" value="08:00" />-<input name="work_hours_end" type="time" value="21:00" /></td>
                                                 <td class="p-1 text-center">
-                                                    <select>
+                                                    <select name="scheme">
                                                         <option value="10">10 min</option>
                                                         <option value="15">15 min</option>
                                                         <option value="20">20 min</option>
@@ -287,7 +290,7 @@
                                         </tbody>
                                     </table>
                                     <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
-<!--                                  </form>-->
+                                  </form>
                                 </div>
                             </div>
                         </section>
