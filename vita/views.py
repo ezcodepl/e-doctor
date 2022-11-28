@@ -72,7 +72,6 @@ def terminarz(request):
 
     print(date_list)
 
-
     ################### end days of month list #################################
     btn_today = today.year
     btn_today_1 = today.year + 1
