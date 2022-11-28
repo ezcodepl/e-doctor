@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
-
+from datetime import date, datetime
 
 
 urlpatterns = [
 
     path('', views.home, name='home'),
     path('panel/terminarz', views.terminarz, name='terminarz'),
-    # path('panel/', views.panel, name='panel'),
+    path(f'panel', views.panel, name='panel'),
     path('news', views.news, name='news'),
     path('test', views.test, name='test'),
     path('laseroterapia', views.laseroterapia, name='laseroterapia'),

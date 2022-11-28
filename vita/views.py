@@ -33,6 +33,7 @@ def terminarz(request):
               '8':'Sierpień', '9':'Wrzesień','10':'Październik','11':'Listopad','12':'Grudzień'}
 
     today = datetime.now()
+    now = date.today()
 
     locale.setlocale(locale.LC_TIME, 'pl_PL')
 
@@ -65,12 +66,24 @@ def terminarz(request):
         btn_y = today.year
 
 
-    def allDays(y, m):
-         return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+    # def allDays(y, m):
+    #      return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+    #
+    # date_list = allDays(y, m)
+    #
+    # print(date_list)
 
-    date_list = allDays(y, m)
+    # def allDays(y, m):
+    #     return ['{:04d}-{:02d}-{:02d}'.format(y, m, d) for d in range(1, monthrange(y, m)[1] + 1)]
+    #
+    # date_list = allDays(y, m)
 
-    print(date_list)
+    date_list = {}
+    for d in range(1, monthrange(y, m)[1] + 1):
+        x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
+        dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
+        date_list[x] = calendar.day_name[dayName].capitalize()
+
 
     ################### end days of month list #################################
     btn_today = today.year
@@ -80,6 +93,7 @@ def terminarz(request):
 
     context = {
         'today': today,
+        'now': now,
         'months': months,
         'date_list': date_list,
         'btn_today': btn_today,
@@ -91,11 +105,16 @@ def terminarz(request):
 
 def panel(request, date):
 
-    today = today = date.today()
+    today = date.today()
     full_path = request.get_full_path()
     current_path = full_path[full_path.index('/', 1):]
 
     get_date = current_path.replace('/', '')
+
+    # if today:
+    #     get_date = current_path.replace('/', '')
+    # else:
+    #     get_date = full_path
 
     context = {
         'today': today,
