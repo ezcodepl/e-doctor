@@ -1,7 +1,7 @@
 import calendar
 import locale
 from itertools import groupby
-
+from django import template
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 from calendar import monthrange
 
-
+register = template.Library()
 
 
 # Create your views here.
@@ -28,67 +28,85 @@ def home(request):
 
 def terminarz(request):
 
-    # if request.method == "POST":
-    #     form = DoctorsSchedule(request.POST)
-    #
-    #     if form.is_valid():
-    #
-    #         form.save()
-    #     else:
-    #         print(form.is_valid()) # form contains data and errors
-    #         print(form.errors)
-    #         form = DoctorsSchedule()
-
-
-    months = {'1':'Styczeń', '2':'Luty','3':'Marzec','4':'Kwiecień','5':'Maj','6':'Czerwiec','7':'Lipiec',
-              '8':'Sierpień', '9':'Wrzesień','10':'Październik','11':'Listopad','12':'Grudzień'}
-
     today = datetime.now()
     now = date.today()
-
     locale.setlocale(locale.LC_TIME, 'pl_PL')
 
+    def months():
 
-    ##################### days of month list ######################################
-    today_year_1 = today.year + 1
-    today_year_2 = today.year + 2
+        months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
+                  '7': 'Lipiec',
+                  '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'}
+        return months
 
-    get_year = today.year
-    get_month = today.month
+    ##################### days of month list create ######################################
+    def days_of_month_list():
+        if request.GET.get('year') and request.GET.get('month'):
 
-    if request.GET.get('year') and request.GET.get('month'):
+            y = int(request.GET.get('year'))
+            m = int(request.GET.get('month'))
+            btn_y = int(request.GET.get('year'))
 
-        y = int(request.GET.get('year'))
-        m = int(request.GET.get('month'))
-        btn_y = int(request.GET.get('year'))
+        else:
 
-    else:
+            y = today.year
+            m = today.month
+            btn_y = today.year
 
-        y = today.year
-        m = today.month
-        btn_y = today.year
+        date_list = {}
+        for d in range(1, monthrange(y, m)[1] + 1):
+            x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
+            dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
+            date_list[x] = calendar.day_name[dayName].capitalize()
 
-    date_list = {}
-    for d in range(1, monthrange(y, m)[1] + 1):
-        x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
-        dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
-        date_list[x] = calendar.day_name[dayName].capitalize()
 
-    ################### end days of month list #################################
+
+        return date_list
+
+    ################### end days of month list create #################################
+
+    def get_days_of_month_list():
+        get_days_list = DoctorSchedule.objects.all().values()
+
+        return get_days_list
+
+    get_days_list = get_days_of_month_list()
+
+    months = months()
+    date_list = days_of_month_list()
+
     btn_today = today.year
     btn_today_1 = today.year + 1
     btn_today_2 = today.year + 2
 
+    if request.GET.get('year') and request.GET.get('month'):
+        btn_y = int(request.GET.get('year'))
+
+    else:
+        btn_y = today.year
+
+    if request.method == 'POST':
+        form = DoctorsSchedule(request.POST)
+        if form.is_valid():
+              form.save()
+
+        else:
+            print(form.is_valid())  # form contains data and errors
+            print(form.errors)
+            form = DoctorsSchedule()
+    else:
+        form = DoctorsSchedule
 
     context = {
+        'form': form,
         'today': today,
         'now': now,
         'months': months,
         'date_list': date_list,
+        'get_days_list': get_days_list,
         'btn_today': btn_today,
         'btn_today_1': btn_today_1,
-        'btn_today_2': btn_today_2,
-        'btn_y': btn_y
+        'btn_today_2': btn_today_2
     }
     return render(request, "vita/panel/terminarz.html", context)
 

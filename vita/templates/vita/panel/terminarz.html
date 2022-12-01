@@ -210,11 +210,12 @@
                                     <div class="row p-3 text-center">
                                         {% include 'vita/messages.html' %}
                                         <div class="text-center p-2">
-                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{btn_today}}';">{{ btn_today }}</button>
-                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{ btn_today_1 }}';">{{ btn_today_1 }}</button>
-                                            <button class="btn btn-info" onclick="window.location='terminarz?month={{today.month}}&year={{ btn_today_2 }}';">{{ btn_today_2 }}</button>
+                                            <a role="button" class="btn btn-info" href='terminarz?month={{today.month}}&year={{btn_today}}'>{{ btn_today }}</a>
+                                            <a role="button" class="btn btn-info" href='terminarz?month={{today.month}}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
+                                            <a role="button" class="btn btn-info" href='terminarz?month={{today.month}}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
                                         </div>
                                         {% for nr, month in months.items %}
+
                                           <div class="col text-center">
                                               {% if btn_y == btn_today_1 %}
                                                  <a role="button" class="btn btn-primary p-2" href="terminarz?month={{nr}}&year={{btn_today_1}}">{{month|upper}}</a>
@@ -239,22 +240,23 @@
                                           </tr>
                                         </thead>
                                         <tbody>
-                                        {% for date, day in date_list.items %}
+                                        {% for row in get_days_list %}
+
                                           <tr>
                                             <td class="p-1">
-                                                <a href="/panel/{{ date }}">
-                                                   <b>{{ date }}</b> -
-                                                     {% if day == 'Sobota' or day == 'Niedziela'  %}
-                                                        <span class="text-danger">{{ day }}</span>
+                                                <a href="/panel/{{row.date|date:'Y-m-d'}}">
+                                                   <b>{{ row.date|date:'Y-m-d' }}</b> -
+                                                     {% if row.date|date:'l' == 'Sobota' or row.date|date:'l' == 'Niedziela'  %}
+                                                        <span class="text-danger">{{ row.date | date:'l' }}</span>
                                                      {% else %}
-                                                        <span class="text-success">{{ day }}</span>
+                                                        <span class="text-success">{{ row.date | date:'l' }}</span>
                                                      {% endif %}
                                                 </a>
-                                                <input type="hidden" name="date" value="{{date}}" />
+                                                <input type="hidden" name="data" value="{{date}}" />
                                             </td>
                                             <td class="p-1">
                                                 <select name="day_type">
-                                                    {% if day == 'Sobota' or day == 'Niedziela'  %}
+                                                    {% if row.day_type == 'Wolny'  %}
                                                         <option value="Wolny" selected>Wolny</option>
                                                         <option value="Pracujący">Pracujący</option>
                                                     {% else %}
@@ -264,21 +266,29 @@
 
                                                 </select>
                                             </td>
-                                               {% if day == 'Sobota' or day == 'Niedziela'  %}
+                                               {% if row.date|date:'l' == 'Sobota' or row.date|date:'l' == 'Niedziela'  %}
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
                                                {% else %}
-                                                <td class="p-1 text-center"><input name="official_hours_start" type="time" value="08:00" />-<input name="official_hours_end" type="time" value="19:00" /></td>
-                                                <td class="p-1 text-center"><input name="work_hours_start" type="time" value="08:00" />-<input name="work_hours_end" type="time" value="21:00" /></td>
+                                                <td class="p-1 text-center"><input name="official_hours_start" type="text" value="{{row.official_hours}}" /></td>
+                                                <td class="p-1 text-center"><input name="work_hours_start" type="text" value="{{row.work_hours}}" /></td>
                                                 <td class="p-1 text-center">
                                                     <select name="scheme">
+                                                        {% if row.scheme %}
+                                                        <option value="{{row.scheme}}" selected>{{row.scheme}} min</option>
+                                                        <option value="10">10 min</option>
+                                                        <option value="15">15 min</option>
+                                                        <option value="20">20 min</option>
+                                                        <option value="25">25 min</option>
+                                                        {% else %}
                                                         <option value="10">10 min</option>
                                                         <option value="15">15 min</option>
                                                         <option value="20">20 min</option>
                                                         <option value="25">25 min</option>
                                                         <option value="30" selected>30 min</option>
+                                                        {% endif %}
                                                     </select>
                                                 </td>
                                                 <td class="p-1 text-center">0</td>
@@ -292,6 +302,7 @@
                                     <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
                                   </form>
                                 </div>
+
                             </div>
                         </section>
 
