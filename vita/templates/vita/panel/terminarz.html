@@ -240,7 +240,10 @@
                                           </tr>
                                         </thead>
                                         <tbody>
+
                                         {% for row in get_days_list %}
+
+                                         {% if row != '' %}
 
                                           <tr>
                                             <td class="p-1">
@@ -295,8 +298,58 @@
                                               {% endif %}
 
                                           </tr>
+                                         {% else %}
 
+                                         {%endif%}
                                         {% endfor %}
+                                         <!--#####################################################################################################-->
+                                          {% for day, d_name in date_list.items %}
+                                           <tr>
+                                             <td class="p-1">
+                                                <a href="/panel/{{row.date|date:'Y-m-d'}}">
+                                                   <b>{{ day }}</b> -
+                                                     {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
+                                                        <span class="text-danger">{{ d_name }}</span>
+                                                     {% else %}
+                                                        <span class="text-success">{{ d_name }}</span>
+                                                     {% endif %}
+                                                </a>
+                                                <input type="hidden" name="data" value="{{day}}" />
+                                             </td>
+                                               <td class="p-1">
+                                                <select name="day_type">
+                                                   {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
+                                                        <option value="Wolny" selected>Wolny</option>
+                                                        <option value="Pracujący">Pracujący</option>
+                                                    {% else %}
+                                                        <option value="Pracujący" selected>Pracujący</option>
+                                                        <option value="Wolny" >Wolny</option>
+                                                    {% endif %}
+                                                </select>
+                                            </td>
+                                                {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+
+                                               {% else %}
+                                               <td class="p-1 text-center"><input name="official_hours_start" type="text" value="08:00-19:00" /></td>
+                                                <td class="p-1 text-center"><input name="work_hours_start" type="text" value="08:00-21:00" /></td>
+                                               <td class="p-1 text-center">
+                                                    <select name="scheme">
+                                                        <option value="10">10 min</option>
+                                                        <option value="15">15 min</option>
+                                                        <option value="20">20 min</option>
+                                                        <option value="25">25 min</option>
+                                                        <option value="30" selected>30 min</option>
+                                                    </select>
+                                               </td>
+                                               {% endif %}
+                                                <td class="p-1 text-center">0</td>
+
+                                           </tr>
+                                          {% endfor %}
+                                        <!-- $###################################################################################### -->
                                         </tbody>
                                     </table>
                                     <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>

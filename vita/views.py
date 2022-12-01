@@ -29,9 +29,9 @@ def home(request):
 def terminarz(request):
 
     today = datetime.now()
-    now = date.today()
+    # now = date.today()
     locale.setlocale(locale.LC_TIME, 'pl_PL')
-
+    #
     def months():
 
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
@@ -64,17 +64,17 @@ def terminarz(request):
         return date_list
 
     ################### end days of month list create #################################
-
-    def get_days_of_month_list():
-        get_days_list = DoctorSchedule.objects.all().values()
-
-        return get_days_list
-
-    get_days_list = get_days_of_month_list()
-
-    months = months()
+    #
+    # def get_days_of_month_list():
+    #     get_days_list = DoctorSchedule.objects.all().values()
+    #
+    #     return get_days_list
+    #
+    # get_days_list = get_days_of_month_list()
+    #
+    # months = months()
     date_list = days_of_month_list()
-
+    #
     btn_today = today.year
     btn_today_1 = today.year + 1
     btn_today_2 = today.year + 2
@@ -85,30 +85,45 @@ def terminarz(request):
     else:
         btn_y = today.year
 
-    if request.method == 'POST':
+    check_schedule = DoctorSchedule.objects.all().values('date')
+    form = DoctorsSchedule(request.POST)
+    if len(check_schedule) > 0:
+        messages.success(request, ("Formularz z bazy"))
+        if request.method == 'POST':
+            form = DoctorsSchedule(request.POST)
+            if form.is_valid():
+                try:
+                    form.save()
+                except Exception as e:
+                    pass
+            else:
+                form = DoctorsSchedule()
+    else:
+        messages.warning(request, ("Nie utworzono jeszcze terminarza"))
+
         form = DoctorsSchedule(request.POST)
         if form.is_valid():
-              form.save()
-
+            try:
+                form.save()
+            except Exception as e:
+                pass
         else:
-            print(form.is_valid())  # form contains data and errors
-            print(form.errors)
             form = DoctorsSchedule()
-    else:
-        form = DoctorsSchedule
 
-    context = {
-        'form': form,
-        'today': today,
-        'now': now,
-        'months': months,
-        'date_list': date_list,
-        'get_days_list': get_days_list,
-        'btn_today': btn_today,
-        'btn_today_1': btn_today_1,
-        'btn_today_2': btn_today_2
-    }
-    return render(request, "vita/panel/terminarz.html", context)
+
+
+    # context = {
+    #     'form': form
+    #     'today': today,
+    #     'now': now,
+    #     'months': months,
+    #     'date_list': date_list,
+    #     'get_days_list': get_days_list,
+    #     'btn_today': btn_today,
+    #     'btn_today_1': btn_today_1,
+    #     'btn_today_2': btn_today_2
+    # }
+    return render(request, "vita/panel/terminarz.html", {'form': form, 'date_list': date_list,'months': months} )
 
 def panel(request, date):
 
