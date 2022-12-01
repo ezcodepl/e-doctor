@@ -64,15 +64,15 @@ def terminarz(request):
         return date_list
 
     ################### end days of month list create #################################
-    #
-    # def get_days_of_month_list():
-    #     get_days_list = DoctorSchedule.objects.all().values()
-    #
-    #     return get_days_list
-    #
-    # get_days_list = get_days_of_month_list()
-    #
-    # months = months()
+
+    def get_days_of_month_list():
+        get_days_list = DoctorSchedule.objects.all().values()
+
+        return get_days_list
+
+    get_days_list = get_days_of_month_list()
+
+    months = months()
     date_list = days_of_month_list()
     #
     btn_today = today.year
@@ -89,22 +89,22 @@ def terminarz(request):
     form = DoctorsSchedule(request.POST)
     if len(check_schedule) > 0:
         messages.success(request, ("Formularz z bazy"))
-        if request.method == 'POST':
-            form = DoctorsSchedule(request.POST)
-            if form.is_valid():
-                try:
-                    form.save()
-                except Exception as e:
-                    pass
-            else:
-                form = DoctorsSchedule()
+        # if request.method == 'POST':
+        #     form = DoctorsSchedule(request.POST)
+        #     if form.is_valid():
+        #         try:
+        #             form.save()
+        #         except Exception as e:
+        #             pass
+        #     else:
+        #         form = DoctorsSchedule()
     else:
         messages.warning(request, ("Nie utworzono jeszcze terminarza"))
-
+        # if schedule not save in datebase - create it
         if request.method == "POST":
             form = DoctorsSchedule(request.POST)
             if form.is_valid():
-                  x1 = request.POST
+                  x1 = request.POST #get data from request and getlist from QueryDict
                   data_l = x1.getlist('data')
                   day_type_l = x1.getlist('day_type')
                   work_hours_l = x1.getlist('work_hours_start')
@@ -123,18 +123,10 @@ def terminarz(request):
             else:
                 form = DoctorsSchedule()
 
-    # context = {
-    #     'form': form
-    #     'today': today,
-    #     'now': now,
-    #     'months': months,
-    #     'date_list': date_list,
-    #     'get_days_list': get_days_list,
-    #     'btn_today': btn_today,
-    #     'btn_today_1': btn_today_1,
-    #     'btn_today_2': btn_today_2
-    # }
-    return render(request, "vita/panel/terminarz.html", {'form': form, 'date_list': date_list,'months': months} )
+    return render(request, "vita/panel/terminarz.html", {'form': form, 'date_list': date_list,'months': months,
+                                                         'today': today, 'get_days_list':get_days_list,
+                                                         'btn_today':btn_today, 'btn_today_1': btn_today_1,
+                                                         'btn_today_2': btn_today_2, 'btn_y': btn_y} )
 
 def panel(request, date):
 
