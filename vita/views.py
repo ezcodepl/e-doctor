@@ -111,7 +111,6 @@ def terminarz(request):
                   scheme_l = x1.getlist('scheme')
                   official_hours_l = x1.getlist('official_hours_start')
 
-
                   for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
 
                       post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
