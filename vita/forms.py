@@ -56,8 +56,6 @@ class PatientUpdateForm(forms.ModelForm):
         fields = ['city','street','post_code','phone','pesel','sms']
 
 class DoctorsSchedule(forms.ModelForm):
-    day_type = forms.CharField(required=True, label='')
     class Meta:
         model = DoctorSchedule
-
-        fields = ['date', 'day_type', 'work_hours', 'scheme', 'official_hours']
+        fields = ['date', 'day_type', 'work_hours', 'official_hours','scheme']

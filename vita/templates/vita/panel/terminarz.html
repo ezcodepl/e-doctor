@@ -270,10 +270,25 @@
                                                 </select>
                                             </td>
                                                {% if row.date|date:'l' == 'Sobota' or row.date|date:'l' == 'Niedziela'  %}
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+s
+                                                <td><input name="official_hours_start" type="text" value="{{row.official_hours}}" /></td>
+                                                <td><input name="work_hours_start" type="text" value="{{row.work_hours}}" /></td>
+                                                <td> <select name="scheme">
+                                                        {% if row.scheme %}
+                                                        <option value="{{row.scheme}}" selected>{{row.scheme}} min</option>
+                                                        <option value="10">10 min</option>
+                                                        <option value="15">15 min</option>
+                                                        <option value="20">20 min</option>
+                                                        <option value="25">25 min</option>
+                                                        {% else %}
+                                                        <option value="10">10 min</option>
+                                                        <option value="15">15 min</option>
+                                                        <option value="20">20 min</option>
+                                                        <option value="25">25 min</option>
+                                                        <option value="30" selected>30 min</option>
+                                                        {% endif %}
+                                                    </select></td>
+                                               <td></td>
                                                {% else %}
                                                 <td class="p-1 text-center"><input name="official_hours_start" type="text" value="{{row.official_hours}}" /></td>
                                                 <td class="p-1 text-center"><input name="work_hours_start" type="text" value="{{row.work_hours}}" /></td>

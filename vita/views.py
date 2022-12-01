@@ -1,6 +1,6 @@
 import calendar
 import locale
-from itertools import groupby
+from itertools import groupby, zip_longest
 from django import template
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -101,16 +101,28 @@ def terminarz(request):
     else:
         messages.warning(request, ("Nie utworzono jeszcze terminarza"))
 
-        form = DoctorsSchedule(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-            except Exception as e:
-                pass
-        else:
-            form = DoctorsSchedule()
+        if request.method == "POST":
+            form = DoctorsSchedule(request.POST)
+            if form.is_valid():
+                  x1 = request.POST
+                  data_l = x1.getlist('data')
+                  day_type_l = x1.getlist('day_type')
+                  work_hours_l = x1.getlist('work_hours_start')
+                  scheme_l = x1.getlist('scheme')
+                  official_hours_l = x1.getlist('official_hours_start')
 
 
+                  for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
+
+                      post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
+
+                      #print(post_dict)
+                      form = DoctorsSchedule(post_dict)
+
+                      form.save()
+
+            else:
+                form = DoctorsSchedule()
 
     # context = {
     #     'form': form
@@ -179,7 +191,7 @@ def register_user(request):
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
-
+        print(request.POST)
         last_id_patient = Patient.objects.all().values('id_patient')  # check id_patient
 
         if form.is_valid() and pp_form.is_valid():
