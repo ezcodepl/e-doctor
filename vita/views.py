@@ -90,16 +90,25 @@ def terminarz(request):
     #form = DoctorsSchedule(request.POST)
     if len(check_schedule) > 0:
         form = DoctorsSchedule(request.POST)
-        messages.success(request, ("Formularz z bazy"))
-        # if request.method == 'POST':
-        #     form = DoctorsSchedule(request.POST)
-        #     if form.is_valid():
-        #         try:
-        #             form.save()
-        #         except Exception as e:
-        #             pass
-        #     else:
-        #         form = DoctorsSchedule()
+
+        if request.method == 'POST':
+            x1 = request.POST  # get data from request and getlist from QueryDict
+            data_l = x1.getlist('data')
+            day_type_l = x1.getlist('day_type')
+            work_hours_l = x1.getlist('work_hours_start')
+            scheme_l = x1.getlist('scheme')
+            official_hours_l = x1.getlist('official_hours_start')
+
+            for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+                                                                          official_hours_l, scheme_l):
+                post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
+                             'official_hours': official_hours, 'scheme': scheme}
+
+                # print(post_dict)
+                form = DoctorsSchedule(post_dict)
+
+                form.save()
+            messages.success(request, ("Terminarz Lekarza został zaktualizowany"))
     else:
         messages.warning(request, ("Nie utworzono jeszcze terminarza"))
         # if schedule not save in datebase - create it
