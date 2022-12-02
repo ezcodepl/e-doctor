@@ -29,7 +29,7 @@ def home(request):
 def terminarz(request):
 
     today = datetime.now()
-    # now = date.today()
+    #now = date.today()
     locale.setlocale(locale.LC_TIME, 'pl_PL')
     #
     def months():
@@ -74,6 +74,7 @@ def terminarz(request):
 
     months = months()
     date_list = days_of_month_list()
+    print(date_list)
     #
     btn_today = today.year
     btn_today_1 = today.year + 1
@@ -86,8 +87,9 @@ def terminarz(request):
         btn_y = today.year
 
     check_schedule = DoctorSchedule.objects.all().values('date')
-    form = DoctorsSchedule(request.POST)
+    #form = DoctorsSchedule(request.POST)
     if len(check_schedule) > 0:
+        form = DoctorsSchedule(request.POST)
         messages.success(request, ("Formularz z bazy"))
         # if request.method == 'POST':
         #     form = DoctorsSchedule(request.POST)
@@ -101,8 +103,9 @@ def terminarz(request):
     else:
         messages.warning(request, ("Nie utworzono jeszcze terminarza"))
         # if schedule not save in datebase - create it
+        form = DoctorsSchedule(request.POST)
         if request.method == "POST":
-            form = DoctorsSchedule(request.POST)
+
             if form.is_valid():
                   x1 = request.POST #get data from request and getlist from QueryDict
                   data_l = x1.getlist('data')
