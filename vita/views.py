@@ -7,8 +7,8 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsSchedule
-from .models import News, Patient, DoctorSchedule
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm
+from .models import News, Patient, DoctorSchedule, FizSchedule
 from django.contrib.auth.models import User
 from datetime import date, datetime
 import time
@@ -29,9 +29,8 @@ def home(request):
 def terminarz(request):
 
     today = datetime.now()
-    #now = date.today()
     locale.setlocale(locale.LC_TIME, 'pl_PL')
-    #
+
     def months():
 
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
@@ -42,13 +41,10 @@ def terminarz(request):
     ##################### days of month list create ######################################
     def days_of_month_list():
         if request.GET.get('year') and request.GET.get('month'):
-
             y = int(request.GET.get('year'))
             m = int(request.GET.get('month'))
             btn_y = int(request.GET.get('year'))
-
         else:
-
             y = today.year
             m = today.month
             btn_y = today.year
@@ -59,8 +55,6 @@ def terminarz(request):
             dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
             date_list[x] = calendar.day_name[dayName].capitalize()
 
-
-
         return date_list
 
     ################### end days of month list create #################################
@@ -70,26 +64,24 @@ def terminarz(request):
 
         return get_days_list
 
-    get_days_list = get_days_of_month_list()
+    get_days_list = get_days_of_month_list() # get days list from function get_days_of_month_list()
 
     months = months()
     date_list = days_of_month_list()
-    print(date_list)
-    #
+
     btn_today = today.year
     btn_today_1 = today.year + 1
     btn_today_2 = today.year + 2
 
     if request.GET.get('year') and request.GET.get('month'):
         btn_y = int(request.GET.get('year'))
-
     else:
         btn_y = today.year
 
     check_schedule = DoctorSchedule.objects.all().values('date')
-    #form = DoctorsSchedule(request.POST)
+
     if len(check_schedule) > 0:
-        form = DoctorsSchedule(request.POST)
+        form = DoctorsScheduleForm(request.POST)
 
         if request.method == 'POST':
             x1 = request.POST  # get data from request and getlist from QueryDict
@@ -103,16 +95,14 @@ def terminarz(request):
                                                                           official_hours_l, scheme_l):
                 post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
                              'official_hours': official_hours, 'scheme': scheme}
-
                 # print(post_dict)
-                form = DoctorsSchedule(post_dict)
-
+                form = DoctorsScheduleForm(post_dict)
                 form.save()
-            messages.success(request, ("Terminarz Lekarza został zaktualizowany"))
+            messages.success(request, "Terminarz Lekarza został zaktualizowany")
     else:
-        messages.warning(request, ("Nie utworzono jeszcze terminarza"))
+        messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
-        form = DoctorsSchedule(request.POST)
+        form = DoctorsScheduleForm(request.POST)
         if request.method == "POST":
 
             if form.is_valid():
@@ -126,19 +116,122 @@ def terminarz(request):
                   for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
 
                       post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
-
                       #print(post_dict)
-                      form = DoctorsSchedule(post_dict)
-
+                      form = DoctorsScheduleForm(post_dict)
                       form.save()
 
             else:
-                form = DoctorsSchedule()
+                form = DoctorsScheduleForm()
 
     return render(request, "vita/panel/terminarz.html", {'form': form, 'date_list': date_list,'months': months,
                                                          'today': today, 'get_days_list':get_days_list,
                                                          'btn_today':btn_today, 'btn_today_1': btn_today_1,
                                                          'btn_today_2': btn_today_2, 'btn_y': btn_y} )
+
+def terminarz_fizykoterapii(request):
+
+    today = datetime.now()
+    locale.setlocale(locale.LC_TIME, 'pl_PL')
+
+    def months():
+
+        months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
+                  '7': 'Lipiec',
+                  '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'}
+        return months
+
+    ##################### days of month list create ######################################
+    def days_of_month_list():
+        if request.GET.get('year') and request.GET.get('month'):
+            y = int(request.GET.get('year'))
+            m = int(request.GET.get('month'))
+            btn_y = int(request.GET.get('year'))
+        else:
+            y = today.year
+            m = today.month
+            btn_y = today.year
+
+        date_list = {}
+        for d in range(1, monthrange(y, m)[1] + 1):
+            x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
+            dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
+            date_list[x] = calendar.day_name[dayName].capitalize()
+
+        return date_list
+
+    ################### end days of month list create #################################
+
+    def get_days_of_month_list():
+        get_days_list = FizSchedule.objects.all().values()
+
+        return get_days_list
+
+    get_days_list = get_days_of_month_list() # get days list from function get_days_of_month_list()
+
+    months = months()
+    date_list = days_of_month_list()
+
+    btn_today = today.year
+    btn_today_1 = today.year + 1
+    btn_today_2 = today.year + 2
+
+    if request.GET.get('year') and request.GET.get('month'):
+        btn_y = int(request.GET.get('year'))
+    else:
+        btn_y = today.year
+
+    check_schedule = FizSchedule.objects.all().values('date')
+
+    if len(check_schedule) > 0:
+        form =FizScheduleForm(request.POST)
+
+        if request.method == 'POST':
+            x1 = request.POST  # get data from request and getlist from QueryDict
+            data_l = x1.getlist('data')
+            day_type_l = x1.getlist('day_type')
+            work_hours_l = x1.getlist('work_hours_start')
+            scheme_l = x1.getlist('scheme')
+            official_hours_l = x1.getlist('official_hours_start')
+
+            for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+                                                                          official_hours_l, scheme_l):
+                post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
+                             'official_hours': official_hours, 'scheme': scheme}
+                # print(post_dict)
+                form = FizScheduleForm(post_dict)
+                form.save()
+            messages.success(request, "Terminarz fizykoterapii został zaktualizowany")
+    else:
+        messages.warning(request, "Nie utworzono jeszcze terminarza")
+        # if schedule not save in datebase - create it
+        form = FizScheduleForm(request.POST)
+        if request.method == "POST":
+
+            if form.is_valid():
+                  x1 = request.POST #get data from request and getlist from QueryDict
+                  data_l = x1.getlist('data')
+                  day_type_l = x1.getlist('day_type')
+                  work_hours_l = x1.getlist('work_hours_start')
+                  scheme_l = x1.getlist('scheme')
+                  official_hours_l = x1.getlist('official_hours_start')
+
+                  for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
+
+                      post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
+                      #print(post_dict)
+                      form = FizScheduleForm(post_dict)
+                      form.save()
+
+            else:
+                form = FizScheduleForm()
+
+    return render(request, "vita/panel/terminarz_f.html", {'form': form, 'date_list': date_list,'months': months,
+                                                         'today': today, 'get_days_list':get_days_list,
+                                                         'btn_today':btn_today, 'btn_today_1': btn_today_1,
+                                                         'btn_today_2': btn_today_2, 'btn_y': btn_y} )
+
+
+
 
 def panel(request, date):
 
@@ -157,7 +250,7 @@ def panel(request, date):
         'today': today,
         'get_date': get_date
     }
-    return render(request, "vita/panel/admbase.html", context)
+    return render(request, "vita/panel/panel.html", context)
 
 def test(request):
 

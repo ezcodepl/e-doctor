@@ -4,7 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Patient, DoctorSchedule
+from .models import Patient, DoctorSchedule, FizSchedule
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 # from captcha.fields import ReCaptchaField
@@ -55,7 +55,12 @@ class PatientUpdateForm(forms.ModelForm):
 
         fields = ['city','street','post_code','phone','pesel','sms']
 
-class DoctorsSchedule(forms.ModelForm):
+class DoctorsScheduleForm(forms.ModelForm):
     class Meta:
         model = DoctorSchedule
+        fields = ['date', 'day_type', 'work_hours', 'official_hours','scheme']
+
+class FizScheduleForm(forms.ModelForm):
+    class Meta:
+        model = FizSchedule
         fields = ['date', 'day_type', 'work_hours', 'official_hours','scheme']

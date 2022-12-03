@@ -77,4 +77,16 @@ class DoctorSchedule(models.Model):
     def __str__(self):
         return self.date
 
+class FizSchedule(models.Model):
+
+    id = models.AutoField(primary_key=True, unique=True)
+    date = models.DateField(blank=True, null=True)
+    day_type = models.CharField(max_length=255, blank=True, null=True, default='Pracujący')
+    work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
+    scheme = models.CharField(max_length=255, blank=True, null=True, default='20')
+    official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
+
+    def __str__(self):
+        return self.date
+
 
