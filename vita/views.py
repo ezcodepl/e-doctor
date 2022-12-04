@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm, NewsForm
 from .models import News, Patient, DoctorSchedule, FizSchedule
 from django.contrib.auth.models import User
 from datetime import date, datetime
@@ -231,6 +231,53 @@ def terminarz_fizykoterapii(request):
                                                          'btn_today_2': btn_today_2, 'btn_y': btn_y} )
 
 
+def patients_list(request):
+    return render(request, "vita/panel/patients_list.html")
+
+
+def new_patient(request):
+    return render(request, "vita/panel/new_patient.html")
+
+def news_list(request):
+    get_news = News.objects.order_by('-data_wpisu').values()
+
+    if not get_news:
+        messages.warning(request, 'Nie ma jeszcze żadnych dodanych Newsów')
+    else:
+        get_news = News.objects.order_by('-data_wpisu').values()
+
+    return render(request, "vita/panel/news_list.html", {'get_news': get_news})
+def create_news(request):
+
+    if request.method == 'POST':
+        n_form = NewsForm(request.POST)
+        if n_form.is_valid():
+            n_form.save()
+            messages.success(request, 'News zapisano')
+            return redirect("/panel/news_list")
+    else:
+        n_form = NewsForm()
+
+    context = {
+        'n_form' : n_form
+    }
+
+    return render(request, "vita/panel/create_news.html", context)
+
+def delete_news(request, pk):
+    news = News.objects.get(id_news = pk)
+    print(news.id_news, news.temat)
+    if request.method == "GET":
+        news.delete()
+        messages.info(request, f'News o temacie: "{news.temat}" z dnia {news.data_wpisu} usunięto!')
+        return redirect('/panel/news_list')
+    else:
+        messages.error(request, 'Nie udało się usunąć newsa')
+    context = {
+        'news' : news
+    }
+
+    return render(request, "vita/panel/news_list.html", context)
 
 
 def panel(request, date):

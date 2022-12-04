@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 {% load static %}
-{% load crispy_forms_tags %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +21,7 @@
 
     <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/logo/favicon.png" type="image/png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -83,7 +84,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/new_patient" class='sidebar-link'>
                                 <i class="bi bi-person-check"></i>
                                 <span>Nowy pacjent</span>
                             </a>
@@ -95,7 +96,7 @@
                             </a>
                         </li>
                          <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/patients" class='sidebar-link'>
                                <i class="bi bi-stack"></i>
                                 <span>Baza pacjentów</span>
                             </a>
@@ -113,7 +114,7 @@
                             </a>
                         </li>
                          <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/news_list" class='sidebar-link'>
                                 <i class="bi bi-info-square"></i>
                                 <span>Aktualności</span>
                             </a>

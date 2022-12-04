@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
-from vita.views import panel
+from vita.views import panel, delete_news
 
 class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
@@ -37,4 +37,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('vita.urls')),
     path('panel/<date:date>/', panel , name="panel"),
+    path('panel/delete_news/<int:pk>', delete_news, name="delete_news"),
 ]

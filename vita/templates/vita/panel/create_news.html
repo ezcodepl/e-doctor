@@ -1,0 +1,38 @@
+{% extends 'vita/panel/adminbase.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="page-heading">
+        <div class="page-title">
+            <div class="row mb-2">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>Aktualności</h3>
+                </div>
+            </div>
+        </div>
+        <section class="section">
+            <div class="card">
+                <div class="card-body">
+                     {% include 'vita/messages.html' %}
+                        <form action="{% url 'create_news' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                  <div class="col-6">
+                                    {{ n_form.temat|as_crispy_field }}
+                                  </div>
+                                  <div class="col-6">
+                                    {{ n_form.data_wpisu|as_crispy_field }}
+                                  </div>
+                            </div>
+                                {{ n_form.status|as_crispy_field }}
+                                {{ n_form.tresc|as_crispy_field }}
+
+                            <div class="text-center"><input class="btn btn-success" type="submit" name="create_news" value="Zapisz" /></div>
+                        </form>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+
+{% endblock %}

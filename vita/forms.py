@@ -4,7 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Patient, DoctorSchedule, FizSchedule
+from .models import Patient, DoctorSchedule, FizSchedule, News
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 # from captcha.fields import ReCaptchaField
@@ -64,3 +64,16 @@ class FizScheduleForm(forms.ModelForm):
     class Meta:
         model = FizSchedule
         fields = ['date', 'day_type', 'work_hours', 'official_hours','scheme']
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+class NewsForm(forms.ModelForm):
+    status_check = [
+        ('1', 'Aktywny'),
+        ('0', 'Nieaktywny')
+    ]
+    data_wpisu = forms.DateField(label='Data wpisu:', widget=DateInput)
+    status = forms.CharField(label='Wybierz status dostępności:', widget=forms.RadioSelect(choices=status_check))
+    class Meta:
+        model = News
+        fields = ['temat', 'tresc', 'data_wpisu', 'status']
