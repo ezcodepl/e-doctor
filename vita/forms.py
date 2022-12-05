@@ -4,7 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Patient, DoctorSchedule, FizSchedule, News
+from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 # from captcha.fields import ReCaptchaField
@@ -77,3 +77,15 @@ class NewsForm(forms.ModelForm):
     class Meta:
         model = News
         fields = ['temat', 'tresc', 'data_wpisu', 'status']
+
+class NoteTemplatesForm(forms.ModelForm):
+    status_check = [
+        ('1', 'Aktywny'),
+        ('0', 'Nieaktywny')
+    ]
+    name = forms.CharField(label='Tytuł notatki')
+    contents = forms.CharField(label='Treść notatki', help_text="", widget=forms.Textarea())
+    status = forms.CharField(label='Wybierz status dostępności:', widget=forms.RadioSelect(choices=status_check))
+    class Meta:
+        model = NoteTemplates
+        fields = ['name', 'contents', 'date', 'status']

@@ -7,8 +7,8 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm, NewsForm
-from .models import News, Patient, DoctorSchedule, FizSchedule
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates
 from django.contrib.auth.models import User
 from datetime import date, datetime
 import time
@@ -266,7 +266,7 @@ def create_news(request):
 
 def delete_news(request, pk):
     news = News.objects.get(id_news = pk)
-    print(news.id_news, news.temat)
+
     if request.method == "GET":
         news.delete()
         messages.info(request, f'News o temacie: "{news.temat}" z dnia {news.data_wpisu} usunięto!')
@@ -279,6 +279,35 @@ def delete_news(request, pk):
 
     return render(request, "vita/panel/news_list.html", context)
 
+def templates_list(request):
+    get_templates = NoteTemplates.objects.order_by('-date').values()
+
+    if not get_templates:
+        messages.warning(request, 'Nie ma jeszcze żadnych dodanych szablonów notatek')
+    else:
+        get_news = NoteTemplates.objects.order_by('-date').values()
+
+    return render(request, "vita/panel/templates_list.html", {'get_templates': get_templates})
+def create_templates(request):
+
+    if request.method == 'POST':
+        form = NoteTemplatesForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Szablon notatki zapisano')
+            return redirect("/panel/templates_list")
+        else:
+            form = NoteTemplatesForm()
+            print(form.errors)
+    else:
+        form = NoteTemplatesForm()
+
+    context = {
+        'form' : form
+    }
+
+    return render(request, "vita/panel/create_templates.html", context)
 
 def panel(request, date):
 
