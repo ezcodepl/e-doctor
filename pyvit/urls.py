@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
-from vita.views import panel, delete_news
+from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates
 
 class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
@@ -38,4 +38,9 @@ urlpatterns = [
     path('', include('vita.urls')),
     path('panel/<date:date>/', panel , name="panel"),
     path('panel/delete_news/<int:pk>', delete_news, name="delete_news"),
+    path('panel/edit_news/<int:pk>', edit_news, name="edit_news"),
+    path('panel/update_news/<int:pk>', update_news, name="update_news"),
+    path('panel/edit_templates/<int:pk>', edit_templates, name="edit_templates"),
+    path('panel/update_templates/<int:pk>', update_templates, name="update_templates"),
+    path('panel/delete_templates/<int:pk>', delete_templates, name="delete_templates"),
 ]

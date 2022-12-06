@@ -1,0 +1,75 @@
+{% extends 'vita/panel/adminbase.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="page-heading">
+    <div class="page-title">
+        <div class="row mb-2">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>Szablony notatek</h3>
+            </div>
+        </div>
+    </div>
+    <section class="section">
+        <div class="card">
+            <div class="card-body">
+                {% include 'vita/messages.html' %}
+                <form action="/panel/update_templates/{{templates.id}}" method="POST" enctype="multipart/form-data">
+                     {% csrf_token %}
+                    <div class="row">
+                        <div class="col-6">
+
+                            <div id="div_id_name" class="form-group">
+                                <label for="id_name" class=" requiredField">
+                                    Temat<span class="asteriskField">*</span>
+                                </label>
+                                <div>
+                                    <input type="text" name="name" maxlength="255"
+                                           class="textinput textInput form-control" required="" id="id_name" value="{{templates.name}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+
+                        </div>
+                    </div>
+                    <div id="div_id_status" class="form-group">
+                        <label class=" requiredField">
+                            Wybierz status dostępności:<span class="asteriskField">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="status" value="1" id="id_status_0"
+                                       required="" value="{{templates.status}}" {% if templates.status == 1 %} checked {% else %} {% endif %}>
+                                <label class="form-check-label" for="id_status_0">
+                                    Aktywny
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="status" value="0" id="id_status_1"
+                                       required="" value="{{templates.status}}" {% if templates.status == 0 %} checked {% else %} {% endif %}>
+                                <label class="form-check-label" for="id_status_1">
+                                    Nieaktywny
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_id_contents" class="form-group">
+                        <label for="id_contents" class=" requiredField">
+                            Tresc<span class="asteriskField">*</span>
+                        </label>
+                        <div>
+                            <textarea name="contents" cols="40" rows="10" class="textarea form-control" required=""
+                                      id="id_contents" >{{templates.contents}}</textarea>
+                        </div>
+                    </div>
+                    <div class="text-center"><input class="btn btn-success" type="submit" name="update_templates"
+                                                    value="Zapisz"></div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+
+{% endblock %}

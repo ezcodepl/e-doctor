@@ -1,0 +1,114 @@
+{% extends 'vita/panel/adminbase.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="page-heading">
+        <div class="page-title">
+            <div class="row mb-2">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>Nowy pacjent</h3>
+                </div>
+            </div>
+        </div>
+        <section class="section">
+            <div class="card">
+<!--                                <div class="card-header">-->
+<!--                                    <h4 class="card-title">Example Content</h4>-->
+<!--                                </div>-->
+                <script>
+                    function swapConfig(x) {
+                    var radioName = document.getElementsByName(x.name);
+                    for(i = 0 ; i < radioName.length; i++){
+                      document.getElementById(radioName[i].id.concat("Settings")).style.display="none";
+                    }
+                    document.getElementById(x.id.concat("Settings")).style.display="initial";
+                  }
+                </script>
+                <div class="card-body">
+                    <div>
+                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="production"
+                               checked="checked"/>
+                        <label for="production">Nowy pacjent stacjonarny</label>
+                    </div>
+                    <div id="productionSettings">
+                        <p>
+                            {% for field in form %}
+                                {{ field.errors }}
+                            {% endfor %}
+                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}">
+                            {% csrf_token %}
+                              <fieldset class="form-group">
+                                   <div class="row align-items-start">
+                                      <div class="col">
+                                          {{ cpform.first_name | as_crispy_field }}
+                                          {{ cpform.last_name | as_crispy_field }}
+                                          {{ cppp_form.street | as_crispy_field }}
+                                      </div>
+                                      <div class="col">
+                                            {{ cppp_form.city | as_crispy_field }}
+                                           {{ cppp_form.post_code | as_crispy_field }}
+                                           {{ cppp_form.phone | as_crispy_field }}
+                                      </div>
+                                   </div>
+
+                              </fieldset>
+                              <div class="form-group align-items-center">
+                                  <button class="btn btn-primary" type="submit">Dodaj pacjenta stacjonarnego</button>
+                              </div>
+                        </form>
+                        </p>
+                    </div>
+                    <div>
+
+                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="development"/>
+                        <label for="development">Nowy pacjent elektroniczny</label>
+                    </div>
+
+                    <div id="developmentSettings" style="display:none">
+                        <p>
+                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'register_user' %}">
+                            {% csrf_token %}
+                              <fieldset class="form-group">
+                                   <div class="row align-items-start">
+                                      <div class="col">{{ form|crispy }}</div>
+                                      <div class="col">{{ pp_form|crispy }}</div>
+                                   </div>
+
+                              </fieldset>
+                              <div class="form-group align-items-center">
+                                  <button class="btn btn-success" type="submit">Dodaj pacjenta elektronicznego</button>
+                              </div>
+
+
+                        </form>
+                        </p>
+                    </div>
+<!--                    <div class="p-3" id="stracjonarnySettings">-->
+<!--                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="stacjonarny" checked="checked" value="0" />&nbsp;&nbsp;Nowy pacjent stracjonarny-->
+<!--                    </div>-->
+
+<!--                    <div class="p-3 mb-2" id="elektronicznySettings">-->
+<!--                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="elektroniczny" value="1" />&nbsp;&nbsp;Nowy Pacjent elektroniczny-->
+<!--                       <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'register_user' %}">-->
+<!--                            {% csrf_token %}-->
+<!--                              <fieldset class="form-group">-->
+<!--                                   <div class="row align-items-start">-->
+<!--                                      <div class="col">{{ form|crispy }}</div>-->
+<!--                                      <div class="col">{{ pp_form|crispy }}</div>-->
+<!--                                   </div>-->
+
+<!--                              </fieldset>-->
+<!--                              <div class="form-group align-items-center">-->
+<!--                                  <button class="btn btn-success" type="submit">Dodaj pacjenta</button>-->
+<!--                              </div>-->
+
+
+<!--                        </form>-->
+<!--                    </div>-->
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+
+{% endblock %}

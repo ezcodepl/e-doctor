@@ -18,7 +18,6 @@
                        <table class="table table-striped">
                          <thead class="text-light text-center" style="background: #26396F;">
                             <tr>
-                              <th class="text-center">Id</th>
                               <th class="text-center">Data wpisu</th>
                               <th class="text-center">Temat</th>
                               <th class="text-center">Treść</th>
@@ -29,9 +28,6 @@
                          <tbody>
                             {% for news in get_news %}
                             <tr>
-                                <td class="text-center">
-                                    {{ news.id_news }}
-                                </td>
                                  <td class="text-center">
                                     {{ news.data_wpisu }}
                                 </td>

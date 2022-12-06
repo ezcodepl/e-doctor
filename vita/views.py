@@ -15,6 +15,7 @@ import time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 from calendar import monthrange
+from django.contrib.auth.base_user import BaseUserManager
 
 register = template.Library()
 
@@ -235,14 +236,53 @@ def patients_list(request):
     return render(request, "vita/panel/patients_list.html")
 
 
-def new_patient(request):
-    return render(request, "vita/panel/new_patient.html")
+# def new_patient(request):
+#     form = RegisterUserForm()
+#     pp_form = PatientRegisterForm()
+#     return render(request, "vita/panel/create_patient.html", {'form': form, 'pp_form': pp_form})
+
+def create_patient(request):
+    if request.method == "POST":
+
+        cpform = RegisterUserForm(request.POST)
+        cppp_form = PatientRegisterForm(request.POST)
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')  # check id_patient
+        print(request.POST)
+
+        if cpform.is_valid() and cppp_form.is_valid():
+            #cpform.save()  # save user form
+            cp_form = cpform.save(commit=False)
+            cp_form.username = request.POST.get('first_name') + "." + request.POST.get('last_name')
+            cp_form.password = BaseUserManager().make_random_password()
+            cp_form.emial = 'stacjonarny@xxx.pl'
+            cp_form.save()
+
+            # set next id_patient number
+            if last_id_patient is not None:
+                next_id_patient = 1
+            else:
+                next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+            pp_form_obj = cppp_form.save(commit=False)
+            pp_form_obj.user = request.user
+            pp_form_obj.id_patient = next_id_patient
+            pp_form_obj.save()
+            messages.success(request, ("Registration Successful!"))
+            return redirect('patient/patients_list')
+    else:
+
+        cpform = RegisterUserForm()
+        cppp_form = PatientRegisterForm()
+
+    return render(request, 'vita/panel/create_patient.html', {
+        'cpform': cpform, 'cppp_form': cppp_form
+    })
 
 def news_list(request):
     get_news = News.objects.order_by('-data_wpisu').values()
 
     if not get_news:
-        messages.warning(request, 'Nie ma jeszcze żadnych dodanych Newsów')
+        messages.warning(request, 'Nie ma jeszcze żadnych dodanych aktualności')
     else:
         get_news = News.objects.order_by('-data_wpisu').values()
 
@@ -253,10 +293,30 @@ def create_news(request):
         n_form = NewsForm(request.POST)
         if n_form.is_valid():
             n_form.save()
-            messages.success(request, 'News zapisano')
+            messages.success(request, 'Dodano nową aktualność')
             return redirect("/panel/news_list")
     else:
         n_form = NewsForm()
+
+    context = {
+        'n_form' : n_form
+    }
+
+    return render(request, "vita/panel/create_news.html", context)
+
+def edit_news(request, pk):
+    news = get_object_or_404(News, id_news = pk)
+    return render(request, "vita/panel/edit_news.html", {'news': news})
+def update_news(request, pk):
+    obj = get_object_or_404(News, id_news = pk)
+    if request.method == 'POST':
+        n_form = NewsForm(request.POST, instance=obj)
+        if n_form.is_valid():
+            n_form.save()
+            messages.success(request, 'Dane zapisano')
+            return redirect("/panel/news_list")
+    else:
+        n_form = NewsForm(instance=obj)
 
     context = {
         'n_form' : n_form
@@ -272,7 +332,7 @@ def delete_news(request, pk):
         messages.info(request, f'News o temacie: "{news.temat}" z dnia {news.data_wpisu} usunięto!')
         return redirect('/panel/news_list')
     else:
-        messages.error(request, 'Nie udało się usunąć newsa')
+        messages.error(request, 'Nie udało się usunąć aktualności')
     context = {
         'news' : news
     }
@@ -280,12 +340,12 @@ def delete_news(request, pk):
     return render(request, "vita/panel/news_list.html", context)
 
 def templates_list(request):
-    get_templates = NoteTemplates.objects.order_by('-date').values()
+    get_templates = NoteTemplates.objects.order_by('-created_at').values()
 
     if not get_templates:
         messages.warning(request, 'Nie ma jeszcze żadnych dodanych szablonów notatek')
     else:
-        get_news = NoteTemplates.objects.order_by('-date').values()
+        get_news = NoteTemplates.objects.order_by('-created_at').values()
 
     return render(request, "vita/panel/templates_list.html", {'get_templates': get_templates})
 def create_templates(request):
@@ -308,6 +368,41 @@ def create_templates(request):
     }
 
     return render(request, "vita/panel/create_templates.html", context)
+
+def edit_templates(request, pk):
+    templates = get_object_or_404(NoteTemplates, id= pk)
+    return render(request, "vita/panel/edit_templates.html", {'templates': templates})
+def update_templates(request, pk):
+    obj = get_object_or_404(NoteTemplates, id = pk)
+    print(obj)
+    if request.method == 'POST':
+        form = NoteTemplatesForm(request.POST, instance=obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Dane zapisano')
+            return redirect("/panel/templates_list")
+    else:
+        form = NoteTemplatesForm(instance=obj)
+
+    context = {
+        'form' : form
+    }
+
+    return render(request, "vita/panel/create_templates.html", context)
+def delete_templates(request, pk):
+    templates = NoteTemplates.objects.get(id = pk)
+
+    if request.method == "GET":
+        templates.delete()
+        messages.info(request, f'Szablon notatki o nazwie: "{templates.name}" usunięto!')
+        return redirect('/panel/templates_list')
+    else:
+        messages.error(request, 'Nie udało się usunąć szablonu notatki')
+    context = {
+        'templates' : templates
+    }
+
+    return render(request, "vita/panel/templates_list.html", context)
 
 def panel(request, date):
 
@@ -346,7 +441,10 @@ def history(request):
 
 
 def news(request):
-    all_news = News.objects.all().order_by('-data_wpisu').values()
+    all_news = News.objects.order_by('-data_wpisu').filter(status=1).values()
+
+    if not all_news:
+        messages.info(request, 'W tej chwili nie opublikowano żadnych aktualności')
 
     return render(request, "vita/news.html", {'all_news': all_news})
 
@@ -363,8 +461,7 @@ def register_user(request):
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
-        print(request.POST)
-        last_id_patient = Patient.objects.all().values('id_patient')  # check id_patient
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')  # check id_patient
 
         if form.is_valid() and pp_form.is_valid():
             form.save()  # save user form
@@ -376,14 +473,17 @@ def register_user(request):
             login(request, user)
 
             # set next id_patient number
-            if last_id_patient is not None:
+            if len(last_id_patient) < 1:
                 next_id_patient = 1
             else:
                 next_id_patient = last_id_patient[0]['id_patient'] + 1
+                print(next_id_patient)
+                print(last_id_patient[0]['id_patient'] + 1)
 
             pp_form_obj = pp_form.save(commit=False)
             pp_form_obj.user = request.user
             pp_form_obj.id_patient = next_id_patient
+
             pp_form_obj.save()
             # messages.success(request, ("Registration Successful!"))
             return redirect('patient/profile')

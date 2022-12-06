@@ -1,0 +1,82 @@
+{% extends 'vita/panel/adminbase.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="page-heading">
+    <div class="page-title">
+        <div class="row mb-2">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>Aktualności</h3>
+            </div>
+        </div>
+    </div>
+    <section class="section">
+        <div class="card">
+            <div class="card-body">
+                {% include 'vita/messages.html' %}
+                <form action="/panel/update_news/{{news.id_news}}" method="POST" enctype="multipart/form-data">
+                     {% csrf_token %}
+                    <div class="row">
+                        <div class="col-6">
+
+                            <div id="div_id_temat" class="form-group">
+                                <label for="id_temat" class=" requiredField">
+                                    Temat<span class="asteriskField">*</span>
+                                </label>
+                                <div>
+                                    <input type="text" name="temat" maxlength="255"
+                                           class="textinput textInput form-control" required="" id="id_temat" value="{{news.temat}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div id="div_id_data_wpisu" class="form-group">
+                                <label for="id_data_wpisu" class=" requiredField">
+                                    Data wpisu:<span class="asteriskField">*</span>
+                                </label>
+                                <div>
+                                    <input type="date" name="data_wpisu" class="dateinput form-control" required=""
+                                           id="id_data_wpisu" value="{{news.data_wpisu|date:'Y-m-d'}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_id_status" class="form-group">
+                        <label class=" requiredField">
+                            Wybierz status dostępności:<span class="asteriskField">*</span>
+                        </label>
+                        <div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="status" value="1" id="id_status_0"
+                                       required="" value="{{news.status}}" {% if news.status == 1 %} checked {% else %} {% endif %}>
+                                <label class="form-check-label" for="id_status_0">
+                                    Aktywny
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="status" value="0" id="id_status_1"
+                                       required="" value="{{news.status}}" {% if news.status == 0 %} checked {% else %} {% endif %}>
+                                <label class="form-check-label" for="id_status_1">
+                                    Nieaktywny
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_id_tresc" class="form-group">
+                        <label for="id_tresc" class=" requiredField">
+                            Tresc<span class="asteriskField">*</span>
+                        </label>
+                        <div>
+                            <textarea name="tresc" cols="40" rows="10" class="textarea form-control" required=""
+                                      id="id_tresc" >{{news.tresc}}</textarea>
+                        </div>
+                    </div>
+                    <div class="text-center"><input class="btn btn-success" type="submit" name="create_news"
+                                                    value="Zapisz"></div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+
+{% endblock %}

@@ -92,7 +92,6 @@ class FizSchedule(models.Model):
 class NoteTemplates(models.Model):
 
     id = models.AutoField(primary_key=True, unique=True)
-    date = models.DateField(default=timezone.now)
     name = models.CharField(max_length=255)
     contents = models.TextField()
     status = models.IntegerField()

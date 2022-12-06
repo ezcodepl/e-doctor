@@ -38,6 +38,23 @@ class PatientRegisterForm(forms.ModelForm):
         model = Patient
         fields = ['street', 'city', 'post_code', 'phone']
 
+class RegisterUserStForm(UserCreationForm):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}),)
+    first_name = forms.CharField(required=True, max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(required=True, max_length=50, label='Nazwisko', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super(RegisterUserForm, self).__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['class'] = 'form-control'
+        self.fields['password2'].widget.attrs['class'] = 'form-control'
+
+
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
@@ -80,12 +97,12 @@ class NewsForm(forms.ModelForm):
 
 class NoteTemplatesForm(forms.ModelForm):
     status_check = [
-        ('1', 'Aktywny'),
-        ('0', 'Nieaktywny')
+        ('1', 'Aktywna'),
+        ('0', 'Nieaktywna')
     ]
     name = forms.CharField(label='Tytuł notatki')
     contents = forms.CharField(label='Treść notatki', help_text="", widget=forms.Textarea())
     status = forms.CharField(label='Wybierz status dostępności:', widget=forms.RadioSelect(choices=status_check))
     class Meta:
         model = NoteTemplates
-        fields = ['name', 'contents', 'date', 'status']
+        fields = ['name', 'contents', 'status']

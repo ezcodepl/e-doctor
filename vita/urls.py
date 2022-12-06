@@ -9,11 +9,14 @@ urlpatterns = [
     path('panel/terminarz', views.terminarz, name='terminarz'),
     path('panel/terminarz_f', views.terminarz_fizykoterapii, name='terminarz_fizykoterapii'),
     path('panel/patients', views.patients_list, name='patients_list'),
-    path('panel/new_patient', views.new_patient, name='new_patient'),
+#    path('panel/new_patient', views.new_patient, name='new_patient'),
     path('panel/create_news', views.create_news, name='create_news'),
     path('panel/news_list', views.news_list, name='news_list'),
     path('panel/create_templates', views.create_templates, name='create_templates'),
     path('panel/templates_list', views.templates_list, name='templates_list'),
+
+    path('panel/create_patient', views.create_patient, name='create_patient'),
+
     path(f'panel', views.panel, name='panel'),
     path('news', views.news, name='news'),
     path('test', views.test, name='test'),
