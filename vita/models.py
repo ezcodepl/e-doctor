@@ -61,9 +61,8 @@ class Patient(models.Model):
     sms = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-
     def __str__(self):
-        return f'{self.user.username} Pacjent'
+        return f'{self.user.first_name} {self.user.last_name} Pacjent'
 
 class DoctorSchedule(models.Model):
 

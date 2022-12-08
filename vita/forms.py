@@ -34,6 +34,7 @@ class PatientRegisterForm(forms.ModelForm):
     city = forms.CharField(required=True, label='Miejscowość')
     phone = forms.CharField(required=True, label='Telefon')
     #captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
+
     class Meta:
         model = Patient
         fields = ['street', 'city', 'post_code', 'phone']
@@ -69,7 +70,6 @@ class PatientUpdateForm(forms.ModelForm):
     sms = forms.BooleanField(required=False,label='Powiadomienie SMS')
     class Meta:
         model = Patient
-
         fields = ['city','street','post_code','phone','pesel','sms']
 
 class DoctorsScheduleForm(forms.ModelForm):

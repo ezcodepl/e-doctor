@@ -1,5 +1,6 @@
 import calendar
 import locale
+import random
 from itertools import groupby, zip_longest
 from django import template
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,6 +17,7 @@ from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
 from calendar import monthrange
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
 
 register = template.Library()
 
@@ -243,40 +245,76 @@ def patients_list(request):
 
 def create_patient(request):
     if request.method == "POST":
+        cform = RegisterUserForm(request.POST)
+        cp_form = PatientRegisterForm(request.POST)
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
+        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+        select_form = request.POST.get('select_form')
 
-        cpform = RegisterUserForm(request.POST)
-        cppp_form = PatientRegisterForm(request.POST)
-        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')  # check id_patient
-        print(request.POST)
 
-        if cpform.is_valid() and cppp_form.is_valid():
-            #cpform.save()  # save user form
-            cp_form = cpform.save(commit=False)
-            cp_form.username = request.POST.get('first_name') + "." + request.POST.get('last_name')
-            cp_form.password = BaseUserManager().make_random_password()
-            cp_form.emial = 'stacjonarny@xxx.pl'
-            cp_form.save()
+        if cform.is_valid() and cp_form.is_valid():
+            if int(select_form) == 1:
+                last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+                c_form = cform.save(commit=False)
+                first_name = str(request.POST.get('first_name')).capitalize()
+                last_name = str(request.POST.get('last_name')).capitalize()
+                c_form.first_name = first_name
+                c_form.last_name = last_name
+                c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
+                c_form.password = make_password(BaseUserManager().make_random_password())
+                c_form.emial = 'stacjonarny@megavita.pl'
+                c_form.save()
 
-            # set next id_patient number
-            if last_id_patient is not None:
-                next_id_patient = 1
+                #set next id_patient number
+                if len(last_id_patient) < 1:
+                    next_id_patient = 1
+                else:
+                    next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+                p_form_obj = cp_form.save(commit=False)
+                p_form_obj.user_id = last_user_id
+                p_form_obj.id_patient = next_id_patient
+                p_form_obj.save()
+                messages.success(request, (f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+                return redirect('/panel/patients')
             else:
-                next_id_patient = last_id_patient[0]['id_patient'] + 1
+                form = RegisterUserForm(request.POST)
+                pp_form = PatientRegisterForm(request.POST)
 
-            pp_form_obj = cppp_form.save(commit=False)
-            pp_form_obj.user = request.user
-            pp_form_obj.id_patient = next_id_patient
-            pp_form_obj.save()
-            messages.success(request, ("Registration Successful!"))
-            return redirect('patient/patients_list')
+                if form.is_valid() and pp_form.is_valid():
+                    form.save()
+                    username = form.cleaned_data['username']
+                    password = form.cleaned_data['password1']
+                    user = authenticate(username=username, password=password)
+
+                    # set next id_patient number
+                if last_id_patient[0]['id_patient'] is None:
+                    next_id_patient = 1
+                else:
+                    next_id_patient = last_id_patient[0]['id_patient']+1
+
+                pp_form_obj = pp_form.save(commit=False)
+                pp_form_obj.user_id = last_user_id
+                pp_form_obj.id_patient = next_id_patient
+
+                pp_form_obj.save()
+                messages.success(request, (f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+                return redirect('/panel/patients')
+
+        else:
+            print(cform.errors)
+            cform = RegisterUserForm()
+            cp_form = PatientRegisterForm()
+            form = RegisterUserForm()
+            pp_form = PatientRegisterForm()
     else:
-
-        cpform = RegisterUserForm()
-        cppp_form = PatientRegisterForm()
-
-    return render(request, 'vita/panel/create_patient.html', {
-        'cpform': cpform, 'cppp_form': cppp_form
-    })
+        cform = RegisterUserForm()
+        cp_form = PatientRegisterForm()
+        form = RegisterUserForm()
+        pp_form = PatientRegisterForm()
+    x = f'stacjonarny{random.sample(range(999), 1)[0]}'
+    user_x = x
+    return render(request, 'vita/panel/create_patient.html', {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x })
 
 def news_list(request):
     get_news = News.objects.order_by('-data_wpisu').values()

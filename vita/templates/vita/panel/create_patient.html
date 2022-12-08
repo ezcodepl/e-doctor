@@ -25,7 +25,7 @@
                 </script>
                 <div class="card-body">
                     <div>
-                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="production"
+                        <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0"
                                checked="checked"/>
                         <label for="production">Nowy pacjent stacjonarny</label>
                     </div>
@@ -34,38 +34,41 @@
                             {% for field in form %}
                                 {{ field.errors }}
                             {% endfor %}
-                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}">
+                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                               <fieldset class="form-group">
                                    <div class="row align-items-start">
                                       <div class="col">
-                                          {{ cpform.first_name | as_crispy_field }}
-                                          {{ cpform.last_name | as_crispy_field }}
-                                          {{ cppp_form.street | as_crispy_field }}
+                                          {{ cform.first_name | as_crispy_field }}
+                                          {{ cform.last_name | as_crispy_field }}
+                                          {{ cp_form.street | as_crispy_field }}
                                       </div>
                                       <div class="col">
-                                            {{ cppp_form.city | as_crispy_field }}
-                                           {{ cppp_form.post_code | as_crispy_field }}
-                                           {{ cppp_form.phone | as_crispy_field }}
+                                            {{ cp_form.city | as_crispy_field }}
+                                           {{ cp_form.post_code | as_crispy_field }}
+                                           {{ cp_form.phone | as_crispy_field }}
                                       </div>
                                    </div>
-
                               </fieldset>
                               <div class="form-group align-items-center">
+                                      <input type="hidden" name="select_form" value="1" />
+                                      <input type="hidden" name="username" value="{{user_x}}" />
+                                      <input type="hidden" name="password1" value="haselko1" />
+                                      <input type="hidden" name="password2" value="haselko1" />
+                                      <input type="hidden" name="email" value="stacjonarny@megavita.pl" />
                                   <button class="btn btn-primary" type="submit">Dodaj pacjenta stacjonarnego</button>
                               </div>
                         </form>
                         </p>
                     </div>
                     <div>
-
-                        <input type="radio" onchange="swapConfig(this)" name="urlOptions" id="development"/>
+                        <input type="radio" onchange="swapConfig(this)" name="sf" id="development" value="1" />
                         <label for="development">Nowy pacjent elektroniczny</label>
                     </div>
 
                     <div id="developmentSettings" style="display:none">
                         <p>
-                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'register_user' %}">
+                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                               <fieldset class="form-group">
                                    <div class="row align-items-start">
@@ -75,6 +78,7 @@
 
                               </fieldset>
                               <div class="form-group align-items-center">
+                                    <input type="hidden" name="select_form" value="0" />
                                   <button class="btn btn-success" type="submit">Dodaj pacjenta elektronicznego</button>
                               </div>
 
