@@ -17,7 +17,43 @@
 
                 <div class="card-body">
                     {% include 'vita/messages.html' %}
-                        lista pacjetów
+                    <table class="table table-striped table-sm">
+                        <thead class="text-light" style="background: #26396F;">
+                            <tr>
+                                <th>Lp.</th>
+                                <th>Imię</th>
+                                <th>Nazwisko</th>
+                                <th>Adres</th>
+                                <th>Miejscowość</th>
+                                <th>Telefon</th>
+                                <th>E-mail</th>
+                                <th>Status</th>
+                                <th>Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                         {% for patient in all_patients %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{patient.user.first_name}}</td>
+                                <td>{{patient.user.last_name}}</td>
+                                <td>{{patient.street}}</td>
+                                <td>{{patient.city}}</td>
+                                <td>{{patient.phone}}</td>
+                                <td>{{patient.user.email}}</td>
+                                <td>
+                                    {% if patient.user.email == 'stacjonarny@megavita.pl' %}
+                                       Konto tradycyjne
+                                    {% else %}
+                                    <span class="text-primary font-bold">Konto elektroniczne</span>
+                                    {% endif %}
+                                </td>
+                                <td><button class="btn btn-info btn-sm">Szczegóły</button><button class="btn btn-success btn-sm">Edytuj</button><button class="btn btn-danger btn-sm">Usuń</button></td>
+                            </tr>
+                         {% endfor %}
+
+                        </tbody>
+                    </table>
                 </div>
 
             </div>

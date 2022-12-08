@@ -235,13 +235,8 @@ def terminarz_fizykoterapii(request):
 
 
 def patients_list(request):
-    return render(request, "vita/panel/patients_list.html")
-
-
-# def new_patient(request):
-#     form = RegisterUserForm()
-#     pp_form = PatientRegisterForm()
-#     return render(request, "vita/panel/create_patient.html", {'form': form, 'pp_form': pp_form})
+    all_patients = Patient.objects.select_related('user').all()
+    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients})
 
 def create_patient(request):
     if request.method == "POST":
@@ -250,7 +245,6 @@ def create_patient(request):
         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
         select_form = request.POST.get('select_form')
-
 
         if cform.is_valid() and cp_form.is_valid():
             if int(select_form) == 1:
@@ -325,6 +319,7 @@ def news_list(request):
         get_news = News.objects.order_by('-data_wpisu').values()
 
     return render(request, "vita/panel/news_list.html", {'get_news': get_news})
+
 def create_news(request):
 
     if request.method == 'POST':
