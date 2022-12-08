@@ -3,6 +3,7 @@ import locale
 import random
 from itertools import groupby, zip_longest
 from django import template
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
@@ -18,6 +19,7 @@ from calendar import HTMLCalendar
 from calendar import monthrange
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 register = template.Library()
 
@@ -235,8 +237,40 @@ def terminarz_fizykoterapii(request):
 
 
 def patients_list(request):
-    all_patients = Patient.objects.select_related('user').all()
-    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients})
+    all_patients = Patient.objects.order_by('user__last_name') #.objects.select_related('user').all()
+
+    query = request.GET.get('q')
+    if query:
+        all_patients = Patient.objects.filter(
+            Q(street__icontains=query) | Q(city__icontains=query) |
+            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+        ).distinct()
+
+        paginator = Paginator(all_patients, 10)
+        page_num = request.GET.get('page', 1)
+
+        try:
+            page_obj = paginator.page(page_num)
+        except PageNotAnInteger:
+            # if page is not an integer, deliver the first page
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            # if the page is out of range, deliver the last page
+            page_obj = paginator.page(paginator.num_pages)
+    else:
+        paginator = Paginator(all_patients, 10)
+        page_num = request.GET.get('page', 1)
+
+        try:
+            page_obj = paginator.page(page_num)
+        except PageNotAnInteger:
+            # if page is not an integer, deliver the first page
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            # if the page is out of range, deliver the last page
+            page_obj = paginator.page(paginator.num_pages)
+
+    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj})
 
 def create_patient(request):
     if request.method == "POST":
