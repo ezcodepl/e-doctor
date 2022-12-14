@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 from datetime import date, datetime
 
 
@@ -8,6 +10,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('panel/terminarz', views.terminarz, name='terminarz'),
     path('panel/terminarz_f', views.terminarz_fizykoterapii, name='terminarz_fizykoterapii'),
+    path('panel/patients', views.patients_list, name='patients_list'),
     path('panel/patients', views.patients_list, name='patients_list'),
 #    path('panel/new_patient', views.new_patient, name='new_patient'),
     path('panel/create_news', views.create_news, name='create_news'),
@@ -32,4 +35,4 @@ urlpatterns = [
     path('patient/new-visit', views.new_visit, name='new_visit'),
     path('patient/appointments', views.appointments, name='appointments'),
     path('patient/history', views.history, name='history'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

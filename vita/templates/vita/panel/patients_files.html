@@ -1,0 +1,18 @@
+{% load crispy_forms_tags %}
+
+<div class="row p-3">
+    {% for file in all_files %}
+    <div class="col-sm text-center">
+        <img src="{{ MEDIA_URL }}/vita/media/patient_files/{{patient.id_patient}}/{{file}}" width="150" height="150"/>
+        <p class="p-2">
+            <form action="{% url 'delete_patient_files' patient.id_patient %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" nam="id" value="{{patient.id_patien}}" />
+                <input type="submit" class="btn btn-sm btn-danger" value="Usuń" />
+            </form>
+         <a href="{% url 'delete_patient_files' patient.id_patient %}">usuń</a>
+        </p>
+    </div>
+
+    {% endfor %}
+</div>

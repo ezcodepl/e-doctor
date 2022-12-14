@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'vita',
     'crispy_forms',
     'captcha',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -81,11 +82,16 @@ WSGI_APPLICATION = 'pyvit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME'    : 'pvita',
+        'NAME'    : 'vita',
         'USER'    : 'root',
         'PASSWORD': '',
         'HOST'    : 'localhost',
         'PORT'    : '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
+            'charset': 'utf8mb4',
+            "autocommit": True,
+        }
     }
 }
 
@@ -128,8 +134,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/vita/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'vita/media')
 
 
 

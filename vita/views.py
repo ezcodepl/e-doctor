@@ -1,16 +1,22 @@
 import calendar
 import locale
 import random
+import os
+from django.shortcuts import render
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from itertools import groupby, zip_longest
 from django import template
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm
-from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates
+from django.views import View
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, \
+    DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel
 from django.contrib.auth.models import User
 from datetime import date, datetime
 import time
@@ -20,6 +26,7 @@ from calendar import monthrange
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.views.generic.edit import FormView
 
 register = template.Library()
 
@@ -237,15 +244,24 @@ def terminarz_fizykoterapii(request):
 
 
 def patients_list(request):
-    all_patients = Patient.objects.order_by('user__last_name') #.objects.select_related('user').all()
+    #get all records from Patient with data form User where user_id
+    all_patients = Patient.objects.order_by('user__last_name')
 
     query = request.GET.get('q')
     if query:
+        #show all record from query
         all_patients = Patient.objects.filter(
             Q(street__icontains=query) | Q(city__icontains=query) |
             Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
         ).distinct()
 
+        #query count
+        query_count  = Patient.objects.filter(
+            Q(street__icontains=query) | Q(city__icontains=query) |
+            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+        ).distinct().count()
+
+        #pagination
         paginator = Paginator(all_patients, 10)
         page_num = request.GET.get('page', 1)
 
@@ -260,6 +276,7 @@ def patients_list(request):
     else:
         paginator = Paginator(all_patients, 10)
         page_num = request.GET.get('page', 1)
+        query_count = ''
 
         try:
             page_obj = paginator.page(page_num)
@@ -270,7 +287,71 @@ def patients_list(request):
             # if the page is out of range, deliver the last page
             page_obj = paginator.page(paginator.num_pages)
 
-    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj})
+    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj, 'query_count': query_count})
+
+def patient_details(request, pk):
+    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+    patients_folder = f'vita/media/patient_files/{pk}'
+    print(patients_folder)
+
+    if request.method == 'POST':
+        form = uploadFilesForm(request.POST, request.FILES)
+        files = request.FILES.getlist('files')
+
+        if form.is_valid():
+            dirname = str(request.POST.get('id'))
+            # checks and create a patient folder name as id_patient
+            try:
+                os.mkdir(os.path.join('vita/media/patient_files/', dirname))
+                pf = form.save(commit=False)
+
+                for f in files:
+                    fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                    d = date.today()
+                    get_ext = str(f).split('.')
+                    filename = fs.save(f, f)
+
+                    fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+                    fi.save()
+                messages.success(request, 'Pliki dodano do akt pacjenta')
+            except OSError as e:
+                if e.errno == 17:
+                    pf = form.save(commit=False)
+
+                    for f in files:
+                        fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                        d = date.today()
+                        get_ext = str(f).split('.')
+
+                        filename = fs.save(f, f)
+                        fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+                        fi.save()
+
+                    messages.success(request, 'Pliki dodano do akt pacjenta')
+        else:
+            messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
+    else:
+        form = uploadFilesForm()
+    if os.path.exists(f'vita/media/patient_files/{pk}') :
+        all_files = os.listdir(f'vita/media/patient_files/{pk}')  # FilesModel.objects.all()
+    else:
+        all_files = ''
+        messages.info(request, 'W aktach pacjenta nie jeszcze plików')
+
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files})
+
+def delete_patient_files(request, pk):
+
+    path = os.path.join(f'vita/media/patient_files/{pk}')
+    print(path)
+    print('pizda zajebana')
+    # if os.path.isfile(path):
+    #     os.remove(path)
+    return render(request, 'vita/panel/delete_file.html')
+def patients_files(request):
+
+    return render(request, 'vita/panel/patient_details.html')
+
 
 def create_patient(request):
     if request.method == "POST":

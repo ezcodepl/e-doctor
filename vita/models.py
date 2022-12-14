@@ -4,6 +4,7 @@ from django.db import models
 from django import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
+from tinymce import models as tinymce_models
 
 
 
@@ -40,9 +41,9 @@ class Patient(models.Model):
     street = models.CharField(max_length=255, blank=True, null=True)
     phone = models.IntegerField(blank=True, null=True)
     pesel = models.CharField(max_length=11, blank=True, null=True)
-    data_of_birth = models.DateField(blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
     insurance_number = models.CharField(max_length=255, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
+    notes = tinymce_models.HTMLField(blank=True, null=True)
     id_healt = models.IntegerField(blank=True, null=True) #id kasa chorych
     id_status = models.IntegerField(blank=True, null=True) #id statusu
     id_nfz = models.IntegerField(blank=True, null=True) #id ubezpieczyciela
@@ -57,7 +58,7 @@ class Patient(models.Model):
     number_of_children = models.IntegerField(blank=True, null=True)
     blood_group = models.CharField(max_length=50, blank=True, null=True)
     visits_int = models.IntegerField(blank=True, null=True)
-    doctor_notes = models.TextField(blank=True, null=True)
+    doctor_notes = tinymce_models.HTMLField(blank=True, null=True)
     sms = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
@@ -99,4 +100,11 @@ class NoteTemplates(models.Model):
 
     def __str__(self):
         return self.name
+
+class FilesModel(models.Model):
+    patient = models.OneToOneField(Patient, on_delete=models.CASCADE)
+    files = models.FileField(upload_to='')
+    ext = models.CharField(max_length=255,null=True)
+    upload_date = models.DateTimeField(default=timezone.now)
+
 

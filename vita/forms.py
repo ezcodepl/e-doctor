@@ -4,7 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.models import User
-from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates
+from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 # from captcha.fields import ReCaptchaField
@@ -106,3 +106,9 @@ class NoteTemplatesForm(forms.ModelForm):
     class Meta:
         model = NoteTemplates
         fields = ['name', 'contents', 'status']
+
+class uploadFilesForm(forms.ModelForm):
+    files = forms.FileField(label='Wybierz pliki', widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    class Meta:
+        model = FilesModel
+        fields = ['files']
