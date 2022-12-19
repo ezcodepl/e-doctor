@@ -102,7 +102,7 @@ class NoteTemplates(models.Model):
         return self.name
 
 def patient_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/patient_<id>/<filename>
     return 'patient_files/{0}/{1}'.format(instance.patient.id_patient, filename)
 class FilesModel(models.Model):
     patient = models.OneToOneField(Patient, on_delete=models.CASCADE)

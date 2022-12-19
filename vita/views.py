@@ -321,29 +321,32 @@ def patient_details(request, pk):
                         # d = date.today()
                         get_ext = str(f).split('.')
                         #filename = fs.save(f, f)
-                        fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
-                        fi.save()
+                        if os.path.exists(f'vita/media/patient_files/{pk}/{f}'):
+                            messages.error(request, f'Plik o nazwie: "{f}" już załączono od akt pacjenta! Proszę wybrać inny lub zmienić nazwę')
+                        else:
+                            print('nie ma')
+                            fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+                            fi.save()
+                            messages.success(request, f'Plik {f} dodano do akt pacjenta')
 
-                    messages.success(request, 'Pliki dodano do akt pacjenta')
         else:
             messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
     else:
         form = uploadFilesForm()
     if os.path.exists(f'vita/media/patient_files/{pk}') :
         all_files = os.listdir(f'vita/media/patient_files/{pk}')  # FilesModel.objects.all()
-        x = FilesModel.objects.all().values()
     else:
         all_files = ''
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files,'x':x})
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files})
 
 def delete_patient_files(request, pk):
-
-    path = os.path.join(f'vita/media/patient_files/{pk}')
+    path = os.path.join(f'vita/media/patient_files/{pk}/')
     
-    # if os.path.isfile(path):
-    #     os.remove(path)
+    if os.path.isfile(path):
+        os.remove(path)
+        return redirect('vita/panel/patient/')
     return render(request, 'vita/panel/delete_file.html')
 def patients_files(request):
 
