@@ -3,19 +3,23 @@
 <div class="row p-3">
 
     {% for file in all_files %}
-        {{x}}
+
     <div class="col-sm text-center">
         {% if file.ext == 'pdf' %}
+          <a href="/vita/media/patient_files/{{patient.id_patient}}/{{file.files}}">
             <img src="/static/image/pdf.png" width="150" height="150"/>
+          </a>
         {% else %}
-            <img src="/vita/media/patient_files/{{patient.id_patient}}/{{file}}" width="150" height="150"/>
+          <a  data-fancybox href="/vita/media/patient_files/{{patient.id_patient}}/{{file.files}}">
+            <img src="/vita/media/patient_files/{{patient.id_patient}}/{{file.files}}" width="150" height="150"/>
+          </a>
         {% endif %}
-        <p>{{file}}</p>
+        <p>{{file.files}}</p>
         <p class="p-2">
             <form action="{% url 'delete_patient_files' patient.id_patient %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="id" value="{{patient.id_patien}}" />
-                <input type="hidden" name="file" value="{{file}}" />
+                <input type="hidden" name="file" value="{{file.files}}" />
                 <input type="submit" class="btn btn-sm btn-danger" value="Usuń" />
             </form>
         </p>
