@@ -305,22 +305,21 @@ def patient_details(request, pk):
             try:
                 os.mkdir(os.path.join('vita/media/patient_files/', dirname))
                 for f in files:
-                    # fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                    fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
                     # d = date.today()
                     get_ext = str(f).split('.')
-                    #filename = fs.save(f, f)
-                    fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+                    filename = fs.save(f, f)
+                    fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
                     fi.save()
                 messages.success(request, 'Pliki dodano do akt pacjenta')
             except OSError as e:
                 if e.errno == 17:
                     for f in files:
-                        #fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                        fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
                         # d = date.today()
                         get_ext = str(f).split('.')
-                        print(get_ext[0])
-                        #filename = fs.save(f, f)
-                        fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+                        filename = fs.save(f, f)
+                        fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
                         fi.save()
 
                     messages.success(request, 'Pliki dodano do akt pacjenta')
@@ -330,12 +329,10 @@ def patient_details(request, pk):
         form = uploadFilesForm()
     if os.path.exists(f'vita/media/patient_files/{pk}') :
         all_files = os.listdir(f'vita/media/patient_files/{pk}')  # FilesModel.objects.all()
-        #all_files = FilesModel.objects.all().values()
+
     else:
         all_files = ''
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
-
-
 
     return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files})
 
