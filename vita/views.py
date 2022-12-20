@@ -323,8 +323,8 @@ def patient_details(request, pk):
                         #fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
                         # d = date.today()
                         get_ext = str(f).split('.')
+                        print(get_ext[0])
                         #filename = fs.save(f, f)
-                        print(f)
                         fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
 
                         fi.save()
@@ -336,7 +336,7 @@ def patient_details(request, pk):
         form = uploadFilesForm()
     if os.path.exists(f'vita/media/patient_files/{pk}') :
         all_files = os.listdir(f'vita/media/patient_files/{pk}')  # FilesModel.objects.all()
-
+        #all_files = FilesModel.objects.all().values()
     else:
         all_files = ''
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
