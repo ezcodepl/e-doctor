@@ -304,21 +304,16 @@ def patient_details(request, pk):
             # checks and create a patient folder name as id_patient
             try:
                 os.mkdir(os.path.join('vita/media/patient_files/', dirname))
-                pf = form.save(commit=False)
-
                 for f in files:
                     # fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
                     # d = date.today()
                     get_ext = str(f).split('.')
                     #filename = fs.save(f, f)
                     fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
-
                     fi.save()
                 messages.success(request, 'Pliki dodano do akt pacjenta')
             except OSError as e:
                 if e.errno == 17:
-                    pf = form.save(commit=False)
-
                     for f in files:
                         #fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
                         # d = date.today()
@@ -326,7 +321,6 @@ def patient_details(request, pk):
                         print(get_ext[0])
                         #filename = fs.save(f, f)
                         fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
-
                         fi.save()
 
                     messages.success(request, 'Pliki dodano do akt pacjenta')
