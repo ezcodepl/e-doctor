@@ -297,8 +297,10 @@ def patient_details(request, pk):
         form = uploadFilesForm(request.POST, request.FILES)
         files = request.FILES.getlist('files')
 
+
         if form.is_valid():
             dirname = str(request.POST.get('id'))
+            
             # checks and create a patient folder name as id_patient
             try:
                 os.mkdir(os.path.join('vita/media/patient_files/', dirname))
@@ -310,6 +312,7 @@ def patient_details(request, pk):
                     get_ext = str(f).split('.')
                     #filename = fs.save(f, f)
                     fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+
                     fi.save()
                 messages.success(request, 'Pliki dodano do akt pacjenta')
             except OSError as e:
@@ -321,7 +324,9 @@ def patient_details(request, pk):
                         # d = date.today()
                         get_ext = str(f).split('.')
                         #filename = fs.save(f, f)
+                        print(f)
                         fi = FilesModel(patient_id=dirname, files=f, ext=get_ext[1])
+
                         fi.save()
 
                     messages.success(request, 'Pliki dodano do akt pacjenta')
@@ -331,20 +336,27 @@ def patient_details(request, pk):
         form = uploadFilesForm()
     if os.path.exists(f'vita/media/patient_files/{pk}') :
         all_files = os.listdir(f'vita/media/patient_files/{pk}')  # FilesModel.objects.all()
-        x = FilesModel.objects.all().values()
+
     else:
         all_files = ''
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files,'x':x})
+
+
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files})
 
 def delete_patient_files(request, pk):
+    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+    path = os.path.join(f'vita/media/patient_files/{pk}/{request.POST.get("file")}')
+    file_name= os.path.join(f'patient_files/{pk}/{request.POST.get("file")}')
 
-    path = os.path.join(f'vita/media/patient_files/{pk}')
-    
-    # if os.path.isfile(path):
-    #     os.remove(path)
-    return render(request, 'vita/panel/delete_file.html')
+
+    if os.path.isfile(path):
+         file = FilesModel.objects.get(files=file_name)
+         file.delete()
+         os.remove(path)
+    return redirect(f"/panel/patients/{pk}")
+
 def patients_files(request):
 
     return render(request, 'vita/panel/patient_details.html')

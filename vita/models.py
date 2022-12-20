@@ -105,7 +105,7 @@ def patient_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'patient_files/{0}/{1}'.format(instance.patient.id_patient, filename)
 class FilesModel(models.Model):
-    patient = models.OneToOneField(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     files = models.FileField(upload_to=patient_directory_path)
     ext = models.CharField(max_length=255,null=True)
     upload_date = models.DateTimeField(default=timezone.now)
