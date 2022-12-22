@@ -293,6 +293,11 @@ def patient_details(request, pk):
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
     patients_folder = f'vita/media/patient_files/{pk}'
 
+    # templates notes of doctor
+    templates = NoteTemplates.objects.all()
+    ########### end templates notes of doctor ################
+
+    ################  upload patient files ###################
     if request.method == 'POST':
         form = uploadFilesForm(request.POST, request.FILES)
         files = request.FILES.getlist('files')
@@ -333,7 +338,9 @@ def patient_details(request, pk):
         all_files = ''
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files})
+    #################### end upload patient files ###################################################
+
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files, 'templates': templates })
 
 def delete_patient_files(request, pk):
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
@@ -423,6 +430,16 @@ def create_patient(request):
     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
     user_x = x
     return render(request, 'vita/panel/create_patient.html', {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x })
+
+def update_patient(request, pk):
+
+    if request.POST == 'POST':
+        print(request.POST)
+    else:
+        print('error')
+
+    return render(request, 'vita/panel/patient_details.html')
+
 
 def news_list(request):
     get_news = News.objects.order_by('-data_wpisu').values()

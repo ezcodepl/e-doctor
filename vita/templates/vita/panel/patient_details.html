@@ -40,7 +40,9 @@
 
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="row p-2 mt-3">
+                      <form action="{% url 'update_patient' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                        <div class="row p-2 mt-3 font-bold">
                             <div class="col">
                                 <label>Imię</label>
                                 <input class="form-control" type="text" name="first_name"
@@ -64,7 +66,7 @@
                                 <input class="form-control" type="text" name="city" value="{{patient.city}}"/>
                             </div>
                         </div>
-                        <div class="row p-2">
+                        <div class="row p-2 font-bold">
                             <div class="col">
                                 <label>Telefon</label>
                                 <input class="form-control" type="text" name="phone" value="{{patient.phone}}"/>
@@ -88,7 +90,7 @@
                                        value="{{patient.created_at|date:'Y-m-d'}}" disabled/>
                             </div>
                         </div>
-                        <div class="row p-2">
+                        <div class="row p-2 font-bold">
                             <div class="col">
                                 <label>E-mail</label>
                                 <input class="form-control" type="text" name="email" value="{{patient.user.email}}"/>
@@ -120,6 +122,42 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row p-2 font-bold">
+                            <div class="col">
+                                <label>Wykształcenie</label>
+                                <input class="form-control" type="text" name="education" value="{{patient.education}}"/>
+                            </div>
+                            <div class="col">
+                                <label>Stan cywilny</label>
+                                <input class="form-control" type="text" name="marital_status"
+                                       value="{{patient.marital_status}}"/>
+                            </div>
+                            <div class="col">
+                                <label>Liczba dzieci</label>
+                                <input class="form-control" type="text" name="number_of_children" value="{{patient.number_of_children}}"/>
+                            </div>
+                            <div class="col">
+                                <label>Grupa krwi</label>
+                                <input class="form-control" type="text" name="blood_group"
+                                       value="{{patient.blood_group}}"/>
+                            </div>
+                            <div class="col">
+                                <label>Opiekun</label>
+                                 <input class="form-control" type="text" name="maintainer"
+                                       value="{{patient.maintainer}}"/>
+                            </div>
+                        </div>
+                        <div class="row p-2 font-bold text-primary">
+                             <div class="col">
+                                <label>Wybierz szablon notatki</label>
+                                <select class="form-select" name="templates">
+                                    <option>----------</option>
+                                    {% for template in templates %}
+                                        <option value="{{template.id}}">{{template}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                         <div class="bg-primary text-light p-2 mt-2">Notatki ogólne</div>
                         <div>
                             <div>
@@ -143,14 +181,19 @@
                             <textarea class="form-control" style="height:200px;" type="text" name="doctor_notes"
                                       value="{{patient.doctor_notes}}">{{patient.doctor_notes}}</textarea>
                         </div>
+                        <div class="text-center p-2">
+                            <input type="hidden" name="pk" value="{{patient.id_patient}}"/>
+                            <input class="btn btn-success w-25" type="submit" value="Zapisz dane" />
+                        </div>
+                      </form>
                     </div>
 
                     <div class="tab-pane fade" id="dokumentacja" role="tabpanel" aria-labelledby="dokumentacja-tab">
 <!--                    <div class="bg-primary text-light p-2" style="margin-top:5px;">&nbsp;</div>-->
-                         <div class="p-4">
+                         <div class="p-4 text-left">
                              <form method="post" action="{% url 'patient_details' patient.id_patient %}" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                {{ form | crispy }}
+                                <div>{{ form | crispy }}</div>
                                 <input type="hidden" name="id" value="{{patient.id_patient}}"/>
                                 <input class="btn btn-primary btn-md" role="button" type="submit" name="submit" value="Dodaj pliki do akt pacjenta">
                              </form>
