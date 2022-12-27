@@ -64,47 +64,47 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
-# class PatientUpdateForm(forms.ModelForm):
-#     street = forms.CharField(required=True, label='Adres')
-#     post_code = forms.CharField(required=True, label='Kod pocztowy')
-#     city = forms.CharField(required=True, label='Miejscowość')
-#     phone = forms.CharField(required=True, label='Telefon')
-#     sms = forms.BooleanField(required=False,label='Powiadomienie SMS')
-#     pesel = forms.CharField(max_length=11, blank=True, null=True)
-#     date_of_birth = forms.DateField(blank=True, null=True)
-#     insurance_number = forms.CharField(max_length=255, blank=True, null=True)
-#     notes = CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
-#     id_healt = forms.IntegerField(blank=True, null=True)  # id kasa chorych
-#     id_status = forms.IntegerField(blank=True, null=True)  # id statusu
-#     id_nfz = forms.IntegerField(blank=True, null=True)  # id ubezpieczyciela
-#     patient_files = forms.TextField(blank=True, null=True)
-#     birthplace = forms.CharField(max_length=255, blank=True, null=True)
-#     gender = forms.CharField(max_length=255, blank=True, null=True)
-#     district = forms.CharField(max_length=255, blank=True, null=True)  # powiat
-#     voivodeship = forms.CharField(max_length=255, blank=True, null=True)  # wojewodztwo
-#     maintainer = forms.CharField(max_length=255, blank=True, null=True)  # opiekun
-#     education = forms.CharField(max_length=255, blank=True, null=True)
-#     marital_status = forms.CharField(max_length=255, blank=True, null=True)  # stan cywilny
-#     number_of_children = forms.IntegerField(blank=True, null=True)
-#     blood_group = forms.CharField(max_length=50, blank=True, null=True)
-#     visits_int = forms.IntegerField(blank=True, null=True)
-#     doctor_notes = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
-#     sms = forms.IntegerField(blank=True, null=True)
-#     class Meta:
-#         model = Patient
-#         fields = ['city','street','post_code','phone','pesel','sms']
+class PatientUpdateForm(forms.ModelForm):
+    street = forms.CharField(required=True, label='Adres')
+    post_code = forms.CharField(required=True, label='Kod pocztowy')
+    city = forms.CharField(required=True, label='Miejscowość')
+    phone = forms.CharField(required=True, label='Telefon')
+    sms = forms.BooleanField(required=False,label='Powiadomienie SMS')
+    pesel = forms.CharField(max_length=11)
+    # date_of_birth = forms.DateField(blank=True, null=True)
+    # insurance_number = forms.CharField(max_length=255, blank=True, null=True)
+    # notes = CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
+    # id_healt = forms.IntegerField(blank=True, null=True)  # id kasa chorych
+    # id_status = forms.IntegerField(blank=True, null=True)  # id statusu
+    # id_nfz = forms.IntegerField(blank=True, null=True)  # id ubezpieczyciela
+    # patient_files = forms.TextField(blank=True, null=True)
+    # birthplace = forms.CharField(max_length=255, blank=True, null=True)
+    # gender = forms.CharField(max_length=255, blank=True, null=True)
+    # district = forms.CharField(max_length=255, blank=True, null=True)  # powiat
+    # voivodeship = forms.CharField(max_length=255, blank=True, null=True)  # wojewodztwo
+    # maintainer = forms.CharField(max_length=255, blank=True, null=True)  # opiekun
+    # education = forms.CharField(max_length=255, blank=True, null=True)
+    # marital_status = forms.CharField(max_length=255, blank=True, null=True)  # stan cywilny
+    # number_of_children = forms.IntegerField(blank=True, null=True)
+    # blood_group = forms.CharField(max_length=50, blank=True, null=True)
+    # visits_int = forms.IntegerField(blank=True, null=True)
+    # doctor_notes = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
+    # sms = forms.IntegerField(blank=True, null=True)
+    class Meta:
+        model = Patient
+        fields = ['city','street','post_code','phone','pesel','sms']
 
-# class PatientUpdateExtendForm(forms.ModelForm):
-#
-#     street = forms.CharField(required=True, label='Adres')
-#     post_code = forms.CharField(required=True, label='Kod pocztowy')
-#     city = forms.CharField(required=True, label='Miejscowość')
-#     phone = forms.CharField(required=True, label='Telefon')
-#     sms = forms.BooleanField(required=False, label='Powiadomienie SMS')
-#
-#     class Meta:
-#         model = Patient
-#         fields = ['city', 'street', 'post_code', 'phone', 'pesel', 'sms']
+class PatientUpdateExtendForm(forms.ModelForm):
+
+    street = forms.CharField(required=True, label='Adres')
+    post_code = forms.CharField(required=True, label='Kod pocztowy')
+    city = forms.CharField(required=True, label='Miejscowość')
+    phone = forms.CharField(required=True, label='Telefon')
+    sms = forms.BooleanField(required=False, label='Powiadomienie SMS')
+
+    class Meta:
+        model = Patient
+        fields = ['city', 'street', 'post_code', 'phone', 'pesel', 'sms']
 
 class DoctorsScheduleForm(forms.ModelForm):
     class Meta:

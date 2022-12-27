@@ -15,7 +15,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, \
-    DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm
+    DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel
 from django.contrib.auth.models import User
 from datetime import date, datetime
@@ -289,58 +289,6 @@ def patients_list(request):
 
     return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj, 'query_count': query_count})
 
-def patient_details(request, pk):
-    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
-    patients_folder = f'vita/media/patient_files/{pk}'
-
-    # templates notes of doctor
-    templates = NoteTemplates.objects.all()
-    ########### end templates notes of doctor ################
-
-    ################  upload patient files ###################
-    if request.method == 'POST':
-        form = uploadFilesForm(request.POST, request.FILES)
-        files = request.FILES.getlist('files')
-
-
-        if form.is_valid():
-            dirname = str(request.POST.get('id'))
-            
-            # checks and create a patient folder name as id_patient
-            try:
-                os.mkdir(os.path.join('vita/media/patient_files/', dirname))
-                for f in files:
-                    fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
-                    # d = date.today()
-                    get_ext = str(f).split('.')
-                    storage_save = fs.save(f, f)
-                    fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
-                    fi.save()
-                messages.success(request, 'Pliki dodano do akt pacjenta')
-            except OSError as e:
-                if e.errno == 17:
-                    for f in files:
-                        fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
-                        # d = date.today()
-                        get_ext = str(f).split('.')
-                        storage_save = fs.save(f, f)
-                        fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
-                        fi.save()
-
-                    messages.success(request, 'Pliki dodano do akt pacjenta')
-        else:
-            messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
-    else:
-        form = uploadFilesForm()
-    if os.path.exists(f'vita/media/patient_files/{pk}') :
-        all_files = FilesModel.objects.filter(patient_id=pk) #os.listdir(f'vita/media/patient_files/{pk}')  #
-    else:
-        all_files = ''
-        messages.info(request, 'W aktach pacjenta nie jeszcze plików')
-
-    #################### end upload patient files ###################################################
-
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form':form, 'all_files':all_files, 'templates': templates })
 
 def delete_patient_files(request, pk):
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
@@ -354,9 +302,63 @@ def delete_patient_files(request, pk):
          messages.success(request, f'Plik o nazwie {request.POST.get("file")} usunięto')
     return redirect(f"/panel/patients/{pk}")
 
-def patients_files(request):
+def patients_files(request, pk):
+    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+    patients_folder = f'vita/media/patient_files/{pk}'
 
-    return render(request, 'vita/panel/patient_details.html')
+    # templates notes of doctor
+    templates = NoteTemplates.objects.all()
+    ########### end templates notes of doctor ################
+
+    if 'submit' in request.POST:
+        ################  upload patient files ###################
+        if request.method == 'POST':
+            form = uploadFilesForm(request.POST, request.FILES)
+            files = request.FILES.getlist('files')
+
+
+            if form.is_valid():
+                dirname = str(request.POST.get('id'))
+
+                # checks and create a patient folder name as id_patient
+                try:
+                    os.mkdir(os.path.join('vita/media/patient_files/', dirname))
+                    for f in files:
+                        fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                        # d = date.today()
+                        get_ext = str(f).split('.')
+                        storage_save = fs.save(f, f)
+                        fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
+                        fi.save()
+                    messages.success(request, 'Pliki dodano do akt pacjenta')
+                except OSError as e:
+                    if e.errno == 17:
+                        for f in files:
+                            fs = FileSystemStorage(location=patients_folder)  # defaults to   MEDIA_ROOT
+                            # d = date.today()
+                            get_ext = str(f).split('.')
+                            storage_save = fs.save(f, f)
+                            fi = FilesModel(patient_id=dirname, files=str(f), ext=get_ext[1])
+                            fi.save()
+
+                        messages.success(request, 'Pliki dodano do akt pacjenta')
+            else:
+                messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
+        else:
+            form = uploadFilesForm()
+    else:
+        form = uploadFilesForm()
+
+
+    if os.path.exists(f'vita/media/patient_files/{pk}') :
+        all_files = FilesModel.objects.filter(patient_id=pk) #os.listdir(f'vita/media/patient_files/{pk}')  #
+    else:
+        all_files = ''
+        messages.info(request, 'W aktach pacjenta nie jeszcze plików')
+
+    #################### end upload patient files ###################################################
+
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files, 'templates': templates })
 
 
 def create_patient(request):
@@ -417,7 +419,7 @@ def create_patient(request):
                 return redirect('/panel/patients')
 
         else:
-            print(cform.errors)
+            #print(cform.errors)
             cform = RegisterUserForm()
             cp_form = PatientRegisterForm()
             form = RegisterUserForm()
@@ -432,13 +434,29 @@ def create_patient(request):
     return render(request, 'vita/panel/create_patient.html', {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x })
 
 def update_patient(request, pk):
+    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+    user = User.objects.order_by('username').get(id=patient.user_id)
 
-    if request.POST == 'POST':
-        print(request.POST)
+    if 'update' in request.POST:
+       if request.method == 'POST':
+          form_u = UserUpdateForm(request.POST, instance=request.user)
+          form_p = PatientUpdateExtendForm(request.POST)
+          if form_u.is_valid():
+              form_uu = form_u.save(commit=False)
+              form_uu.first_name = form_u.cleaned_data['first_name']
+              form_uu.last_name = form_u.cleaned_data['last_name']
+              form_uu.email = form_u.cleaned_data['email']
+              form_uu.save()
+              messages.success(request, 'Dane zostały zapisane')
+          else:
+              print(form_u.errors)
+       else:
+           print('not request')
     else:
-        print('error')
+        print('xxxxxx')
 
-    return render(request, 'vita/panel/patient_details.html')
+
+    return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user})
 
 
 def news_list(request):
