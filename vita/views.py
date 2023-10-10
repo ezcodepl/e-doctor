@@ -435,26 +435,35 @@ def create_patient(request):
 
 def update_patient(request, pk):
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
-    user = User.objects.order_by('username').get(id=patient.user_id)
+    user = User.objects.get(id=patient.user_id)
+    print(patient.user_id)
 
     if 'update' in request.POST:
        if request.method == 'POST':
-          form_u = UserUpdateForm(request.POST, instance=request.user)
-          form_p = PatientUpdateExtendForm(request.POST)
-          if form_u.is_valid():
+          form_u = UserUpdateForm(request.POST, instance=user)
+          form_p = PatientUpdateExtendForm(request.POST, instance=patient)
+          print(request.POST)
+          print(request.POST['first_name'])
+          if form_u.is_valid() and form_p.is_valid():
               form_uu = form_u.save(commit=False)
-              form_uu.first_name = form_u.cleaned_data['first_name']
-              form_uu.last_name = form_u.cleaned_data['last_name']
-              form_uu.email = form_u.cleaned_data['email']
+              form_uu.first_name = request.POST['first_name']
+              form_uu.last_name = request.POST['last_name']
+              form_uu.email = request.POST['email']
               form_uu.save()
+
+              form_pp = form_p.save(commit=False)
+              form_pp.pesel = request.POST['pesel']
+              form_pp.street = request.POST['street']
+              form_pp.save()
+
               messages.success(request, 'Dane zostały zapisane')
+              return redirect(f'/panel/patients/{pk}')
           else:
               print(form_u.errors)
        else:
            print('not request')
     else:
         print('xxxxxx')
-
 
     return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user})
 
@@ -470,7 +479,6 @@ def news_list(request):
     return render(request, "vita/panel/news_list.html", {'get_news': get_news})
 
 def create_news(request):
-
     if request.method == 'POST':
         n_form = NewsForm(request.POST)
         if n_form.is_valid():
@@ -483,12 +491,13 @@ def create_news(request):
     context = {
         'n_form' : n_form
     }
-
     return render(request, "vita/panel/create_news.html", context)
 
 def edit_news(request, pk):
     news = get_object_or_404(News, id_news = pk)
     return render(request, "vita/panel/edit_news.html", {'news': news})
+
+
 def update_news(request, pk):
     obj = get_object_or_404(News, id_news = pk)
     if request.method == 'POST':
@@ -505,6 +514,7 @@ def update_news(request, pk):
     }
 
     return render(request, "vita/panel/create_news.html", context)
+
 
 def delete_news(request, pk):
     news = News.objects.get(id_news = pk)

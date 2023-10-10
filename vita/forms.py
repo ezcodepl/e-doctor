@@ -101,7 +101,7 @@ class PatientUpdateExtendForm(forms.ModelForm):
     city = forms.CharField(required=True, label='Miejscowość')
     phone = forms.CharField(required=True, label='Telefon')
     sms = forms.BooleanField(required=False, label='Powiadomienie SMS')
-
+    pesel = forms.CharField(label='PESEL')
     class Meta:
         model = Patient
         fields = ['city', 'street', 'post_code', 'phone', 'pesel', 'sms']
