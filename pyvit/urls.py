@@ -49,6 +49,6 @@ urlpatterns = [
     path('panel/delete_templates/<int:pk>', delete_templates, name="delete_templates"),
     path('panel/patients/<int:pk>', patients_files, name="patients_files"),
     path('panel/patients/<int:pk>/delete', delete_patient_files, name="delete_patient_files"),
-    path('panel/patients/<int:pk>/update', update_patient, name="update_patient"),
+    path('panel/patients/<int:pk>/updates', update_patient, name="update_patient"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -142,7 +142,7 @@ class NoteTemplatesForm(forms.ModelForm):
         fields = ['name', 'contents', 'status']
 
 class uploadFilesForm(forms.ModelForm):
-    files = forms.FileField(label='', widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    files = forms.FileField(label='', widget=forms.ClearableFileInput(attrs={'allow_multiple_selected': True}))
     class Meta:
         model = FilesModel
         fields = ['files']

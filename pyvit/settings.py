@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'vita',
     'crispy_forms',
+    'crispy_bootstrap4',
     'captcha',
     'tinymce',
 ]
@@ -81,17 +82,13 @@ WSGI_APPLICATION = 'pyvit.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME'    : 'vita',
-        'USER'    : 'root',
-        'PASSWORD': '',
+       #'ENGINE': 'django.db.backends.mysql', postgresql_psycopg2
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME'    : 'test',
+        'USER'    : 'postgres',
+        'PASSWORD': 'postgresql',
         'HOST'    : 'localhost',
-        'PORT'    : '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
-            'charset': 'utf8mb4',
-            "autocommit": True,
-        }
+        'PORT'    : '5432',
     }
 }
 
