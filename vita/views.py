@@ -27,6 +27,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic.edit import FormView
+from django.db import connection
 
 register = template.Library()
 
@@ -437,7 +438,7 @@ def update_patient(request, pk):
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
     user = User.objects.get(id=patient.user_id)
     print(patient.user_id)
-
+    #print(connection.queries) #print sql
     if 'update' in request.POST:
        if request.method == 'POST':
           form_u = UserUpdateForm(request.POST, instance=user)
@@ -449,13 +450,24 @@ def update_patient(request, pk):
               form_uu.first_name = request.POST['first_name']
               form_uu.last_name = request.POST['last_name']
               form_uu.email = request.POST['email']
+              #print(connection.queries)
               form_uu.save()
 
               form_pp = form_p.save(commit=False)
               form_pp.pesel = request.POST['pesel']
+              form_pp.nip = request.POST['nip']
+              form_pp.date_of_birth = request.POST['date_of_birth']
               form_pp.street = request.POST['street']
+              form_pp.birthplace = request.POST['birthplace']
+              form_pp.gender = request.POST['gender']
+              form_pp.education = request.POST['education']
+              form_pp.marital_status = request.POST['marital_status']
+              form_pp.number_of_children = request.POST['number_of_children']
+              form_pp.blood_group = request.POST['blood_group']
+              form_pp.notes = request.POST['notes']
+              form_pp.doctor_notes = request.POST['doctor_notes']
               form_pp.save()
-
+              #print(connection.queries)
               messages.success(request, 'Dane zostały zapisane')
               return redirect(f'/panel/patients/{pk}')
           else:

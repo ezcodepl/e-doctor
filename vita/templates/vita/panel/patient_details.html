@@ -83,8 +83,8 @@
                             </div>
                             <div class="col">
                                 <label>Data urodzenia</label>
-                                <input class="form-control" type="text" name="date_of_birth"
-                                       value="{{patient.date_of_birth}}"/>
+                                <input class="form-control" type="date" name="date_of_birth"
+                                       value="{{patient.date_of_birth|date:'Y-m-d'}}"/>
                             </div>
                             <div class="col">
                                 <label>Data utworzenia konta</label>
