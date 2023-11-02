@@ -14,11 +14,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
-from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientUpdateForm, PatientRegisterForm, \
+from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm,  PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel
 from django.contrib.auth.models import User
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
@@ -608,22 +608,44 @@ def delete_templates(request, pk):
 
     return render(request, "vita/panel/templates_list.html", context)
 
-def panel(request, date):
 
+def panel(request, date):
     today = date.today()
     full_path = request.get_full_path()
     current_path = full_path[full_path.index('/', 1):]
 
     get_date = current_path.replace('/', '')
 
-    # if today:
-    #     get_date = current_path.replace('/', '')
-    # else:
-    #     get_date = full_path
+    day_type = DoctorSchedule.objects.all().filter(date=date).values()
+
+    if (day_type[0]['day_type'] == 'Pracujący'):
+
+        for work_hours in day_type:  # work_hours result 08:00-21:00
+
+            work_hours = work_hours['work_hours'].split('-')
+            sh = work_hours[0].split(':')
+            eh = work_hours[1].split(':')
+
+            start_hour = int(sh[0])  # 8
+            end_hour = int(eh[0])  # 21
+
+            scheme = day_type[0]['scheme']
+
+            start_time: datetime = datetime(1, 1, 1, start_hour)
+            end_time = datetime(1, 1, 1, end_hour)
+
+            h =[]
+            while start_time <= end_time:
+                h.append(start_time.strftime("%H:%M"))
+                start_time += timedelta(minutes=int(scheme))
+
+    else:
+        print('Wolny')
 
     context = {
         'today': today,
-        'get_date': get_date
+        'get_date': get_date,
+        'wizyty': h
     }
     return render(request, "vita/panel/panel.html", context)
 
@@ -735,12 +757,12 @@ def profile(request):
     if request.method == 'POST':
         patient = Patient.objects.all().values()
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = PatientUpdateForm(request.POST,
+        pe_form = PatientUpdateExtendForm(request.POST,
                                    request.FILES,
                                    instance=request.user.patient)
-        if u_form.is_valid() and p_form.is_valid():
+        if u_form.is_valid() and pe_form.is_valid():
             u_form.save()
-            p_form.save()
+            pe_form.save()
             messages.success(request, f'Twoje dane zostały zapisane!')
             return redirect('profile')
 
@@ -748,11 +770,11 @@ def profile(request):
         patient = Patient.objects.all().values()
 
         u_form = UserUpdateForm(instance=request.user)
-        p_form = PatientUpdateForm(instance=request.user.patient)
+        pe_form = PatientUpdateExtendForm(instance=request.user.patient)
 
     context = {
         'u_form': u_form,
-        'p_form': p_form
+        'pe_form': pe_form
     }
 
     return render(request, 'vita/patient/profile.html', context)

@@ -68,22 +68,22 @@ class PatientUpdateForm(forms.ModelForm):
     pesel = forms.CharField(max_length=11)
     date_of_birth = forms.DateField(widget = forms.SelectDateWidget, required=False)
     # insurance_number = forms.CharField(max_length=255, blank=True, null=True)
-    notes = forms.CharField()
+    notes = forms.CharField(required=False)
     # id_healt = forms.IntegerField(blank=True, null=True)  # id kasa chorych
     # id_status = forms.IntegerField(blank=True, null=True)  # id statusu
     # id_nfz = forms.IntegerField(blank=True, null=True)  # id ubezpieczyciela
     #patient_files = forms.TextField(blank=True, null=True)
-    birthplace = forms.CharField()
+    birthplace = forms.CharField(required=False)
     gender = forms.CharField()
     #district = forms.CharField(max_length=255, blank=True, null=True)  # powiat
     #voivodeship = forms.CharField(max_length=255, blank=True, null=True)  # wojewodztwo
     #maintainer = forms.CharField(max_length=255, blank=True, null=True)  # opiekun
-    education = forms.CharField()
-    marital_status = forms.CharField()  # stan cywilny
-    number_of_children = forms.IntegerField()
-    blood_group = forms.CharField()
+    education = forms.CharField(required=False)
+    marital_status = forms.CharField(required=False)  # stan cywilny
+    number_of_children = forms.IntegerField(required=False)
+    blood_group = forms.CharField(required=False)
     #visits_int = forms.IntegerField(blank=True, null=True)
-    doctor_notes = forms.CharField()
+    doctor_notes = forms.CharField(required=False)
     # sms = forms.IntegerField(blank=True, null=True)
     class Meta:
         model = Patient

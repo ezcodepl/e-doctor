@@ -9,11 +9,11 @@ from tinymce import models as tinymce_models
 
 
 # Create your models here.
-class Cel_wizyt(models.Model):
+class PruposeVisit(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    cel = models.CharField(max_length=100)
-    id_lekarza = models.IntegerField()
-    opis = models.TextField()
+    purpose_name = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    description = models.TextField()
 
     def __str__(self):
         return self.cel
@@ -41,7 +41,7 @@ class Patient(models.Model):
     street = models.CharField(max_length=255, blank=True, null=True)
     phone = models.IntegerField(blank=True, null=True)
     pesel = models.CharField(max_length=11, blank=True, null=True)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True)
     insurance_number = models.CharField(max_length=255, blank=True, null=True)
     notes = tinymce_models.HTMLField(blank=True, null=True)
     id_healt = models.IntegerField(blank=True, null=True) #id kasa chorych
@@ -55,7 +55,7 @@ class Patient(models.Model):
     maintainer = models.CharField(max_length=255, blank=True, null=True) #opiekun
     education = models.CharField(max_length=255, blank=True, null=True)
     marital_status = models.CharField(max_length=255 , blank=True, null=True) #stan cywilny
-    number_of_children = models.IntegerField(blank=True, null=True)
+    number_of_children = models.IntegerField(default=0, blank=True, null=True)
     blood_group = models.CharField(max_length=50, blank=True, null=True)
     visits_int = models.IntegerField(blank=True, null=True)
     doctor_notes = tinymce_models.HTMLField(blank=True, null=True)
@@ -110,4 +110,13 @@ class FilesModel(models.Model):
     ext = models.CharField(max_length=255,null=True)
     upload_date = models.DateTimeField(default=timezone.now)
 
+class Groups(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    status = models.IntegerField()
+    create_at = models.DateTimeField(default=timezone.now)
+    update_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.id
 
