@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.views import View
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm,  PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm
-from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 import time
@@ -616,8 +616,8 @@ def panel(request, date):
 
     get_date = current_path.replace('/', '')
 
-    day_type = DoctorSchedule.objects.all().filter(date=date).values()
-
+    day_type = DoctorSchedule.objects.filter(date=date).values()
+    print(connection.queries)
     if (day_type[0]['day_type'] == 'Pracujący'):
 
         for work_hours in day_type:  # work_hours result 08:00-21:00
@@ -635,9 +635,20 @@ def panel(request, date):
             end_time = datetime(1, 1, 1, end_hour)
 
             h =[]
+            gw = Visits.objects.values()
+
+            t = datetime.fromisoformat(str(gw[0]['time']))
+
             while start_time <= end_time:
                 h.append(start_time.strftime("%H:%M"))
                 start_time += timedelta(minutes=int(scheme))
+
+
+                if t in h:
+                    print('zajeta')
+                else:
+                    print('wolna')
+
 
     else:
         print('Wolny')
