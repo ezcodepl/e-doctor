@@ -12,7 +12,6 @@ from tinymce import models as tinymce_models
 class PruposeVisit(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     purpose_name = models.CharField(max_length=100)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.TextField()
 
     def __str__(self):
@@ -120,3 +119,16 @@ class Groups(models.Model):
     def __str__(self):
         return self.id
 
+class Visits(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    date = models.DateField(null=True)
+    time = models.DateTimeField(default=timezone.now)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
+    visit = models.CharField(null=True)
+    status = models.IntegerField(null=True)
+    pay = models.IntegerField(null=True)
+    cancel = models.IntegerField(null=True)
+    office = models.IntegerField(null=True, default='1')
+    def __str__(self):
+        return self.id
