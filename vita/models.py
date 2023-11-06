@@ -122,7 +122,7 @@ class Groups(models.Model):
 class Visits(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     date = models.DateField(null=True)
-    time = models.DateTimeField(default=timezone.now)
+    time = models.CharField(null=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
     visit = models.CharField(null=True)

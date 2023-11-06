@@ -615,10 +615,9 @@ def panel(request, date):
     current_path = full_path[full_path.index('/', 1):]
 
     get_date = current_path.replace('/', '')
-
     day_type = DoctorSchedule.objects.filter(date=date).values()
-    print(connection.queries)
-    if (day_type[0]['day_type'] == 'Pracujący'):
+
+    if (day_type[0]['day_type'] == 'Wolny'):
 
         for work_hours in day_type:  # work_hours result 08:00-21:00
 
@@ -626,29 +625,20 @@ def panel(request, date):
             sh = work_hours[0].split(':')
             eh = work_hours[1].split(':')
 
-            start_hour = int(sh[0])  # 8
-            end_hour = int(eh[0])  # 21
+        start_hour = int(sh[0])  # 8
+        end_hour = int(eh[0])  # 21
+        scheme = day_type[0]['scheme'] #30m
 
-            scheme = day_type[0]['scheme']
+        start_time: datetime = datetime(1, 1, 1, start_hour)
+        end_time = datetime(1, 1, 1, end_hour)
 
-            start_time: datetime = datetime(1, 1, 1, start_hour)
-            end_time = datetime(1, 1, 1, end_hour)
+        h =[]
 
-            h =[]
-            gw = Visits.objects.values()
+        while start_time <= end_time:
+            h.append(start_time.strftime("%H:%M"))
+            start_time += timedelta(minutes=int(scheme))
 
-            t = datetime.fromisoformat(str(gw[0]['time']))
-
-            while start_time <= end_time:
-                h.append(start_time.strftime("%H:%M"))
-                start_time += timedelta(minutes=int(scheme))
-
-
-                if t in h:
-                    print('zajeta')
-                else:
-                    print('wolna')
-
+            check_visit = Visits.objects.filter(date=date).values()
 
     else:
         print('Wolny')
@@ -656,7 +646,8 @@ def panel(request, date):
     context = {
         'today': today,
         'get_date': get_date,
-        'wizyty': h
+        'h':h,
+        'check_visit': check_visit
     }
     return render(request, "vita/panel/panel.html", context)
 

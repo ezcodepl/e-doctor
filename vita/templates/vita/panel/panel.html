@@ -49,16 +49,29 @@
                             </tr>
                           </thead>
                           <tbody>
-                            {% for w in wizyty %}
-                            <tr>
-                                 <td>{{w}}</td>
-                                 <td class="text-bold-500"></td>
-                                 <td>Umówiona</td>
-                                 <td>2</td>
-                                 <td class="text-bold-500">Masaż</td>
-                                 <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
-                            </tr>
-                            {% endfor %}
+                             {% for x in check_visit %}
+                                {{x}}
+                             {% endfor %}
+                             {% for w in h %}
+
+                                {% if w == x %}
+                                   zajete
+                                {% else %
+                                   wone
+                                {% endif %}
+                                  <tr>
+                                     <td>{{w}}</td>
+                                     <td class="text-bold-500"></td>
+                                     <td>
+
+                                     </td>
+                                     <td></td>
+                                     <td class="text-bold-500"></td>
+                                     <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
+                                 </tr>
+
+                             {% endfor %}
+
                           </tbody>
                         </table>
                       </div>
