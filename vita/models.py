@@ -131,4 +131,4 @@ class Visits(models.Model):
     cancel = models.IntegerField(null=True)
     office = models.IntegerField(null=True, default='1')
     def __str__(self):
-        return self.id
+        return self.date

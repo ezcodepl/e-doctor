@@ -27,7 +27,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic.edit import FormView
-from django.db import connection
+from django.db import connection, connections
 
 register = template.Library()
 
@@ -615,9 +615,10 @@ def panel(request, date):
     current_path = full_path[full_path.index('/', 1):]
 
     get_date = current_path.replace('/', '')
+
     day_type = DoctorSchedule.objects.filter(date=date).values()
 
-    if (day_type[0]['day_type'] == 'Wolny'):
+    if (day_type[0]['day_type'] == 'Pracujący'):
 
         for work_hours in day_type:  # work_hours result 08:00-21:00
 
@@ -627,19 +628,48 @@ def panel(request, date):
 
         start_hour = int(sh[0])  # 8
         end_hour = int(eh[0])  # 21
-        scheme = day_type[0]['scheme'] #30m
+        scheme = int(day_type[0]['scheme']) #30m
+        date_sch = (day_type[0]['date']).strftime('%Y-%m-%d')
 
-        start_time: datetime = datetime(1, 1, 1, start_hour)
+
+        start_time = datetime(1,1,1, start_hour)
         end_time = datetime(1, 1, 1, end_hour)
+
 
         h =[]
 
         while start_time <= end_time:
             h.append(start_time.strftime("%H:%M"))
-            start_time += timedelta(minutes=int(scheme))
+            start_time += timedelta(minutes=scheme)
 
-            check_visit = Visits.objects.filter(date=date).values()
+            check_visit = Visits.objects.values()  # time__gte=start_time, time__lte=end_hour
 
+
+###########################################################################################
+        # if day_type[0]['day_type'] == 'Pracujący':
+        #     czas_pracy = '08:00-21:00'.split('-')
+        #     poczatek_pracy = czas_pracy[0]
+        #     koniec_pracy = czas_pracy[1]
+        #     j = 0
+        #     i = datetime.strptime(poczatek_pracy, '%H:%M')
+        #     h = []
+        #     while i <= datetime.strptime(koniec_pracy, '%H:%M'):
+        #         biezaca_godzina = i.strftime('%H:%M')
+        #         nastepna_godzina = i + timedelta(minutes=30)
+        #         nastepna_godzina = nastepna_godzina.strftime('%H:%M')
+        #         h.append(nastepna_godzina)
+        #
+        #         # zapytanie do bazy danych o wizyty zaplanowane na dany dzien i godzine
+        #         cursor = connection.cursor()
+        #         cursor.execute(f"SELECT count(*) FROM vita_visits WHERE date='{date}' AND (time >= '{biezaca_godzina}' AND time < '{nastepna_godzina}')")
+        #         row_count = cursor.rowcount
+
+        #        i += timedelta(minutes=30)
+###########################################################################################
+
+
+
+            #print(connection.queries)
     else:
         print('Wolny')
 
@@ -648,7 +678,9 @@ def panel(request, date):
         'get_date': get_date,
         'h':h,
         'check_visit': check_visit
+
     }
+
     return render(request, "vita/panel/panel.html", context)
 
 def test(request):
