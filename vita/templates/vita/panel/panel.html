@@ -55,7 +55,7 @@
                                         <tr>
                                          <td>{{ hour }}</td>
                                          <td class="text-bold-500">
-                                             {% for fl in patient_name %} {% if visit.patient_id == fl.id %} {{fl.first_name}} {{fl.last_name}} {% endif %}{% endfor %}
+                                             {{visit.patient__user__first_name}} {{visit.patient__user__last_name}}
                                          </td>
                                          <td>{% for p in pv %}
                                                {{p}}

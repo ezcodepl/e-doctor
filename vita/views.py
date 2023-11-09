@@ -637,7 +637,8 @@ def panel(request, date):
 
         h =[]
 
-        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).values()
+        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
+        'patient__user').values('patient__user__first_name', 'patient__user__last_name', 'time','patient_id')
 
 
         while start_time <= end_time:
