@@ -57,9 +57,7 @@
                                          <td class="text-bold-500">
                                              {{visit.patient__user__first_name}} {{visit.patient__user__last_name}}
                                          </td>
-                                         <td>{% for p in pv %}
-                                               {{p}}
-                                             {% endfor %}</td>
+                                         <td> {{visit.prupose_visit__purpose_name}}</td>
                                          <td></td>
                                          <td class="text-bold-500"></td>
                                          <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
