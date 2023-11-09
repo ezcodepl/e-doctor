@@ -69,7 +69,26 @@
                                          <td></td>
                                          <td></td>
                                          <td class="text-bold-500"></td>
-                                         <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
+                                         <td>
+                                           <div style="width:100px;" class="row">
+                                             <div class="col">
+                                              <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
+                                                 {% csrf_token %}
+                                                  <input type="hidden" name="date" value="{{get_date}}" />
+                                                  <input type="hidden" name="time" value="{{hour}}" />
+                                                  <input type="hidden" name="office" value="1" />
+                                                  <input type="submit" class="btn btn-sm btn-success" style="width:30px;"  value="+" />
+
+                                              </form>
+                                             </div>
+                                             <div class="col">
+                                              <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
+                                                 {% csrf_token %}
+                                                  <input type="submit" class="btn btn-sm btn-info" style="width:30px;" value="||" />
+                                              </form>
+                                             </div>
+                                           </div>
+                                         </td>
                                      </tr>
                                     {% endif %}
                                 {% endfor %}

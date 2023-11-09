@@ -19,6 +19,7 @@ urlpatterns = [
     path('panel/templates_list', views.templates_list, name='templates_list'),
 
     path('panel/create_patient', views.create_patient, name='create_patient'),
+    path('panel/create_visit', views.create_visit, name='create_visit'),
 
     path(f'panel', views.panel, name='panel'),
     path('news', views.news, name='news'),

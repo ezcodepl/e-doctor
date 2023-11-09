@@ -19,7 +19,8 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
-    patients_files, delete_patient_files, update_patient
+    patients_files, delete_patient_files, update_patient, create_visit
+
 
 class DateConverter:
     regex = r"\d{4}-\d{1,2}-\d{1,2}"
@@ -50,5 +51,6 @@ urlpatterns = [
     path('panel/patients/<int:pk>', patients_files, name="patients_files"),
     path('panel/patients/<int:pk>/delete', delete_patient_files, name="delete_patient_files"),
     path('panel/patients/<int:pk>/updates', update_patient, name="update_patient"),
+   # path('create_visit/date=<str:get_date>&time=<int:hour>', create_visit, name='create_visit'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

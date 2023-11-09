@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel
+from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel, Visits
 
 
 # from captcha.fields import ReCaptchaField
@@ -141,3 +141,10 @@ class uploadFilesForm(forms.ModelForm):
     class Meta:
         model = FilesModel
         fields = ['files']
+
+
+class VisitForm(forms.ModelForm):
+    date_visit = forms.DateField(label='Data wpisu:', widget=DateInput)
+    class Meta:
+        model = Visits
+        fields = ['date']
