@@ -57,9 +57,9 @@
                                          <td class="text-bold-500">
                                              {{visit.patient__user__first_name}} {{visit.patient__user__last_name}}
                                          </td>
-                                         <td> {{visit.prupose_visit__purpose_name}}</td>
-                                         <td></td>
-                                         <td class="text-bold-500"></td>
+                                         <td> </td>
+                                         <td>{{ visit.visit}}</td>
+                                         <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
                                          <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
                                      </tr>
                                     {% else %}
@@ -68,23 +68,23 @@
                                          <td class="text-bold-500"></td>
                                          <td></td>
                                          <td></td>
-                                         <td class="text-bold-500"></td>
+                                         <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
                                          <td>
-                                           <div style="width:100px;" class="row">
-                                             <div class="col">
-                                              <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
+                                           <div class="d-flex flex-row">
+                                             <div class="row" style="padding-right: 3px;">
+                                              <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
                                                   <input type="hidden" name="date" value="{{get_date}}" />
                                                   <input type="hidden" name="time" value="{{hour}}" />
                                                   <input type="hidden" name="office" value="1" />
-                                                  <input type="submit" class="btn btn-sm btn-success" style="width:30px;"  value="+" />
+                                                  <input type="submit" class="btn btn-sm btn-success"  value="Nowa wizyta" />
 
                                               </form>
                                              </div>
-                                             <div class="col">
-                                              <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
+                                             <div class="row">
+                                              <form  novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
-                                                  <input type="submit" class="btn btn-sm btn-info" style="width:30px;" value="||" />
+                                                  <input type="submit" class="btn btn-sm btn-info"  value="Przerwa" />
                                               </form>
                                              </div>
                                            </div>

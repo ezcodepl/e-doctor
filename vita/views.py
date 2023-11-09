@@ -638,7 +638,7 @@ def panel(request, date):
         h =[]
 
         check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
-        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name', 'time','patient_id', 'prupose_visit__purpose_name', 'prupose_visit_id')
+        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name', 'time','patient_id', 'prupose_visit__purpose_name', 'prupose_visit_id','visit')
 
 
         while start_time <= end_time:
@@ -669,7 +669,7 @@ def panel(request, date):
         get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
        # get_pruposevisit = PruposeVisit.objects.filter(id=check_visit[0]['prupose_visit_id']).values()
 
-
+        print(visits_dict)
 
 
     else:
