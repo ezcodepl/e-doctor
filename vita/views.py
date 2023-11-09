@@ -27,8 +27,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic.edit import FormView
-from django.db import connection, connections
-
+from django.db import connection
 register = template.Library()
 
 
@@ -629,7 +628,7 @@ def panel(request, date):
         start_hour = int(sh[0])  # 8
         end_hour = int(eh[0])  # 21
         scheme = int(day_type[0]['scheme']) #30m
-        date_sch = (day_type[0]['date']).strftime('%Y-%m-%d')
+        #date_sch = (day_type[0]['date']).strftime('%Y-%m-%d')
 
 
         start_time = datetime(1,1,1, start_hour)
@@ -638,47 +637,50 @@ def panel(request, date):
 
         h =[]
 
+        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).values()
+
+
         while start_time <= end_time:
             h.append(start_time.strftime("%H:%M"))
-            start_time += timedelta(minutes=scheme)
+            start_time = start_time + timedelta(minutes=scheme)
+           # h.extend(check_visit)
 
-            check_visit = Visits.objects.values()  # time__gte=start_time, time__lte=end_hour
+        # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
+        visits_dict = {}
 
+        # Iterujemy po liście h, która zawiera godziny pracy lekarza
+        for hour in h:
+            # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
+            if isinstance(hour, str):
+                # Iterujemy po liście check_visit, która zawiera dane wizyt
+                for visit in check_visit:
+                    # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
+                    if visit['time'] == hour:
+                        # Dodajemy parę godzina: wizyta do słownika
+                        visits_dict[hour] = visit
+                        # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
+                        break
+                # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
+                else:
+                    visits_dict[hour] = None
 
-###########################################################################################
-        # if day_type[0]['day_type'] == 'Pracujący':
-        #     czas_pracy = '08:00-21:00'.split('-')
-        #     poczatek_pracy = czas_pracy[0]
-        #     koniec_pracy = czas_pracy[1]
-        #     j = 0
-        #     i = datetime.strptime(poczatek_pracy, '%H:%M')
-        #     h = []
-        #     while i <= datetime.strptime(koniec_pracy, '%H:%M'):
-        #         biezaca_godzina = i.strftime('%H:%M')
-        #         nastepna_godzina = i + timedelta(minutes=30)
-        #         nastepna_godzina = nastepna_godzina.strftime('%H:%M')
-        #         h.append(nastepna_godzina)
-        #
-        #         # zapytanie do bazy danych o wizyty zaplanowane na dany dzien i godzine
-        #         cursor = connection.cursor()
-        #         cursor.execute(f"SELECT count(*) FROM vita_visits WHERE date='{date}' AND (time >= '{biezaca_godzina}' AND time < '{nastepna_godzina}')")
-        #         row_count = cursor.rowcount
-
-        #        i += timedelta(minutes=30)
-###########################################################################################
-
+        # Wyświetlamy słownik z godzinami i wizytami
+        get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
+       # get_pruposevisit = PruposeVisit.objects.filter(id=check_visit[0]['prupose_visit_id']).values()
 
 
-            #print(connection.queries)
+
+
     else:
         print('Wolny')
 
     context = {
         'today': today,
         'get_date': get_date,
-        'h':h,
-        'check_visit': check_visit
-
+        'h': h,
+        'visits': visits_dict,
+        'patient_name': get_patient
+        # 'pv':get_pruposevisit
     }
 
     return render(request, "vita/panel/panel.html", context)

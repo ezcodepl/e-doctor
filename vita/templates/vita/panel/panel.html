@@ -50,30 +50,31 @@
                           </thead>
                           <tbody>
 
-
-                             {% for w in h %}
-                               {% for ch in check_visit %}
-                                 {% if w == ch.time %}
-                                 <tr>
-                                     <td>{{ch.time}}</td>
-                                     <td class="text-bold-500"></td>
-                                     <td></td>
-                                     <td></td>
-                                     <td class="text-bold-500"></td>
-                                     <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
-                                 </tr>
-                                 {% else %}
-                                     <tr>
-                                     <td>{{w}}</td>
-                                     <td class="text-bold-500"></td>
-                                     <td></td>
-                                     <td></td>
-                                     <td class="text-bold-500"></td>
-                                     <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
-                                 </tr>
-                                {% endif %}
+                                {% for hour, visit in visits.items %}
+                                    {% if visit %}
+                                        <tr>
+                                         <td>{{ hour }}</td>
+                                         <td class="text-bold-500">
+                                             {% for fl in patient_name %} {% if visit.patient_id == fl.id %} {{fl.first_name}} {{fl.last_name}} {% endif %}{% endfor %}
+                                         </td>
+                                         <td>{% for p in pv %}
+                                               {{p}}
+                                             {% endfor %}</td>
+                                         <td></td>
+                                         <td class="text-bold-500"></td>
+                                         <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
+                                     </tr>
+                                    {% else %}
+                                    <tr>
+                                         <td>{{ hour }}</td>
+                                         <td class="text-bold-500"></td>
+                                         <td></td>
+                                         <td></td>
+                                         <td class="text-bold-500"></td>
+                                         <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
+                                     </tr>
+                                    {% endif %}
                                 {% endfor %}
-                             {% endfor %}
 
                           </tbody>
                         </table>
