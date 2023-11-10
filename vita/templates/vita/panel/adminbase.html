@@ -23,14 +23,29 @@
 
     <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/logo/favicon.png" type="image/png">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://cdn.tiny.cloud/1/yi5yqhrtik2j9i1nf4rw5nxqk713pwrwu5jqk9y94xvhag9r/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/yi5yqhrtik2j9i1nf4rw5nxqk713pwrwu5jqk9y94xvhag9r/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+     <script>
+      $( function() {
+        var availableTags = [
+            {% for person in persons %}
+                "{{ person.patient__id }} {{ person.patient__user__last_name }} {{ person.patient__user__first_name  }} {{ person.patient__city }} {{ person.patient__street }} ",
+            {% endfor %}
+        ];
+        $( "#person" ).autocomplete({
+          source: availableTags
+        });
+      } );
+   </script>
 </head>
 
 <body>
+
     <div id="app">
-    {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated and request.user.username == 'lekarz' %}
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
                 <div class="sidebar-header position-relative">
@@ -274,7 +289,7 @@
         </div>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/xapp.js"></script>
+    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/app.js"></script>
 </body>
 
 </html>

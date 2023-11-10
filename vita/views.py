@@ -14,6 +14,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
+from django.views.decorators.http import require_GET
+
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm,  PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, VisitForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit
@@ -646,6 +648,7 @@ def panel(request, date):
             start_time = start_time + timedelta(minutes=scheme)
            # h.extend(check_visit)
 
+
         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
         visits_dict = {}
 
@@ -666,21 +669,33 @@ def panel(request, date):
                     visits_dict[hour] = None
 
         # Wyświetlamy słownik z godzinami i wizytami
-        get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
-       # get_pruposevisit = PruposeVisit.objects.filter(id=check_visit[0]['prupose_visit_id']).values()
-
-        print(visits_dict)
-
-
+        if len(check_visit) > 0:
+          get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
+        else:
+          get_patient = ''
+        freeday = ''
     else:
-        print('Wolny')
+        if (day_type[0]['day_type'] == 'Wolny'):
+            freeday = 'Dzień wolny od pracy'
+        else:
+            freeday = ''
+
+        h = ''
+        visits_dict = ''
+        get_patient = ''
+
+    date_check = datetime.today()
+    td = date_check.strftime('%Y-%m-%d')
+
 
     context = {
-        'today': today,
+        'td': td,
         'get_date': get_date,
         'h': h,
         'visits': visits_dict,
-        'patient_name': get_patient
+        'patient_name': get_patient,
+        'freeday': freeday,
+        'today': today
         # 'pv':get_pruposevisit
     }
 
@@ -836,6 +851,15 @@ def create_visit(request):
     vtime = request.POST['time']
     vo = request.POST['office']
 
+    # @require_GET
+    # def person_autocomplete(request):
+    #     q = request.GET.get("q", "")
+    persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street',) #filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)
+    print(persons)
+
+        # data = {"options": [str(p) for p in persons]}
+        # return JsonResponse(data)
+
     if request.method == "POST":
         cform = RegisterUserForm(request.POST)
         cp_form = PatientRegisterForm(request.POST)
@@ -909,4 +933,4 @@ def create_visit(request):
     user_x = x
 
     return render(request, 'vita/panel/create_visit.html', {'cform': cform, 'cp_form': cp_form, 'form': form,
-            'pp_form': pp_form, 'user_x': user_x, 'vd': vdate, 'vt': vtime, 'vo': vo })
+            'pp_form': pp_form, 'user_x': user_x, 'vd': vdate, 'vt': vtime, 'vo': vo, 'persons': persons })

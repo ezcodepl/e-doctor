@@ -49,7 +49,7 @@
                             </tr>
                           </thead>
                           <tbody>
-
+                                <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
                                 {% for hour, visit in visits.items %}
                                     {% if visit %}
                                         <tr>
@@ -71,6 +71,7 @@
                                          <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
                                          <td>
                                            <div class="d-flex flex-row">
+
                                              <div class="row" style="padding-right: 3px;">
                                               <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
@@ -84,7 +85,11 @@
                                              <div class="row">
                                               <form  novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
+                                                  <input type="hidden" name="date" value="{{get_date}}" />
+                                                  <input type="hidden" name="time" value="{{hour}}" />
+                                                  <input type="hidden" name="office" value="1" />
                                                   <input type="submit" class="btn btn-sm btn-info"  value="Przerwa" />
+
                                               </form>
                                              </div>
                                            </div>

@@ -11,28 +11,26 @@
         <section class="section">
             <div class="card">
 
-                <script>
-                    function swapConfig(x) {
-                    var radioName = document.getElementsByName(x.name);
-                    for(i = 0 ; i < radioName.length; i++){
-                      document.getElementById(radioName[i].id.concat("Settings")).style.display="none";
-                    }
-                    document.getElementById(x.id.concat("Settings")).style.display="initial";
-                  }
-                </script>
+
+                 <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
                 <div class="card-body">
                     <div>
+
+
+
                         <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0"
                                checked="checked"/>
                         <label for="production">Pacjent figurujący w bazie danych</label>
                     </div>
                     <div id="productionSettings">
                         <p>
+
                             <div class="input-group flex-nowrap">
                               <span class="input-group-text" id="addon-wrapping">
                                  &#x2B9E;
                               </span>
-                              <input type="text" class="form-control" placeholder="...wpisz nazwisko pacjenta" />
+
+                              <input type="text" id="person" name="person" class="form-control" placeholder="...wpisz nazwisko pacjenta" />
                             </div>
                         </p>
                     </div>
@@ -46,7 +44,7 @@
                              {% for field in form %}
                                 {{ field.errors }}
                             {% endfor %}
-                         <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
+
                             {% csrf_token %}
                               <fieldset class="form-group">
                                    <div class="row align-items-start">
@@ -62,13 +60,13 @@
                                       </div>
                                    </div>
                               </fieldset>
-                              <div class="form-group align-items-center">
+                              <div>
                                       <input type="hidden" name="select_form" value="1" />
                                       <input type="hidden" name="username" value="{{user_x}}" />
                                       <input type="hidden" name="password1" value="haselko1" />
                                       <input type="hidden" name="password2" value="haselko1" />
                                       <input type="hidden" name="email" value="stacjonarny@megavita.pl" />
-                                  <button class="btn btn-primary" type="submit">Dodaj pacjenta stacjonarnego</button>
+
                               </div>
                         </form>
                         </p>
