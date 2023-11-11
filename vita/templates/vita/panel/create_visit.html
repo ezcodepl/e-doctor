@@ -10,7 +10,15 @@
         </div>
         <section class="section">
             <div class="card">
-
+                 <script>
+                    function swapConfig(x) {
+                    var radioName = document.getElementsByName(x.name);
+                    for(i = 0 ; i < radioName.length; i++){
+                      document.getElementById(radioName[i].id.concat("Settings")).style.display="none";
+                    }
+                    document.getElementById(x.id.concat("Settings")).style.display="initial";
+                  }
+                </script>
 
                  <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
                 <div class="card-body">
