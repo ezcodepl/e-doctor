@@ -20,10 +20,8 @@
                   }
                 </script>
 
-                 <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
                 <div class="card-body">
                     <div>
-
 
 
                         <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0"
@@ -52,8 +50,9 @@
                              {% for field in form %}
                                 {{ field.errors }}
                             {% endfor %}
+                             <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_patient' %}" enctype="multipart/form-data">
+                               {% csrf_token %}
 
-                            {% csrf_token %}
                               <fieldset class="form-group">
                                    <div class="row align-items-start">
                                       <div class="col">
@@ -76,7 +75,7 @@
                                       <input type="hidden" name="email" value="stacjonarny@megavita.pl" />
 
                               </div>
-                        </form>
+                            </form>
                         </p>
                     </div>
 
@@ -85,16 +84,17 @@
                 <p>
                   <div class="card-body">
                      <fieldset class="form-group">
-                           <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
-                               {% csrf_token %}
+                            <form class="row g-3 needs-validation" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
+                              {% csrf_token %}
+
                                    <div class="row align-items-start">
                                        <div class="col">
                                             <label for="development">Data wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="date" value="{{vd}}" disabled/>
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="vdate" value="{{vd}}" />
                                        </div>
                                        <div class="col">
                                             <label for="development">Godzina wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="time" value="{{vt}}" disabled/>
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="vtime" value="{{vt}}" />
                                        </div>
                                         <div class="col">
                                             <label for="development">Cel wizyty: </label>
@@ -107,7 +107,7 @@
                                        </div>
                                         <div class="col">
                                             <label for="development">Gabinet: </label>
-                                            {{vo}}
+                                            <input type="hidden" name="office" value="{{vo}}" />
                                             {% if vo == '1' %}
                                               <input class="form-control" style="background:#ccfbf1;" type="text" name="vo" value="gabinet lekarski" disabled/>
                                             {% else %}
@@ -116,13 +116,14 @@
                                        </div>
                                    </div>
                                    <div class="row align-items-start p-4">
-                                       <input type="hidden" name="office" value="1" />
+
                                        <input type="submit" class="btn btn-success form-control"  value="Dodaj nową wizytę" />
                                    </div>
-                          </form>
+                         </form>
                      </fieldset>
                   </div>
                 </p>
+
             </div>
         </section>
     </div>

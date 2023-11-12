@@ -148,7 +148,7 @@ class VisitForm(forms.ModelForm):
     date_visit = forms.DateField(label='Data wpisu:', widget=DateInput)
     class Meta:
         model = Visits
-        fields = ['date']
+        fields = ['date','time','visit']
 
 class PersonForm(forms.Form):
     person = forms.ModelChoiceField(
