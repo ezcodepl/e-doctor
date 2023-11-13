@@ -21,13 +21,11 @@
                 </script>
 
                 <div class="card-body">
-                    <div>
                     <form class="row g-3 needs-validation" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
                       {% csrf_token %}
 
-
-                        <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0"
-                               checked="checked"/>
+                    <div style="text-align:left;">
+                        <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0" checked="checked"/>
                         <label for="production">Pacjent figurujący w bazie danych</label>
                     </div>
                     <div id="productionSettings">
@@ -57,6 +55,7 @@
                                    <div class="row align-items-start">
                                       <div class="col">
                                           {{ cform.first_name | as_crispy_field }}
+                                          {{ cform.first_name.errors }}
                                           {{ cform.last_name | as_crispy_field }}
                                           {{ cp_form.street | as_crispy_field }}
                                       </div>
