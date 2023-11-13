@@ -1013,7 +1013,7 @@ def create_new_visit(request):
                 #         vv_form.date = str(request.POST.get('date')).capitalize()
                 #         vv_form.time = str(request.POST.get('time')).capitalize()
                 #         vv_form.save()
-                #
+
                 #         print(cform.errors)
                 #
                 #         messages.success(request, (
