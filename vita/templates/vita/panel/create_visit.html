@@ -21,9 +21,9 @@
                 </script>
 
                 <div class="card-body">
-                    <form class="row g-3 needs-validation" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" name="v_form" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
                       {% csrf_token %}
-
+                      {{ form.errors }}
                     <div style="text-align:left;">
                         <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0" checked="checked"/>
                         <label for="production">Pacjent figurujący w bazie danych</label>
@@ -87,11 +87,11 @@
                                    <div class="row align-items-start">
                                        <div class="col">
                                             <label for="development">Data wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="vdate" value="{{vd}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="date" value="{{vd}}" />
                                        </div>
                                        <div class="col">
                                             <label for="development">Godzina wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="vtime" value="{{vt}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="time" value="{{vt}}" />
                                        </div>
                                         <div class="col">
                                             <label for="development">Cel wizyty: </label>

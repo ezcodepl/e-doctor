@@ -1053,6 +1053,7 @@ def create_new_visit(request):
 
                 if request.POST['sf'] == '1':
 
+
                     last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
 
                     c_form = cform.save(commit=False)
@@ -1065,7 +1066,15 @@ def create_new_visit(request):
                     c_form.emial = 'stacjonarny@megavita.pl'
                     c_form.save()
 
-                    # set next id_patient number
+                    #check_username = User.objects.filter(username=c_form.username).values()  # check username
+
+                    # if c_form != check_username:
+                    #     c_form.save()
+                    # else:
+                    #      messages.success(request, (
+                    #      f"Pacjent o takim imieniu i nazwisku jest już w naszej bazie: {request.POST.get('first_name')} {request.POST.get('last_name')} {c_form.username}"))
+                    #      print('Już taki jest ')
+
                     if len(last_id_patient) < 1:
                         next_id_patient = 1
                     else:
@@ -1076,6 +1085,21 @@ def create_new_visit(request):
                     p_form_obj.id_patient = next_id_patient
                     p_form_obj.save()
 
+                    if v_form.is_valid():
+                     vv_form = v_form.save(commit=False)
+                     vv_form.date = request.POST['date']
+                     vv_form.time = request.POST['time']
+                     vv_form.office = request.POST['office']
+                     vv_form.prupose_visit_id = request.POST['purpose_visit']
+                     vv_form.patient_id = next_id_patient
+                     vv_form.save()
+
+
+                    else:
+                      print(request.POST['date'])
+                      print(request.POST['time'])
+                      print(v_form.errors)
+
     else:
         print('dupa')
         # cform = RegisterUserForm()
@@ -1084,4 +1108,4 @@ def create_new_visit(request):
         # pp_form = PatientRegisterForm()
 
 
-    return redirect(f'/panel/{request.POST["vdate"]}')
+    return redirect(f'/panel/{request.POST["date"]}')

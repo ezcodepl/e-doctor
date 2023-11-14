@@ -147,7 +147,7 @@ class uploadFilesForm(forms.ModelForm):
 class VisitForm(forms.ModelForm):
     class Meta:
         model = Visits
-        fields = '__all__'
+        fields = ['date','time']
 class PersonForm(forms.Form):
     person = forms.ModelChoiceField(
         queryset=User.objects.all(),
