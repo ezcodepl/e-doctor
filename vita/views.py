@@ -1091,7 +1091,9 @@ def create_new_visit(request):
                      vv_form.time = request.POST['time']
                      vv_form.office = request.POST['office']
                      vv_form.prupose_visit_id = request.POST['purpose_visit']
-                     vv_form.patient_id = next_id_patient
+                     last_p_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
+
+                     vv_form.patient_id = last_p_id
                      vv_form.save()
 
 
