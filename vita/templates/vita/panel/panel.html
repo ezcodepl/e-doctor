@@ -55,7 +55,8 @@
                                         <tr>
                                          <td>{{ hour }}</td>
                                          <td class="text-bold-500">
-                                             {{visit.patient__user__first_name}} {{visit.patient__user__last_name}}
+
+                                           <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
                                          </td>
                                          <td> </td>
                                          <td>{{ visit.visit}}</td>
