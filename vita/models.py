@@ -2,6 +2,8 @@ import datetime
 
 from django.db import models
 from django import forms
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
 from django.utils import timezone
 from django.contrib.auth.models import User
 from tinymce import models as tinymce_models
@@ -118,6 +120,13 @@ class PruposeVisit(models.Model):
 
     def __str__(self):
         return self.cel
+
+@receiver(post_migrate)
+def dodaj_domyślne_rekordy(sender, **kwargs):
+    if sender.name == "vita":  # Zastąp "twoja_aplikacja" nazwą Twojej aplikacji
+        if not PruposeVisit.objects.exists():
+            PruposeVisit.objects.create(purpose_name='badanie', description='badanie')
+            PruposeVisit.objects.create(purpose_name='masaż', description='masaż')
 
 class StatusVisist(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
