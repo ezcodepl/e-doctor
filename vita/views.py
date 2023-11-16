@@ -973,22 +973,30 @@ def create_new_visit(request):
               pst = person[3] #patient street
               pc = person[4] #patient city
 
-              print(pfn, pln)
-              if cform.is_valid():
+              print(pid, pfn, pln)
 
-                  last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-                  c_form = cform.save(commit=False)
-                  first_name = str(pfn)
-                  last_name = str(pln)
-                  print(first_name, last_name)
-                  c_form.first_name = first_name
-                  c_form.last_name = last_name
-                  c_form.save()
+              check_patient = Patient.objects.filter(id_patient=pid).values()
+              #print(check_patient)
 
+              if v_form.is_valid():
+                  vv_form = v_form.save(commit=False)
+                  vv_form.date = request.POST['date']
+                  vv_form.time = request.POST['time']
+                  vv_form.status = '1'
+                  #check visist number
+                  check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()
+                  if check_visit_nr['visit']:
+                      visit_nr = int(check_visit_nr['visit']) + 1
+                  else:
+                      visit_nr = '1'
+                  vv_form.visit = visit_nr
+                  vv_form.office = request.POST['office']
+                  vv_form.prupose_visit_id = request.POST['purpose_visit']
+                  vv_form.pay = '0'
+                  vv_form.cancel = '0'
+                  vv_form.patient_id = pid
 
-                  print(cform.errors)
-                  #print(cp_form.errors)
-                  #print(v_form.errors)
+                  vv_form.save()
               else:
                   print('Po walidacji')
                   print(cform.errors)

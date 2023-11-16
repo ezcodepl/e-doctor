@@ -26,18 +26,18 @@
 <!--                            </div>-->
 <!--                        </section>-->
                         <!-- Basic Tables start -->
-         {% include 'vita/panel/calendar.html' %}
+
           <section class="section">
             <div class="row" id="basic-table">
               <div class="col-12 col-md-6">
                 <div class="card">
                   <div class="card-header">
                     <h4 class="card-title">Gabinet lekarski - GODZINY PRACY: 08:00-21:00  </h4>
-                    {% include 'vita/messages.html' %}
+
                   </div>
                   <div class="card-content">
                     <div>
-
+                        {% include 'vita/messages.html' %}
                       <div class="table-responsive">
                         <table class="table table-sm">
                           <thead>
@@ -54,7 +54,7 @@
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
                                 {% for hour, visit in visits.items %}
                                     {% if visit %}
-                                        {{ visit.date}}
+                                       {{ visit.date | date:"Y-m-d" }}
                                         <tr>
                                          <td>{{ hour }}</td>
                                          <td class="text-bold-500">
