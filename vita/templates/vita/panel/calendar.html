@@ -1,0 +1,32 @@
+<!-- calendar.html -->
+<html>
+<head>
+    <title>Kalendarz</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Pon</th>
+            <th>Wt</th>
+            <th>Śr</th>
+            <th>Czw</th>
+            <th>Pt</th>
+            <th>Sob</th>
+            <th>Ndz</th>
+        </tr>
+        {% for week, week_links in cal|zip:links %}
+        <tr>
+            {% for day, link in week|zip:week_links %}
+            <td>
+                {% if link %}
+                <a href="{{ link }}">{{ day }}</a>
+                {% else %}
+                {{ day }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

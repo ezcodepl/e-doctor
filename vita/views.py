@@ -250,6 +250,7 @@ def terminarz_fizykoterapii(request):
 
 
 def patients_list(request):
+    today = datetime.now()
     #get all records from Patient with data form User where user_id
     all_patients = Patient.objects.order_by('user__last_name')
 
@@ -293,7 +294,7 @@ def patients_list(request):
             # if the page is out of range, deliver the last page
             page_obj = paginator.page(paginator.num_pages)
 
-    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj, 'query_count': query_count})
+    return render(request, "vita/panel/patients_list.html", {'all_patients': all_patients, 'page_obj': page_obj, 'query_count': query_count, 'today': today})
 
 
 def delete_patient_files(request, pk):
@@ -309,6 +310,7 @@ def delete_patient_files(request, pk):
     return redirect(f"/panel/patients/{pk}")
 
 def patients_files(request, pk):
+    today = datetime.now()
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
     patients_folder = f'vita/media/patient_files/{pk}'
 
@@ -364,10 +366,11 @@ def patients_files(request, pk):
 
     #################### end upload patient files ###################################################
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files, 'templates': templates })
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files, 'templates': templates, 'today': today })
 
 
 def create_patient(request):
+    today = datetime.now()
     if request.method == "POST":
         cform = RegisterUserForm(request.POST)
         cp_form = PatientRegisterForm(request.POST)
@@ -437,9 +440,10 @@ def create_patient(request):
         pp_form = PatientRegisterForm()
     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
     user_x = x
-    return render(request, 'vita/panel/create_patient.html', {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x })
+    return render(request, 'vita/panel/create_patient.html', {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x, 'today': today })
 
 def update_patient(request, pk):
+    today = datetime.now()
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
     user = User.objects.get(id=patient.user_id)
     print(patient.user_id)
@@ -482,10 +486,11 @@ def update_patient(request, pk):
     else:
         print('xxxxxx')
 
-    return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user})
+    return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user, 'today': today})
 
 
 def news_list(request):
+    today = datetime.now()
     get_news = News.objects.order_by('-data_wpisu').values()
 
     if not get_news:
@@ -493,9 +498,10 @@ def news_list(request):
     else:
         get_news = News.objects.order_by('-data_wpisu').values()
 
-    return render(request, "vita/panel/news_list.html", {'get_news': get_news})
+    return render(request, "vita/panel/news_list.html", {'get_news': get_news, 'today':today})
 
 def create_news(request):
+    today = datetime.now()
     if request.method == 'POST':
         n_form = NewsForm(request.POST)
         if n_form.is_valid():
@@ -506,7 +512,8 @@ def create_news(request):
         n_form = NewsForm()
 
     context = {
-        'n_form' : n_form
+        'n_form' : n_form,
+        'today': today
     }
     return render(request, "vita/panel/create_news.html", context)
 
@@ -549,6 +556,7 @@ def delete_news(request, pk):
     return render(request, "vita/panel/news_list.html", context)
 
 def templates_list(request):
+    today = datetime.now()
     get_templates = NoteTemplates.objects.order_by('-created_at').values()
 
     if not get_templates:
@@ -556,9 +564,9 @@ def templates_list(request):
     else:
         get_news = NoteTemplates.objects.order_by('-created_at').values()
 
-    return render(request, "vita/panel/templates_list.html", {'get_templates': get_templates})
+    return render(request, "vita/panel/templates_list.html", {'get_templates': get_templates, 'today': today})
 def create_templates(request):
-
+    today = datetime.now()
     if request.method == 'POST':
         form = NoteTemplatesForm(request.POST)
 
@@ -573,7 +581,8 @@ def create_templates(request):
         form = NoteTemplatesForm()
 
     context = {
-        'form' : form
+        'form' : form,
+        'today': today
     }
 
     return render(request, "vita/panel/create_templates.html", context)
@@ -719,12 +728,13 @@ def history(request):
 
 
 def news(request):
+    today = datetime.now()
     all_news = News.objects.order_by('-data_wpisu').filter(status=1).values()
 
     if not all_news:
         messages.info(request, 'W tej chwili nie opublikowano żadnych aktualności')
 
-    return render(request, "vita/news.html", {'all_news': all_news})
+    return render(request, "vita/news.html", {'all_news': all_news, 'today': today})
 
 def laseroterapia(request):
     return render(request, "vita/laseroterapia.html")
@@ -1112,3 +1122,36 @@ def create_new_visit(request):
 
 
     return redirect(f'/panel/{request.POST["date"]}')
+
+
+def calendar_view(request, year=None, month=None):
+    if year is None:
+        year = date.today().year
+    if month is None:
+        month = date.today().month
+    # get the calendar for the given year and month
+    cal = calendar.monthcalendar(year, month)
+    # create a list of links for each day
+    links = []
+    for week in cal:
+        week_links = []
+        for day in week:
+            if day == 0:
+                # if the day is 0, it means it is outside the current month
+                week_links.append('')
+            else:
+                print('')
+                # otherwise, create a link to the day view with the date as parameter
+                #link = reverse(day, args=[year, month, day])
+                #week_links.append(link)
+        links.append(week_links)
+    # render the calendar template with the links
+    return render(request, 'calendar.html', {'cal': cal, 'links': links})
+
+def day_view(request, year, month, day):
+    # get the date from the parameters
+    date = datetime(year, month, day)
+    # do something with the date, e.g. display events or details
+    # ...
+    # render the day template with the date
+    return render(request, 'day.html', {'date': date})
