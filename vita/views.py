@@ -98,21 +98,25 @@ def terminarz(request):
         form = DoctorsScheduleForm(request.POST)
 
         if request.method == 'POST':
-            x1 = request.POST  # get data from request and getlist from QueryDict
-            data_l = x1.getlist('data')
-            day_type_l = x1.getlist('day_type')
-            work_hours_l = x1.getlist('work_hours_start')
-            scheme_l = x1.getlist('scheme')
-            official_hours_l = x1.getlist('official_hours_start')
 
-            for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
-                                                                          official_hours_l, scheme_l):
-                post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
-                             'official_hours': official_hours, 'scheme': scheme}
-                # print(post_dict)
-                form = DoctorsScheduleForm(post_dict)
-                form.save()
-            messages.success(request, "Terminarz Lekarza został zaktualizowany")
+            if not check_schedule:
+                x1 = request.POST  # get data from request and getlist from QueryDict
+                data_l = x1.getlist('data')
+                day_type_l = x1.getlist('day_type')
+                work_hours_l = x1.getlist('work_hours_start')
+                scheme_l = x1.getlist('scheme')
+                official_hours_l = x1.getlist('official_hours_start')
+
+                for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+                                                                              official_hours_l, scheme_l):
+                    post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
+                                 'official_hours': official_hours, 'scheme': scheme}
+                    # print(post_dict)
+                    form = DoctorsScheduleForm(post_dict)
+                    form.save()
+                messages.success(request, "Terminarz Lekarza został zaktualizowany")
+            else:
+                messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
@@ -611,15 +615,14 @@ def delete_templates(request, pk):
 
 
 def panel(request, date):
+
     today = date.today()
     full_path = request.get_full_path()
     current_path = full_path[full_path.index('/', 1):]
-
     get_date = current_path.replace('/', '')
-
     day_type = DoctorSchedule.objects.filter(date=date).values()
 
-    if (day_type[0]['day_type'] == 'Pracujący'):
+    if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Pracujący'):
 
         for work_hours in day_type:  # work_hours result 08:00-21:00
 
@@ -630,24 +633,17 @@ def panel(request, date):
         start_hour = int(sh[0])  # 8
         end_hour = int(eh[0])  # 21
         scheme = int(day_type[0]['scheme']) #30m
-        #date_sch = (day_type[0]['date']).strftime('%Y-%m-%d')
-
-
         start_time = datetime(1,1,1, start_hour)
         end_time = datetime(1, 1, 1, end_hour)
-
-
-        h =[]
+        h =[] #empty hour list
 
         check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
-        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name', 'time','patient_id', 'prupose_visit__purpose_name', 'prupose_visit_id','visit', 'patient__id_patient')
+        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit')
 
 
         while start_time <= end_time:
             h.append(start_time.strftime("%H:%M"))
             start_time = start_time + timedelta(minutes=scheme)
-           # h.extend(check_visit)
-
 
         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
         visits_dict = {}
@@ -673,12 +669,17 @@ def panel(request, date):
           get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
         else:
           get_patient = ''
+
         freeday = ''
     else:
-        if (day_type[0]['day_type'] == 'Wolny'):
-            freeday = 'Dzień wolny od pracy'
+        if day_type.count() == 0:
+             freeday = ''
+             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz')
         else:
-            freeday = ''
+            if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
+                freeday = 'Dzień wolny od pracy'
+            else:
+                freeday = ''
 
         h = ''
         visits_dict = ''
@@ -686,7 +687,6 @@ def panel(request, date):
 
     date_check = datetime.today()
     td = date_check.strftime('%Y-%m-%d')
-
 
     context = {
         'td': td,
@@ -1053,7 +1053,6 @@ def create_new_visit(request):
 
                 if request.POST['sf'] == '1':
 
-
                     last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
 
                     c_form = cform.save(commit=False)
@@ -1086,17 +1085,19 @@ def create_new_visit(request):
                     p_form_obj.save()
 
                     if v_form.is_valid():
-                     vv_form = v_form.save(commit=False)
-                     vv_form.date = request.POST['date']
-                     vv_form.time = request.POST['time']
-                     vv_form.office = request.POST['office']
-                     vv_form.prupose_visit_id = request.POST['purpose_visit']
-                     last_p_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
-
-                     vv_form.patient_id = last_p_id
-                     vv_form.save()
-
-
+                         vv_form = v_form.save(commit=False)
+                         vv_form.date = request.POST['date']
+                         vv_form.time = request.POST['time']
+                         vv_form.status = '1'
+                         vv_form.visit = '1'
+                         vv_form.office = request.POST['office']
+                         vv_form.prupose_visit_id = request.POST['purpose_visit']
+                         last_user_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
+                         if last_user_id == '':
+                             vv_form.patient_id = '1'
+                         else:
+                             vv_form.patient_id = last_user_id
+                         vv_form.save()
                     else:
                       print(request.POST['date'])
                       print(request.POST['time'])

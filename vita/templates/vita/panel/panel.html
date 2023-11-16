@@ -32,6 +32,7 @@
                 <div class="card">
                   <div class="card-header">
                     <h4 class="card-title">Gabinet lekarski - GODZINY PRACY: 08:00-21:00  </h4>
+                    {% include 'vita/messages.html' %}
                   </div>
                   <div class="card-content">
                     <div>
@@ -52,13 +53,21 @@
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
                                 {% for hour, visit in visits.items %}
                                     {% if visit %}
+                                        {{ visit.date}}
                                         <tr>
                                          <td>{{ hour }}</td>
                                          <td class="text-bold-500">
-
                                            <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
                                          </td>
-                                         <td> </td>
+                                         <td>
+                                             <select name="status">
+                                                 <option value="1">UMÓWIONA</option>
+                                                 <option value="2">NIE ODBYŁA SIĘ</option>
+                                                 <option value="3">ODWOŁANA</option>
+                                                 <option value="4">WWW</option>
+                                                 <option value="5">ODWOŁANA WWW</option>
+                                             </select>
+                                         </td>
                                          <td>{{ visit.visit}}</td>
                                          <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
                                          <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>

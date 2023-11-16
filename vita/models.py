@@ -8,14 +8,6 @@ from tinymce import models as tinymce_models
 
 
 
-# Create your models here.
-class PruposeVisit(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    purpose_name = models.CharField(max_length=100)
-    description = models.TextField()
-
-    def __str__(self):
-        return self.cel
 
 # Create mode news
 class News(models.Model):
@@ -119,6 +111,21 @@ class Groups(models.Model):
     def __str__(self):
         return self.id
 
+class PruposeVisit(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    purpose_name = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.cel
+
+class StatusVisist(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    status_name = models.CharField()
+    description = models.CharField()
+    def __str__(self):
+        return self.status_name
+
 class Visits(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     date = models.DateField(null=True)
@@ -126,9 +133,12 @@ class Visits(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
     visit = models.CharField(null=True)
-    status = models.IntegerField(null=True)
+    status = models.CharField(null=True)
     pay = models.IntegerField(null=True)
     cancel = models.IntegerField(null=True)
     office = models.IntegerField(null=True, default='1')
     def __str__(self):
         return self.patient
+
+
+
