@@ -48,7 +48,7 @@
                         <div class="row p-2 mt-3 font-bold text-primary">
                             <div class="col">
                                 <label>Nazwa użytkownika</label>
-                                <input class="form-control" type="text" name="username" value="{{patient.user.username}}"/>
+                                <input class="form-control" type="text" name="uname" value="{{patient.user.username}}"/>
                             </div>
                             <div class="col"></div>
                             <div class="col"></div>
@@ -216,7 +216,7 @@
                         </div>
                         <div class="text-center p-2">
                             <input type="hidden" name="pk" value="{{patient.id_patient}}"/>
-                            <input type="hidden" name="username" value="{{user}}"/>
+
                             <input class="btn btn-success w-25" type="submit" name="update" value="Zapisz dane" />
                         </div>
                       </form>
