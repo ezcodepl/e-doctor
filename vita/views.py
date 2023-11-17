@@ -368,6 +368,13 @@ def patients_files(request, pk):
 
     return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files, 'templates': templates, 'today': today })
 
+def add_template_patient(request):
+    today = datetime.now()
+    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+    user = User.objects.get(id=patient.user_id)
+    print(request)
+
+    return render(request, 'vita/panel/patient_details.html', {'today': today})
 
 def create_patient(request):
     today = datetime.now()

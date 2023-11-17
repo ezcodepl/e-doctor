@@ -1,6 +1,7 @@
 {% extends 'vita/panel/adminbase.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load static %}
 <div class="page-heading">
     <div class="page-title">
         <div class="row mb-2">
@@ -44,12 +45,15 @@
                       <form action="{% url 'update_patient' patient.id_patient %}"  method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
 
-                        <div class="row p-2 mt-3 font-bold">
+                        <div class="row p-2 mt-3 font-bold text-primary">
                             <div class="col">
-                                <label>Nazaw użytkownika</label>
-                                <input class="form-control" type="text" name="username"
-                                       value="{{patient.user.username}}"/>
+                                <label>Nazwa użytkownika</label>
+                                <input class="form-control" type="text" name="username" value="{{patient.user.username}}"/>
                             </div>
+                            <div class="col"></div>
+                            <div class="col"></div>
+                        </div>
+                        <div class="row p-2 mt-3 font-bold">
                             <div class="col">
                                 <label>Imię</label>
                                 <input class="form-control" type="text" name="first_name"
@@ -155,15 +159,20 @@
                             </div>
                         </div>
                         <div class="row p-2 font-bold text-primary">
-                             <div class="col">
-                                <label>Wybierz szablon notatki</label>
-                                <select class="form-select" name="templates">
-                                    <option>----------</option>
-                                    {% for template in templates %}
-                                        <option value="{{template.id}}">{{template}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                            <form action="{% url 'add_template_patient'%}" method="POST">
+                                 {% csrf_token %}
+                                 <div class="col">
+                                    <label>Wybierz szablon notatki</label>
+
+                                        <select class="form-select" name="template_patient">
+                                            <option>----------</option>
+                                            {% for template in templates %}
+                                                <option value="{{template.id}}">{{template}}</option>
+                                            {% endfor %}
+                                        </select>
+                                 </div>
+                                 <div class="col"><input type="submit" name="add_template_patient" value="" style="margin-top:25px;background-image:url({% static 'image/plus-svgrepo-com.svg' %});width: 30px; height: 30px; border: none;" /></div>
+                            </form>
                         </div>
                         <div class="bg-primary text-light p-2 mt-2">Notatki ogólne</div>
                         <div>
@@ -171,15 +180,14 @@
                                 <textarea class="form-control" style="height:200px;" type="text" name="notes"
                                           value="{{patient.notes}}">{{patient.notes}}</textarea>
                                 <script>
-                              tinymce.init({
-                              selector: 'textarea',  // change this value according to your HTML
-                              plugins: 'a_tinymce_plugin',
-                              language: 'pl',
-                              height: 280,
-                              a_plugin_option: true,
-                              a_configuration_option: 400
-                            });
-
+                                      tinymce.init({
+                                      selector: 'textarea',  // change this value according to your HTML
+                                      plugins: 'a_tinymce_plugin',
+                                      language: 'pl',
+                                      height: 280,
+                                      a_plugin_option: true,
+                                      a_configuration_option: 400
+                                    });
                                 </script>
                             </div>
                         </div>
