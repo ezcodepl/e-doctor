@@ -647,7 +647,7 @@ def panel(request, date):
         h =[] #empty hour list
 
         check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
-        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit')
+        'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
 
 
         while start_time <= end_time:
@@ -961,30 +961,22 @@ def create_new_visit(request):
         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
         select_form = request.POST.get('select_form')
 
-        print(request.POST['sf'])
-        if request.POST['sf'] == '0':
-              print('Pacjent z autocompleate')
+        if request.POST['sf'] == '0': # add visit with patient from autocomplete
 
-              person = request.POST['person'].split(' ')
-
+              person = request.POST['person'].split(' ') #split data from autocomplete field
               pid = person[0] #patient_id
               pln = person[1] #patient last_name
               pfn = person[2] #patient first_name
               pst = person[3] #patient street
               pc = person[4] #patient city
-
-              print(pid, pfn, pln)
-
-              check_patient = Patient.objects.filter(id_patient=pid).values()
-              #print(check_patient)
+              check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
 
               if v_form.is_valid():
                   vv_form = v_form.save(commit=False)
                   vv_form.date = request.POST['date']
                   vv_form.time = request.POST['time']
                   vv_form.status = '1'
-                  #check visist number
-                  check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()
+                  check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()#check visist number
                   if check_visit_nr['visit']:
                       visit_nr = int(check_visit_nr['visit']) + 1
                   else:
@@ -995,80 +987,13 @@ def create_new_visit(request):
                   vv_form.pay = '0'
                   vv_form.cancel = '0'
                   vv_form.patient_id = pid
-
                   vv_form.save()
               else:
-                  print('Po walidacji')
                   print(cform.errors)
                   print(cp_form.errors)
                   print(v_form.errors)
-                #
-                #     if int(select_form) == 1:
-                #
-                #         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-                #         c_form = cform.save(commit=False)
-                #         first_name = str(request.POST.get('first_name')).capitalize()
-                #         last_name = str(request.POST.get('last_name')).capitalize()
-                #         c_form.first_name = first_name
-                #         c_form.last_name = last_name
-                #         c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
-                #         c_form.password = make_password(BaseUserManager().make_random_password())
-                #         c_form.emial = 'stacjonarny@megavita.pl'
-                #         c_form.save()
-                #
-                #         # set next id_patient number
-                #         if len(last_id_patient) < 1:
-                #             next_id_patient = 1
-                #         else:
-                #             next_id_patient = last_id_patient[0]['id_patient'] + 1
-                #
-                #         p_form_obj = cp_form.save(commit=False)
-                #         p_form_obj.user_id = last_user_id
-                #         p_form_obj.id_patient = next_id_patient
-                #         p_form_obj.save()
-                #
-                #         vv_form = v_form.save(commit=False)
-                #         vv_form.date = str(request.POST.get('date')).capitalize()
-                #         vv_form.time = str(request.POST.get('time')).capitalize()
-                #         vv_form.save()
-
-                #         print(cform.errors)
-                #
-                #         messages.success(request, (
-                #             f"Dodano nową wizytę: {request.POST.get('first_name')} {request.POST.get('last_name')} {request.POST.get('vdate')} {request.POST.get('vtime')}"))
-                #         return redirect(f'/panel/{request.POST["vdate"]}')
-                # else:
-                #         print(cform.errors)
-                #         print(cp_form.errors)
-                #         print(v_form.errors)
-                #
-                #         # form = RegisterUserForm(request.POST)
-                #         # pp_form = PatientRegisterForm(request.POST)
-                #         #
-                #         # if form.is_valid() and pp_form.is_valid():
-                #         #     form.save()
-                #         #     username = form.cleaned_data['username']
-                #         #     password = form.cleaned_data['password1']
-                #         #     user = authenticate(username=username, password=password)
-                #         #
-                #         #     # set next id_patient number
-                #         # if last_id_patient[0]['id_patient'] is None:
-                #         #     next_id_patient = 1
-                #         # else:
-                #         #     next_id_patient = last_id_patient[0]['id_patient'] + 1
-                #         #
-                #         # pp_form_obj = pp_form.save(commit=False)
-                #         # pp_form_obj.user_id = last_user_id
-                #         # pp_form_obj.id_patient = next_id_patient
-                #         #
-                #         # pp_form_obj.save()
-                #         # messages.success(request, (
-                #         #     f"Błędnie wypełnione dane, proszę uzupełnić dane pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-                #         return redirect(f'/panel/{request.POST["vdate"]}')
-
         else:
-                print('pacjent stacjonarny recznie wprowadzony')
-
+                # patient data entered manually to fields
                 if request.POST['sf'] == '1':
 
                     last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
@@ -1117,12 +1042,9 @@ def create_new_visit(request):
                              vv_form.patient_id = last_user_id
                          vv_form.save()
                     else:
-                      print(request.POST['date'])
-                      print(request.POST['time'])
-                      print(v_form.errors)
-
+                        print(v_form.errors)
     else:
-        print('dupa')
+        print('')
         # cform = RegisterUserForm()
         # cp_form = PatientRegisterForm()
         # form = RegisterUserForm()
@@ -1130,6 +1052,31 @@ def create_new_visit(request):
 
 
     return redirect(f'/panel/{request.POST["date"]}')
+
+
+def pause_visit(request):
+    full_path = request.get_full_path()
+    current_path = full_path[full_path.index('/', 1):]
+
+    get_date = current_path.replace('/', '')
+    vform = VisitForm(request.POST)
+    if request.method == 'POST':
+
+        form = vform.save(commit=False)
+        form.date = request.POST['date']
+        form.time = request.POST['time']
+        form.status = '0'
+        form.visit = '0'
+        form.office = request.POST['office']
+        form.prupose_visit_id = '5'
+        if request.user.username == 'lekarz':
+            form.patient_id = request.user.id
+        form.save()
+    else:
+        print('')
+
+    return redirect(f'/panel/{request.POST["date"]}')
+
 
 
 def calendar_view(request, year=None, month=None):

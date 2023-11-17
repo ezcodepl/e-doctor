@@ -54,22 +54,27 @@
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
                                 {% for hour, visit in visits.items %}
                                     {% if visit %}
-                                       {{ visit.date | date:"Y-m-d" }}
-                                        <tr>
+                                       <tr>
                                          <td>{{ hour }}</td>
-                                         <td class="text-bold-500">
-                                           <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
-                                         </td>
-                                         <td>
-                                             <select name="status">
-                                                 <option value="1">UMÓWIONA</option>
-                                                 <option value="2">NIE ODBYŁA SIĘ</option>
-                                                 <option value="3">ODWOŁANA</option>
-                                                 <option value="4">WWW</option>
-                                                 <option value="5">ODWOŁANA WWW</option>
-                                             </select>
-                                         </td>
-                                         <td>{{ visit.visit}}</td>
+                                            {% if visit.status == '0' %}
+                                               <td>-</td>
+                                               <td>-</td>
+                                               <td>-</td>
+                                            {% else %}
+                                               <td class="text-bold-500">
+                                                 <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
+                                               </td>
+                                               <td>
+                                                 <select name="status">
+                                                     <option value="1">UMÓWIONA</option>
+                                                     <option value="2">NIE ODBYŁA SIĘ</option>
+                                                     <option value="3">ODWOŁANA</option>
+                                                     <option value="4">WWW</option>
+                                                     <option value="5">ODWOŁANA WWW</option>
+                                                 </select>
+                                               </td>
+                                               <td>{{ visit.visit}}</td>
+                                            {% endif %}
                                          <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
                                          <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
                                      </tr>
@@ -94,7 +99,7 @@
                                               </form>
                                              </div>
                                              <div class="row">
-                                              <form  novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
+                                              <form  novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
                                                   <input type="hidden" name="date" value="{{get_date}}" />
                                                   <input type="hidden" name="time" value="{{hour}}" />
@@ -102,6 +107,7 @@
                                                   <input type="submit" class="btn btn-sm btn-info"  value="Przerwa" />
 
                                               </form>
+
                                              </div>
                                            </div>
                                          </td>

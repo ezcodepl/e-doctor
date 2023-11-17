@@ -21,6 +21,7 @@ urlpatterns = [
     path('panel/create_patient', views.create_patient, name='create_patient'),
     path('panel/create_visit', views.create_visit, name='create_visit'),
     path('panel/create_new_visit', views.create_new_visit, name='create_new_visit'),
+    path('panel/pause_visit', views.pause_visit, name='pause_visit'),
 
     path(f'panel', views.panel, name='panel'),
     path('news', views.news, name='news'),
