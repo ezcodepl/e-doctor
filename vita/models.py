@@ -127,6 +127,9 @@ def dodaj_domyślne_rekordy(sender, **kwargs):
         if not PruposeVisit.objects.exists():
             PruposeVisit.objects.create(purpose_name='badanie', description='badanie')
             PruposeVisit.objects.create(purpose_name='masaż', description='masaż')
+            PruposeVisit.objects.create(purpose_name='masaż karnet', description='masaż karnet')
+            PruposeVisit.objects.create(purpose_name='akupunktura', description='akupunktura')
+            PruposeVisit.objects.create(purpose_name='przerwa', description='przerwa')
 
 class StatusVisist(models.Model):
     id = models.AutoField(primary_key=True, unique=True)

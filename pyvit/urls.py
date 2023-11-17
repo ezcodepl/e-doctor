@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
-    patients_files, delete_patient_files, update_patient, create_visit, pause_visit, add_template_patient
+    patients_files, delete_patient_files, update_patient, create_visit, pause_visit
 
 
 class DateConverter:

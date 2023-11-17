@@ -366,15 +366,16 @@ def patients_files(request, pk):
 
     #################### end upload patient files ###################################################
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files, 'templates': templates, 'today': today })
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files,'templates': templates, 'today': today })
 
-def add_template_patient(request):
-    today = datetime.now()
-    patient = Patient.objects.order_by('user__id').get(id_patient=pk)
-    user = User.objects.get(id=patient.user_id)
-    print(request)
-
-    return render(request, 'vita/panel/patient_details.html', {'today': today})
+# def add_template_patient(request):
+#     today = datetime.now()
+#     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
+#     user = User.objects.get(id=patient.user_id)
+#     templates = NoteTemplates.objects.all()
+#     print(templates)
+#
+#     return render(request, 'vita/panel/patient_details.html', {'today': today, 'templates': templates})
 
 def create_patient(request):
     today = datetime.now()
@@ -453,14 +454,13 @@ def update_patient(request, pk):
     today = datetime.now()
     patient = Patient.objects.order_by('user__id').get(id_patient=pk)
     user = User.objects.get(id=patient.user_id)
-    print(patient.user_id)
+
     #print(connection.queries) #print sql
     if 'update' in request.POST:
        if request.method == 'POST':
           form_u = UserUpdateForm(request.POST, instance=user)
           form_p = PatientUpdateExtendForm(request.POST, instance=patient)
-          print(request.POST)
-          print(request.POST['first_name'])
+
           if form_u.is_valid() and form_p.is_valid():
               form_uu = form_u.save(commit=False)
               form_uu.first_name = request.POST['first_name']
@@ -491,9 +491,12 @@ def update_patient(request, pk):
        else:
            print('not request')
     else:
-        print('xxxxxx')
+        messages.error(request, 'Dane nie zostały zapisane !')
+        return redirect(f'/panel/patients/{pk}')
 
-    return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user, 'today': today})
+    return render(request, 'vita/panel/patient_details.html', {'patient':patient, 'user': user,'today': today})
+
+
 
 
 def news_list(request):

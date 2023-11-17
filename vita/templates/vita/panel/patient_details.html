@@ -159,34 +159,52 @@
                             </div>
                         </div>
                         <div class="row p-2 font-bold text-primary">
-                            <form action="{% url 'add_template_patient'%}" method="POST">
-                                 {% csrf_token %}
+
                                  <div class="col">
                                     <label>Wybierz szablon notatki</label>
 
-                                        <select class="form-select" name="template_patient">
-                                            <option>----------</option>
+                                        <select class="form-select" name="template_patient" id="element_select">
+                                            <option value="">------</option>
                                             {% for template in templates %}
-                                                <option value="{{template.id}}">{{template}}</option>
+                                                <option>{{template.contents}}</option>
                                             {% endfor %}
                                         </select>
                                  </div>
-                                 <div class="col"><input type="submit" name="add_template_patient" value="" style="margin-top:25px;background-image:url({% static 'image/plus-svgrepo-com.svg' %});width: 30px; height: 30px; border: none;" /></div>
-                            </form>
+
                         </div>
                         <div class="bg-primary text-light p-2 mt-2">Notatki ogólne</div>
                         <div>
                             <div>
                                 <textarea class="form-control" style="height:200px;" type="text" name="notes"
-                                          value="{{patient.notes}}">{{patient.notes}}</textarea>
+                                          value="{{patient.notes}}"  id="my_textarea">{{patient.notes}}</textarea>
                                 <script>
-                                      tinymce.init({
-                                      selector: 'textarea',  // change this value according to your HTML
-                                      plugins: 'a_tinymce_plugin',
-                                      language: 'pl',
-                                      height: 280,
-                                      a_plugin_option: true,
-                                      a_configuration_option: 400
+                                    tinymce.init({
+                                        selector: 'textarea',
+                                        plugins: 'a_tinymce_plugin',
+                                        language: 'pl',
+                                        height: 280,
+                                        a_plugin_option: true,
+                                        a_configuration_option: 400
+                                    });
+
+                                </script>
+                                 <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        var selectElement = document.getElementById('element_select');
+                                        var textareaElement = document.getElementById('my_textarea');
+
+                                        selectElement.addEventListener('change', function() {
+                                            var selectedElement = selectElement.options[selectElement.selectedIndex].text;
+
+                                            // Dodaj przecinek i nowy element po obecnym tekście
+                                            var newContent = textareaElement.value + (textareaElement.value.trim() !== '' ? ', ' : '') + selectedElement;
+
+                                            // Ustaw nową zawartość w obszarze tekstowym
+                                            textareaElement.value = newContent;
+
+                                            // Zaktualizuj także zawartość TinyMCE
+                                            tinymce.get('my_textarea').setContent(newContent);
+                                        });
                                     });
                                 </script>
                             </div>
