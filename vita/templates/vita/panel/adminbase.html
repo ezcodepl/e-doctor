@@ -40,7 +40,23 @@
         });
       } );
    </script>
+    <style>
+          .current-day {
+          background-color: #007bff !important;
+          color: #fff;
+        }
 
+        .weekend {
+          background-color: #ff0000 !important;
+          color: #fff;
+        }
+
+        button {
+          margin: 5px;
+          padding: 5px 10px;
+          font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
@@ -80,25 +96,25 @@
                         </li>
                          <li
                             class="sidebar-item">
-                            <a href="/panel/terminarz" class='sidebar-link'>
+                            <a href="/panel/docschedule" class='sidebar-link'>
                                 <i class="bi bi-calendar3"></i>
                                 <span>Terminarz Lekarza</span>
                             </a>
                         </li>
                          <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/fizschedule" class='sidebar-link'>
                                 <i class="bi bi-calendar3"></i>
                                 <span>Terminarz Fizykoterapii</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/fizschedule" class='sidebar-link'>
                                 <i class="bi bi-menu-up"></i>
                                 <span>Plan Tygodniowy</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/panel/terminarz_f" class='sidebar-link'>
+                            <a href="/panel/fizschedule" class='sidebar-link'>
                                 <i class="bi bi-menu-up"></i>
                                 <span>Plan Tygoniowy Fizykoterapia</span>
                             </a>
@@ -285,12 +301,12 @@
               <h4 class="alert-heading">Odmowa dostępu !</h4>
               <p>Treści na tej stronie przeznaczone są tylko dla osób zalogowanych.</p>
               <hr>
-              <p class="mb-0">Jeżeli posiadasz zarejestrowane konto w tym serwisie i masz odpowiednie urpawnienia  - <a style="color:#842029;" href="/login">Zaloguj się !</p>
+              <p class="mb-0">Jeżeli posiadasz zarejestrowane konto w tym serwisie i masz odpowiednie urpawnienia  - <a style="color:#842029;" href="/login">Zaloguj się !</a></p>
             </div>
         </div>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/app.js"></script>
+<!--    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/app.js"></script>-->
 </body>
 
 </html>

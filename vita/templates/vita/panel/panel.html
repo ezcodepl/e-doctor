@@ -13,19 +13,7 @@
                 </div>
             </div>
         </div>
-<!--                        <section class="section">-->
-<!--                            <div class="card">-->
-<!--                                <div class="card-header">-->
-<!--                                    <h4 class="card-title">Example Content</h4>-->
-<!--                                </div>-->
-<!--                                <div class="card-body">-->
-<!--                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur quas omnis laudantium tempore-->
-<!--                                    exercitationem, expedita aspernatur sed officia asperiores unde tempora maxime odio reprehenderit-->
-<!--                                    distinctio incidunt! Vel aspernatur dicta consequatur!-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </section>-->
-                        <!-- Basic Tables start -->
+            <div id="calendar-container"></div>
 
           <section class="section">
             <div class="row" id="basic-table">
@@ -247,5 +235,116 @@
             </div>
           </section>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarContainer = document.getElementById('calendar-container');
+      var currentDate = new Date();
 
+      renderCalendar(currentDate);
+
+      function renderCalendar(date) {
+        calendarContainer.innerHTML = '';
+
+        var calendarTable = document.createElement('table');
+        calendarTable.classList.add('table', 'table-sm', 'table-bordered');
+        calendarTable.style.width = '25%';
+
+        var monthRow = calendarTable.createTHead().insertRow();
+        var monthCell = document.createElement('th');
+        monthCell.colSpan = 7;
+        monthCell.textContent = getMonthName(date.getMonth()) + ' ' + date.getFullYear();
+        monthCell.classList.add('text-center');
+        monthRow.appendChild(monthCell);
+
+        var daysOfWeek = ['Pon', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+        var daysRow = calendarTable.createTHead().insertRow();
+        for (var i = 0; i < daysOfWeek.length; i++) {
+          var dayCell = document.createElement('th');
+          dayCell.textContent = daysOfWeek[i];
+          daysRow.appendChild(dayCell);
+        }
+
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+        var currentDay = firstDay;
+        while (currentDay <= lastDay) {
+          var newRow = calendarTable.insertRow();
+
+          for (var j = 0; j < 7; j++) {
+            var newCell = newRow.insertCell();
+
+            if (currentDay.getMonth() === date.getMonth()) {
+              newCell.textContent = currentDay.getDate();
+              newCell.addEventListener('click', function (event) {
+                var clickedDate = new Date(date.getFullYear(), date.getMonth(), parseInt(event.target.textContent));
+                handleDateClick(clickedDate);
+              });
+
+              if (isSameDay(currentDay, new Date())) {
+                newCell.classList.add('current-day');
+              }
+
+              if (j === 5 || j === 6) {
+                newCell.classList.add('weekend');
+              }
+            }
+
+            currentDay.setDate(currentDay.getDate() + 1);
+          }
+        }
+
+        calendarContainer.appendChild(calendarTable);
+
+        var prevMonthButton = createButton('<', function () {
+          date.setMonth(date.getMonth() - 1);
+          renderCalendar(date);
+        });
+
+        var nextMonthButton = createButton('>', function () {
+          date.setMonth(date.getMonth() + 1);
+          renderCalendar(date);
+        });
+
+        var prevYearButton = createButton('<<', function () {
+          date.setFullYear(date.getFullYear() - 1);
+          renderCalendar(date);
+        });
+
+        var nextYearButton = createButton('>>', function () {
+          date.setFullYear(date.getFullYear() + 1);
+          renderCalendar(date);
+        });
+
+        calendarContainer.appendChild(prevMonthButton);
+        calendarContainer.appendChild(nextMonthButton);
+        calendarContainer.appendChild(prevYearButton);
+        calendarContainer.appendChild(nextYearButton);
+      }
+
+      function handleDateClick(clickedDate) {
+        var formattedDate = clickedDate.toISOString().split('T')[0];
+        window.location.href = '/panel/' + clickedDate.getFullYear() + '-' + (clickedDate.getMonth() + 1) + '-' + clickedDate.getDate();
+      }
+
+      function createButton(text, clickHandler) {
+        var button = document.createElement('button');
+        button.textContent = text;
+        button.classList.add('btn', 'btn-primary', 'mr-2');
+        button.addEventListener('click', clickHandler);
+        return button;
+      }
+
+      function getMonthName(month) {
+        var monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+        return monthNames[month];
+      }
+
+      function isSameDay(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getDate() === date2.getDate();
+      }
+    });
+  </script>
 {% endblock %}

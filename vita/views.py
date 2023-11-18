@@ -836,7 +836,6 @@ def panel(request, date):
         'freeday': freeday,
         'freeday_f': freeday_f,
         'today': today
-        # 'pv':get_pruposevisit
     }
 
     return render(request, "vita/panel/panel.html", context)
