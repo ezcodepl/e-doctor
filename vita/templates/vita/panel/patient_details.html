@@ -238,98 +238,193 @@
                     </div>
                     <div class="tab-pane fade" id="wizyty" role="tabpanel" aria-labelledby="wizyty-tab">
 
-                        <div class="row" id="basic-table">
-                          <div class="col-12 col-md-6">
-                            <div class="card">
-                              <div class="card-header">
-                                <h4 class="card-title text-success">WIZYTY PACJENTA</h4>
-                              </div>
-                              <div class="card-content">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm">
-                                          <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th>Lp.</th>
-                                                <th>Data</th>
-                                                <th>Godz.</th>
-                                                <th>Status</th>
-                                                <th>Cel wizyty</th>
-                                                <th>Nr</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {% for w in visits_akt %}
-                                              {% if w.status == '1' or w.status == '2' or w.status == '5' %}
-                                                <tr>
-                                                    <td><input type="checkbox" /> </td>
-                                                    <td>{{ forloop.counter }}</td>
-                                                    <td>{{ w.date|date:"Y-m-d" }}</td>
-                                                    <td>{{ w.time }}</td>
-                                                    <td class="col">
-                                                        {% if w.status == '1' %}
-                                                          <div><input type="radio" value="w.status" checked /> umówiona </div>
-                                                          <div><input type="radio" value="w.status" /> odwołana</div>
-                                                          <div><input type="radio" value="w.status" /> www</div>
-                                                          <div><input type="radio" value="w.status" /> odwołana www</div>
-                                                        {% elif w.status == '2' %}
-                                                            odbyła się
-                                                        {% else %}
-                                                            www
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
-                                                    <td>{{ w.visit }}</td>
-                                                </tr>
-                                               {% endif %}
-                                            {% endfor %}
+                            {% if x == 1 %}
+                                     <div class="row" id="basic-table">
+                                      <div class="col-12 col-md-6">
+                                        <div class="card">
+                                          <div class="card-header">
+                                            <h4 class="card-title text-success">WIZYTY PACJENTA</h4>
+                                          </div>
+                                          <div class="card-content">
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm">
+                                                      <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>Lp.</th>
+                                                            <th>Data</th>
+                                                            <th>Godz.</th>
+                                                            <th>Status</th>
+                                                            <th>Cel wizyty</th>
+                                                            <th>Nr</th>
+                                                        </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                        {% for w in visits_akt %}
+                                                          {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                                                            <tr>
+                                                                <td><input type="checkbox" /> </td>
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ w.date|date:"Y-m-d" }}</td>
+                                                                <td>{{ w.time }}</td>
+                                                                <td class="col">
+                                                                    {% if w.status == '1' %}
+                                                                      <div><input type="radio" value="w.status" checked /> umówiona </div>
+                                                                      <div><input type="radio" value="w.status" /> odwołana</div>
+                                                                      <div><input type="radio" value="w.status" /> www</div>
+                                                                      <div><input type="radio" value="w.status" /> odwołana www</div>
+                                                                    {% elif w.status == '2' %}
+                                                                        odbyła się
+                                                                    {% else %}
+                                                                        www
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                <td>{{ w.visit }}</td>
+                                                            </tr>
+                                                           {% endif %}
+                                                        {% endfor %}
 
-                                          </tbody>
-                                        </table>
-                                    </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-12 col-md-6">
-                            <div class="card">
-                              <div class="card-header">
-                                <h4 class="card-title text-danger">WIZYTY PACJENTA ODWOŁANE I KTÓRE SIĘ NIE ODBYŁY</h4>
-                              </div>
-                              <div class="card-content">
-                                <!-- Table with no outer spacing -->
-                                <div class="table-responsive">
-                                     <table class="table table-sm">
-                                          <thead>
-                                           <tr>
-                                                <th></th>
-                                                <th>Lp.</th>
-                                                <th>Data</th>
-                                                <th>Godz.</th>
-                                                <th>Status</th>
-                                                <th>Cel wizyty</th>
-                                                <th>Nr</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                               {% for w in visits_can %}
-                                               <tr>
+                                                      </tbody>
+                                                    </table>
+                                                </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-12 col-md-6">
+                                        <div class="card">
+                                          <div class="card-header">
+                                            <h4 class="card-title text-danger">WIZYTY PACJENTA ODWOŁANE I KTÓRE SIĘ NIE ODBYŁY</h4>
+                                          </div>
+                                          <div class="card-content">
+                                            <!-- Table with no outer spacing -->
+                                            <div class="table-responsive">
+                                                 <table class="table table-sm">
+                                                      <thead>
+                                                       <tr>
+                                                            <th></th>
+                                                            <th>Lp.</th>
+                                                            <th>Data</th>
+                                                            <th>Godz.</th>
+                                                            <th>Status</th>
+                                                            <th>Cel wizyty</th>
+                                                            <th>Nr</th>
+                                                        </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                           {% for w in visits_can %}
+                                                           <tr>
 
-                                                    <td><input type="checkbox" /> </td>
-                                                    <td>{{ forloop.counter }}</td>
-                                                    <td>{{ w.date|date:"Y-m-d" }}</td>
-                                                    <td>{{ w.time }}</td>
-                                                    <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}</td>
-                                                    <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
-                                                    <td>{{ w.visit }}</td>
+                                                                <td><input type="checkbox" /> </td>
+                                                                <td>{{ forloop.counter }}</td>
+                                                                <td>{{ w.date|date:"Y-m-d" }}</td>
+                                                                <td>{{ w.time }}</td>
+                                                                <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}</td>
+                                                                <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                <td>{{ w.visit }}</td>
 
-                                               </tr>
-                                               {% endfor %}
-                                          </tbody>
-                                    </table>
-                                </div>
-                              </div>
-                            </div>
-                         </div>
+                                                           </tr>
+                                                           {% endfor %}
+                                                      </tbody>
+                                                </table>
+                                            </div>
+                                          </div>
+                                        </div>
+                                     </div>
+                            {% else %}
+                                         <div class="row" id="basic-table-f">
+                                              <div class="col-12 col-md-6">
+                                                <div class="card">
+                                                  <div class="card-header">
+                                                    <h4 class="card-title text-success">WIZYTY PACJENTA</h4>
+                                                  </div>
+                                                  <div class="card-content">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm">
+                                                              <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>Lp.</th>
+                                                                    <th>Data</th>
+                                                                    <th>Godz.</th>
+                                                                    <th>Status</th>
+                                                                    <th>Cel wizyty</th>
+                                                                    <th>Nr</th>
+                                                                </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                {% for w in visits_akt_f %}
+                                                                  {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                                                                    <tr>
+                                                                        <td><input type="checkbox" /> </td>
+                                                                        <td>{{ forloop.counter }}</td>
+                                                                        <td>{{ w.date|date:"Y-m-d" }}</td>
+                                                                        <td>{{ w.time }}</td>
+                                                                        <td class="col">
+                                                                            {% if w.status == '1' %}
+                                                                              <div><input type="radio" value="w.status" checked /> umówiona </div>
+                                                                              <div><input type="radio" value="w.status" /> odwołana</div>
+                                                                              <div><input type="radio" value="w.status" /> www</div>
+                                                                              <div><input type="radio" value="w.status" /> odwołana www</div>
+                                                                            {% elif w.status == '2' %}
+                                                                                odbyła się
+                                                                            {% else %}
+                                                                                www
+                                                                            {% endif %}
+                                                                        </td>
+                                                                        <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                        <td>{{ w.visit }}</td>
+                                                                    </tr>
+                                                                   {% endif %}
+                                                                {% endfor %}
+
+                                                              </tbody>
+                                                            </table>
+                                                        </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="col-12 col-md-6">
+                                                <div class="card">
+                                                  <div class="card-header">
+                                                    <h4 class="card-title text-danger">WIZYTY PACJENTA ODWOŁANE I KTÓRE SIĘ NIE ODBYŁY</h4>
+                                                  </div>
+                                                  <div class="card-content">
+                                                    <!-- Table with no outer spacing -->
+                                                    <div class="table-responsive">
+                                                         <table class="table table-sm">
+                                                              <thead>
+                                                               <tr>
+                                                                    <th></th>
+                                                                    <th>Lp.</th>
+                                                                    <th>Data</th>
+                                                                    <th>Godz.</th>
+                                                                    <th>Status</th>
+                                                                    <th>Cel wizyty</th>
+                                                                    <th>Nr</th>
+                                                                </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                   {% for w in visits_can_f %}
+                                                                   <tr>
+
+                                                                        <td><input type="checkbox" /> </td>
+                                                                        <td>{{ forloop.counter }}</td>
+                                                                        <td>{{ w.date|date:"Y-m-d" }}</td>
+                                                                        <td>{{ w.time }}</td>
+                                                                        <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}</td>
+                                                                        <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                        <td>{{ w.visit }}</td>
+
+                                                                   </tr>
+                                                                   {% endfor %}
+                                                              </tbody>
+                                                        </table>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                             </div>
+                            {% endif %}
                     </div>
                 </div>
 

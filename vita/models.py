@@ -152,5 +152,19 @@ class Visits(models.Model):
     def __str__(self):
         return self.patient
 
+class Visits_f(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    date = models.DateField(null=True)
+    time = models.CharField(null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
+    visit = models.CharField(null=True)
+    status = models.CharField(null=True)
+    pay = models.IntegerField(null=True)
+    cancel = models.IntegerField(null=True)
+    office = models.IntegerField(null=True, default='1')
+    def __str__(self):
+        return self.patient
+
 
 

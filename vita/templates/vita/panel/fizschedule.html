@@ -21,18 +21,18 @@
                                     <div class="row p-3 text-center">
                                         {% include 'vita/messages.html' %}
                                         <div class="text-center p-2">
-                                            <a role="button" class="btn btn-info" href='terminarz_f?month={{today.month}}&year={{btn_today}}'>{{ btn_today }}</a>
-                                            <a role="button" class="btn btn-info" href='terminarz_f?month={{today.month}}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
-                                            <a role="button" class="btn btn-info" href='terminarz_f?month={{today.month}}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
+                                            <a role="button" class="btn btn-info" href='fizschedule?month={{today.month}}&year={{btn_today}}'>{{ btn_today }}</a>
+                                            <a role="button" class="btn btn-info" href='fizschedule?month={{today.month}}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
+                                            <a role="button" class="btn btn-info" href='fizschedule?month={{today.month}}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
                                         </div>
                                         {% for nr, month in months.items %}
                                               <div class="col text-center">
                                                   {% if btn_y == btn_today_1 %}
-                                                     <a role="button" class="btn btn-success p-2" href="terminarz_f?month={{nr}}&year={{btn_today_1}}">{{month|upper}}</a>
+                                                     <a role="button" class="btn btn-success p-2" href="fizschedule?month={{nr}}&year={{btn_today_1}}">{{month|upper}}</a>
                                                   {% elif btn_y == btn_today_2 %}
-                                                     <a role="button" class="btn btn-success p-2" href="terminarz_f?month={{nr}}&year={{btn_today_2}}">{{month|upper}}</a>
+                                                     <a role="button" class="btn btn-success p-2" href="fizschedule?month={{nr}}&year={{btn_today_2}}">{{month|upper}}</a>
                                                   {% else %}
-                                                     <a role="button" class="btn btn-success p-2" href="terminarz_f?month={{nr}}&year={{btn_today}}">{{month|upper}}</a>
+                                                     <a role="button" class="btn btn-success p-2" href="fizschedule?month={{nr}}&year={{btn_today}}">{{month|upper}}</a>
                                                   {% endif %}
                                               </div>
                                         {% endfor %}
@@ -75,8 +75,8 @@
                                                             </select>
                                                         </td>
                                                             {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                                            <td class="p-1 text-center" ><input name="official_hours_start" type="hidden" value="08:00-19:00" /></td>
-                                                            <td class="p-1 text-center" ><input name="work_hours_start" type="hidden" value="08:00-21:00" /></td>
+                                                            <td class="p-1 text-center" ><input name="official_hours_start" type="hidden" value="08:30-13:00" /></td>
+                                                            <td class="p-1 text-center" ><input name="work_hours_start" type="hidden" value="08:30-13:30" /></td>
                                                             <td class="p-1 text-center" >
                                                                 <select name="scheme" hidden>
                                                                     <option value="10">10 min</option>
@@ -88,8 +88,8 @@
                                                             </td>
 
                                                            {% else %}
-                                                           <td class="p-1 text-center"><input name="official_hours_start" type="text" value="08:00-19:00" /></td>
-                                                            <td class="p-1 text-center"><input name="work_hours_start" type="text" value="08:00-21:00" /></td>
+                                                           <td class="p-1 text-center"><input name="official_hours_start" type="text" value="08:30-13:30" /></td>
+                                                            <td class="p-1 text-center"><input name="work_hours_start" type="text" value="08:30-13:30" /></td>
                                                            <td class="p-1 text-center">
                                                                 <select name="scheme">
                                                                     <option value="10">10 min</option>

@@ -158,17 +158,86 @@
                             </tr>
                           </thead>
                           <tbody>
+                                <tr><td scope="row" style="padding:10px;color:red;">{{ freeday_f }}</td></tr>
+                                {% for hour_f, visit_f in visits_f.items %}
+                                    {% if visit_f %}
+                                       <tr>
+                                         <td>{{ hour_f }}</td>
+                                            {% if visit_f.status == '0' %}
+                                               <td>-</td>
+                                               <td>-</td>
+                                               <td>-</td>
+                                            {% else %}
+                                               <td class="text-bold-500">
+                                                 <a href="/panel/patients/{{visit_f.patient__id_patient}}" >{{visit_f.patient__user__first_name}} {{visit_f.patient__user__last_name}}</a>
+                                               </td>
+                                               <td>
+                                                   {% if visit_f.status == '2' %}
+                                                         ODBYŁA SIĘ
+                                                   {% elif visit_f.status == '3' %}
+                                                         NIE ODBYŁA SIĘ
+                                                   {% elif visit_f.status == '5' %}
+                                                    <select name="status">
+                                                         <option value="1">UMÓWIONA</option>
+                                                         <option value="2">ODBYŁA SIĘ</option>
+                                                         <option value="3">NIE ODBYŁA SIĘ</option>
+                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="5" selected>WWW</option>
+                                                         <option value="6">ODWOŁANA WWW</option>
+                                                     </select>
+                                                   {% else %}
+                                                     <select name="status">
+                                                         <option value="1" selected>UMÓWIONA</option>
+                                                         <option value="2">ODBYŁA SIĘ</option>
+                                                         <option value="3">NIE ODBYŁA SIĘ</option>
+                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="5">WWW</option>
+                                                         <option value="6">ODWOŁANA WWW</option>
+                                                     </select>
+                                                   {% endif %}
+                                               </td>
+                                               <td>{{ visit_f.visit}}</td>
+                                            {% endif %}
+                                         <td class="text-bold-500">{{visit_f.prupose_visit__purpose_name}}</td>
+                                         <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
+                                     </tr>
+                                    {% else %}
+                                    <tr>
+                                         <td>{{ hour_f }}</td>
+                                         <td class="text-bold-500"></td>
+                                         <td></td>
+                                         <td></td>
+                                         <td class="text-bold-500">{{visit_f.prupose_visit__purpose_name}}</td>
+                                         <td>
+                                           <div class="d-flex flex-row">
 
-                           {% for w in wizyty %}
-                            <tr>
-                                 <td>{{w}}</td>
-                                 <td class="text-bold-500"></td>
-                                 <td>Umówiona</td>
-                                 <td>2</td>
-                                 <td class="text-bold-500">Masaż</td>
-                                 <td><button type="button" class="btn btn-sm btn-success">Dodaj</button></td>
-                            </tr>
-                            {% endfor %}
+                                             <div class="row" style="padding-right: 3px;">
+                                              <form novalidate="" method="POST" action="{% url 'create_visit_f' %}" enctype="multipart/form-data">
+                                                 {% csrf_token %}
+                                                  <input type="hidden" name="date" value="{{get_date}}" />
+                                                  <input type="hidden" name="time" value="{{hour_f}}" />
+                                                  <input type="hidden" name="office" value="2" />
+                                                  <input type="submit" class="btn btn-sm btn-success"  value="Nowa wizyta" />
+
+                                              </form>
+                                             </div>
+                                             <div class="row">
+                                              <form  novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
+                                                 {% csrf_token %}
+                                                  <input type="hidden" name="date" value="{{get_date}}" />
+                                                  <input type="hidden" name="time" value="{{hour_f}}" />
+                                                  <input type="hidden" name="office" value="1" />
+                                                  <input type="submit" class="btn btn-sm btn-info"  value="Przerwa" />
+
+                                              </form>
+
+                                             </div>
+                                           </div>
+                                         </td>
+                                     </tr>
+                                    {% endif %}
+                                {% endfor %}
+
                           </tbody>
                         </table>
                     </div>

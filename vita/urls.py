@@ -8,8 +8,8 @@ from datetime import date, datetime
 urlpatterns = [
 
     path('', views.home, name='home'),
-    path('panel/terminarz', views.terminarz, name='terminarz'),
-    path('panel/terminarz_f', views.terminarz_fizykoterapii, name='terminarz_fizykoterapii'),
+    path('panel/docschedule', views.docschedule, name='docschedule'),
+    path('panel/fizschedule', views.fizschedule, name='fizschedule'),
     path('panel/patients', views.patients_list, name='patients_list'),
     path('panel/patients', views.patients_list, name='patients_list'),
 #    path('panel/new_patient', views.new_patient, name='new_patient'),
@@ -21,6 +21,8 @@ urlpatterns = [
     path('panel/create_patient', views.create_patient, name='create_patient'),
     path('panel/create_visit', views.create_visit, name='create_visit'),
     path('panel/create_new_visit', views.create_new_visit, name='create_new_visit'),
+    path('panel/create_visit_f', views.create_visit_f, name='create_visit_f'),
+    path('panel/create_new_visit_f', views.create_new_visit_f, name='create_new_visit_f'),
     path('panel/pause_visit', views.pause_visit, name='pause_visit'),
 
 

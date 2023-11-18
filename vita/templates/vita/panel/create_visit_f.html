@@ -5,7 +5,7 @@
         <div class="page-title">
             <div class="row mb-2">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Dodaj nową wizytę do gabinetu lekarskiego</h3>
+                    <h3>Dodaj nową wizytę do gabinetu fizykoterapii</h3>
             </div>
         </div>
         <section class="section">
@@ -21,7 +21,7 @@
                 </script>
 
                 <div class="card-body">
-                    <form class="row g-3 needs-validation" name="v_form" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" name="v_form_f" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit_f' %}" enctype="multipart/form-data">
                       {% csrf_token %}
                       {{ form.errors }}
                     <div style="text-align:left;">
@@ -72,7 +72,7 @@
                                       <input type="hidden" name="email" value="stacjonarny@megavita.pl" />
 
                               </div>
-<!--                            </form>-->
+
                         </p>
                     </div>
 
@@ -81,17 +81,15 @@
                 <p>
                   <div class="card-body">
                      <fieldset class="form-group">
-<!--                            <form class="row g-3 needs-validation" id="visit" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">-->
-<!--                              {% csrf_token %}-->
 
                                    <div class="row align-items-start">
                                        <div class="col">
                                             <label for="development">Data wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="date" value="{{vd}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="date" value="{{vd_f}}" />
                                        </div>
                                        <div class="col">
                                             <label for="development">Godzina wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="time" value="{{vt}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="time" value="{{vt_f}}" />
                                        </div>
                                         <div class="col">
                                             <label for="development">Cel wizyty: </label>
@@ -104,11 +102,11 @@
                                        </div>
                                         <div class="col">
                                             <label for="development">Gabinet: </label>
-                                            <input type="hidden" name="office" value="{{vo}}" />
-                                            {% if vo == '1' %}
-                                              <input class="form-control" style="background:#ccfbf1;" type="text" name="vo" value="gabinet lekarski" disabled/>
+                                            <input type="hidden" name="office" value="{{vo_f}}" />
+                                            {% if vo_f == '1' %}
+                                              <input class="form-control" style="background:#ccfbf1;" type="text" name="vo_f" value="gabinet lekarski" disabled/>
                                             {% else %}
-                                              <input class="form-control" style="background:#ccfbf1;" type="text" name="vo" value="gabinet fizjoterapii" disabled/>
+                                              <input class="form-control" style="background:#ccfbf1;" type="text" name="vo_f" value="gabinet fizjoterapii" disabled/>
                                             {% endif %}
                                        </div>
                                    </div>

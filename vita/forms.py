@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel, Visits
+from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel, Visits, Visits_f
 
 
 # from captcha.fields import ReCaptchaField
@@ -147,6 +147,11 @@ class uploadFilesForm(forms.ModelForm):
 class VisitForm(forms.ModelForm):
     class Meta:
         model = Visits
+        fields = ['date','time']
+
+class VisitForm_f(forms.ModelForm):
+    class Meta:
+        model = Visits_f
         fields = ['date','time']
 class PersonForm(forms.Form):
     person = forms.ModelChoiceField(
