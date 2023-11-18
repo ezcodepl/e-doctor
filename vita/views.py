@@ -92,9 +92,10 @@ def terminarz(request):
     else:
         btn_y = today.year
 
-    check_schedule = DoctorSchedule.objects.all().values('date')
+    #check_schedule = DoctorSchedule.objects.all().values('date')
 
-    if len(check_schedule) > 0:
+    check_schedule = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
+    if check_schedule:
         form = DoctorsScheduleForm(request.POST)
 
         if request.method == 'POST':
@@ -116,7 +117,14 @@ def terminarz(request):
                     form.save()
                 messages.success(request, "Terminarz Lekarza został zaktualizowany")
             else:
-                messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
+                #check doctor shedule - visit today
+                # ch_v = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
+                #
+                # if ch_v:
+                #     messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
+                # else:
+                 print('')
+
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
@@ -326,8 +334,12 @@ def patients_files(request, pk):
 
 
             if form.is_valid():
-                dirname = str(request.POST.get('id'))
 
+                dirname = str(request.POST.get('id'))
+                directory_path = os.path.join('vita', 'media', 'patient_files')
+
+                # Utwórz katalog, jeśli nie istnieje
+                os.makedirs(directory_path, exist_ok=True)
                 # checks and create a patient folder name as id_patient
                 try:
                     os.mkdir(os.path.join('vita/media/patient_files/', dirname))
@@ -351,10 +363,15 @@ def patients_files(request, pk):
 
                         messages.success(request, 'Pliki dodano do akt pacjenta')
             else:
+                print(form.errors)
                 messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
         else:
+
+            messages.error(request, 'Nie udało się dodać plików do akt pacjenta')
+
             form = uploadFilesForm()
     else:
+
         form = uploadFilesForm()
 
 
@@ -366,7 +383,11 @@ def patients_files(request, pk):
 
     #################### end upload patient files ###################################################
 
-    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files,'templates': templates, 'today': today })
+    #get patient visites active and cancel
+    visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=pk).order_by('-id').values('patient','prupose_visit__purpose_name', 'prupose_visit_id','visit','status', 'time', 'date')
+    visits_can = Visits.objects.select_related('pruposevisit').filter(Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient','prupose_visit__purpose_name', 'prupose_visit_id','visit','status', 'time', 'date')
+
+    return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files,'templates': templates, 'visits_akt':visits_akt,'visits_can':visits_can, 'today': today })
 
 # def add_template_patient(request):
 #     today = datetime.now()

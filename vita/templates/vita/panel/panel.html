@@ -65,13 +65,29 @@
                                                  <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
                                                </td>
                                                <td>
-                                                 <select name="status">
-                                                     <option value="1">UMÓWIONA</option>
-                                                     <option value="2">NIE ODBYŁA SIĘ</option>
-                                                     <option value="3">ODWOŁANA</option>
-                                                     <option value="4">WWW</option>
-                                                     <option value="5">ODWOŁANA WWW</option>
-                                                 </select>
+                                                   {% if visit.status == '2' %}
+                                                         ODBYŁA SIĘ
+                                                   {% elif visit.status == '3' %}
+                                                         NIE ODBYŁA SIĘ
+                                                   {% elif visit.status == '5' %}
+                                                    <select name="status">
+                                                         <option value="1">UMÓWIONA</option>
+                                                         <option value="2">ODBYŁA SIĘ</option>
+                                                         <option value="3">NIE ODBYŁA SIĘ</option>
+                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="5" selected>WWW</option>
+                                                         <option value="6">ODWOŁANA WWW</option>
+                                                     </select>
+                                                   {% else %}
+                                                     <select name="status">
+                                                         <option value="1" selected>UMÓWIONA</option>
+                                                         <option value="2">ODBYŁA SIĘ</option>
+                                                         <option value="3">NIE ODBYŁA SIĘ</option>
+                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="5">WWW</option>
+                                                         <option value="6">ODWOŁANA WWW</option>
+                                                     </select>
+                                                   {% endif %}
                                                </td>
                                                <td>{{ visit.visit}}</td>
                                             {% endif %}
