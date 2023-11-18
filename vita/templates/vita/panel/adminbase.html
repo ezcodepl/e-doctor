@@ -41,8 +41,13 @@
       } );
    </script>
     <style>
-          .current-day {
-          background-color: #007bff !important;
+        .current-day {
+          background-color: #157347 !important;
+          color: #fff;
+        }
+
+        .selected-day {
+         background-color: #157347 !important;
           color: #fff;
         }
 
@@ -51,10 +56,14 @@
           color: #fff;
         }
 
+        .clickable {
+          cursor: pointer;
+        }
+
         button {
-          margin: 5px;
-          padding: 5px 10px;
-          font-size: 16px;
+          margin: 2px;
+          padding: 2px 2px;
+          font-size: 10px;
         }
     </style>
 </head>
@@ -87,8 +96,7 @@
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
 
-                        <li
-                            class="sidebar-item  "  style="background-color:#58CAEB;border-radius: 5px;border:1px solid #58CAEB;">
+                        <li class="sidebar-item  "  style="background-color:#58CAEB;border-radius: 5px;border:1px solid #58CAEB;">
                             <a href="/panel/{{today.year}}-{{today.month}}-{{today.day}}" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Start</span>

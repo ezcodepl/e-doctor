@@ -12,12 +12,18 @@
 
                 </div>
             </div>
-        </div>
+
             <div id="calendar-container"></div>
 
+        </div>
+
+
           <section class="section">
+
             <div class="row" id="basic-table">
+
               <div class="col-12 col-md-6">
+
                 <div class="card">
                   <div class="card-header">
                     <h4 class="card-title">Gabinet lekarski - GODZINY PRACY: 08:00-21:00  </h4>
@@ -236,115 +242,136 @@
           </section>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var calendarContainer = document.getElementById('calendar-container');
-      var currentDate = new Date();
+document.addEventListener('DOMContentLoaded', function () {
+  var calendarContainer = document.getElementById('calendar-container');
+  var currentDate = new Date();
 
-      renderCalendar(currentDate);
+  renderCalendar(currentDate);
 
-      function renderCalendar(date) {
-        calendarContainer.innerHTML = '';
+  function renderCalendar(date) {
+    calendarContainer.innerHTML = '';
 
-        var calendarTable = document.createElement('table');
-        calendarTable.classList.add('table', 'table-sm', 'table-bordered');
-        calendarTable.style.width = '25%';
+    var calendarTable = document.createElement('table');
+    calendarTable.classList.add('table', 'table-sm', 'table-bordered');
+    calendarTable.style.width = '25%';
 
-        var monthRow = calendarTable.createTHead().insertRow();
-        var monthCell = document.createElement('th');
-        monthCell.colSpan = 7;
-        monthCell.textContent = getMonthName(date.getMonth()) + ' ' + date.getFullYear();
-        monthCell.classList.add('text-center');
-        monthRow.appendChild(monthCell);
+    var monthRow = calendarTable.createTHead().insertRow();
+    var monthCell = document.createElement('th');
+    monthCell.colSpan = 7;
+    monthCell.textContent = getMonthName(date.getMonth()) + ' ' + date.getFullYear();
+    monthCell.classList.add('text-center');
+    monthRow.appendChild(monthCell);
 
-        var daysOfWeek = ['Pon', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
-        var daysRow = calendarTable.createTHead().insertRow();
-        for (var i = 0; i < daysOfWeek.length; i++) {
-          var dayCell = document.createElement('th');
-          dayCell.textContent = daysOfWeek[i];
-          daysRow.appendChild(dayCell);
-        }
+    var daysOfWeek = ['Pon', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+    var daysRow = calendarTable.createTHead().insertRow();
+    for (var i = 0; i < daysOfWeek.length; i++) {
+      var dayCell = document.createElement('th');
+      dayCell.textContent = daysOfWeek[i];
 
-        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+       // Dodawanie klasy do nagłówka tabeli
+         dayCell.style.background = '#58CAEB';
+         dayCell.style.color = '#000';
 
-        var currentDay = firstDay;
-        while (currentDay <= lastDay) {
-          var newRow = calendarTable.insertRow();
+      daysRow.appendChild(dayCell);
+    }
 
-          for (var j = 0; j < 7; j++) {
-            var newCell = newRow.insertCell();
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;  // Indeks pierwszego dnia miesiąca w daysOfWeek
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-            if (currentDay.getMonth() === date.getMonth()) {
-              newCell.textContent = currentDay.getDate();
-              newCell.addEventListener('click', function (event) {
-                var clickedDate = new Date(date.getFullYear(), date.getMonth(), parseInt(event.target.textContent));
-                handleDateClick(clickedDate);
-              });
+    var today = new Date();  // Aktualna data
 
-              if (isSameDay(currentDay, new Date())) {
-                newCell.classList.add('current-day');
-              }
+    var currentDay = new Date(firstDay);
+    currentDay.setDate(currentDay.getDate() - firstDayIndex);  // Przesunięcie do poprzedniego poniedziałku
+    while (currentDay <= lastDay) {
+      var newRow = calendarTable.insertRow();
 
-              if (j === 5 || j === 6) {
-                newCell.classList.add('weekend');
-              }
+      for (var j = 0; j < 7; j++) {
+        var newCell = newRow.insertCell();
+
+        if (currentDay.getMonth() === date.getMonth()) {
+          newCell.textContent = currentDay.getDate();
+          newCell.addEventListener('click', function (event) {
+            // Usuń klasę z poprzednio zaznaczonej komórki (jeśli istnieje)
+            var selectedCell = calendarTable.querySelector('.selected-day');
+            if (selectedCell) {
+              selectedCell.classList.remove('selected-day');
             }
 
-            currentDay.setDate(currentDay.getDate() + 1);
+            // Dodaj klasę do aktualnie zaznaczonej komórki
+            event.target.classList.add('selected-day');
+
+            var clickedDate = new Date(date.getFullYear(), date.getMonth(), parseInt(event.target.textContent));
+            handleDateClick(clickedDate);
+          });
+
+          if (isSameDay(currentDay, today)) {
+            newCell.classList.add('current-day');
           }
+
+          if (j >= 5) {
+            newCell.classList.add('weekend');
+          }
+
+          newCell.classList.add('clickable');
         }
 
-        calendarContainer.appendChild(calendarTable);
-
-        var prevMonthButton = createButton('<', function () {
-          date.setMonth(date.getMonth() - 1);
-          renderCalendar(date);
-        });
-
-        var nextMonthButton = createButton('>', function () {
-          date.setMonth(date.getMonth() + 1);
-          renderCalendar(date);
-        });
-
-        var prevYearButton = createButton('<<', function () {
-          date.setFullYear(date.getFullYear() - 1);
-          renderCalendar(date);
-        });
-
-        var nextYearButton = createButton('>>', function () {
-          date.setFullYear(date.getFullYear() + 1);
-          renderCalendar(date);
-        });
-
-        calendarContainer.appendChild(prevMonthButton);
-        calendarContainer.appendChild(nextMonthButton);
-        calendarContainer.appendChild(prevYearButton);
-        calendarContainer.appendChild(nextYearButton);
+        currentDay.setDate(currentDay.getDate() + 1);
       }
+    }
 
-      function handleDateClick(clickedDate) {
-        var formattedDate = clickedDate.toISOString().split('T')[0];
-        window.location.href = '/panel/' + clickedDate.getFullYear() + '-' + (clickedDate.getMonth() + 1) + '-' + clickedDate.getDate();
-      }
+    calendarContainer.appendChild(calendarTable);
 
-      function createButton(text, clickHandler) {
-        var button = document.createElement('button');
-        button.textContent = text;
-        button.classList.add('btn', 'btn-primary', 'mr-2');
-        button.addEventListener('click', clickHandler);
-        return button;
-      }
-
-      function getMonthName(month) {
-        var monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
-        return monthNames[month];
-      }
-
-      function isSameDay(date1, date2) {
-        return date1.getFullYear() === date2.getFullYear() &&
-               date1.getMonth() === date2.getMonth() &&
-               date1.getDate() === date2.getDate();
-      }
+    var prevMonthButton = createButton('<', function () {
+      date.setMonth(date.getMonth() - 1);
+      renderCalendar(date);
     });
+
+    var nextMonthButton = createButton('>', function () {
+      date.setMonth(date.getMonth() + 1);
+      renderCalendar(date);
+    });
+
+    var prevYearButton = createButton('<<', function () {
+      date.setFullYear(date.getFullYear() - 1);
+      renderCalendar(date);
+    });
+
+    var nextYearButton = createButton('>>', function () {
+      date.setFullYear(date.getFullYear() + 1);
+      renderCalendar(date);
+    });
+
+    calendarContainer.appendChild(prevMonthButton);
+    calendarContainer.appendChild(nextMonthButton);
+    calendarContainer.appendChild(prevYearButton);
+    calendarContainer.appendChild(nextYearButton);
+  }
+
+  function handleDateClick(clickedDate) {
+    var formattedDate = clickedDate.toISOString().split('T')[0];
+    window.location.href = '/panel/' + clickedDate.getFullYear() + '-' + (clickedDate.getMonth() + 1) + '-' + clickedDate.getDate();
+  }
+
+  function createButton(text, clickHandler) {
+    var button = document.createElement('button');
+    button.textContent = text;
+    button.classList.add('btn', 'btn-primary', 'mr-2');
+    button.addEventListener('click', clickHandler);
+    return button;
+  }
+
+  function getMonthName(month) {
+    var monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+    return monthNames[month];
+  }
+
+  function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+  }
+});
+
   </script>
 {% endblock %}
