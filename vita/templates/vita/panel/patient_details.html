@@ -256,6 +256,7 @@
                                                             <th>Godz.</th>
                                                             <th>Status</th>
                                                             <th>Cel wizyty</th>
+                                                            <th>Gabinet</th>
                                                             <th>Nr</th>
                                                         </tr>
                                                       </thead>
@@ -280,6 +281,8 @@
                                                                     {% endif %}
                                                                 </td>
                                                                 <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+
+                                                                <td> {% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                                                                 <td>{{ w.visit }}</td>
                                                             </tr>
                                                            {% endif %}
@@ -308,6 +311,7 @@
                                                             <th>Godz.</th>
                                                             <th>Status</th>
                                                             <th>Cel wizyty</th>
+                                                            <th>Gabinet</th>
                                                             <th>Nr</th>
                                                         </tr>
                                                       </thead>
@@ -321,6 +325,8 @@
                                                                 <td>{{ w.time }}</td>
                                                                 <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}</td>
                                                                 <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+
+                                                                <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                                                                 <td>{{ w.visit }}</td>
 
                                                            </tr>
@@ -349,6 +355,7 @@
                                                                     <th>Godz.</th>
                                                                     <th>Status</th>
                                                                     <th>Cel wizyty</th>
+                                                                    <th>Gabinet</th>
                                                                     <th>Nr</th>
                                                                 </tr>
                                                               </thead>
@@ -369,10 +376,14 @@
                                                                             {% elif w.status == '2' %}
                                                                                 odbyła się
                                                                             {% else %}
-                                                                                www
+                                                                               <div><input type="radio" value="w.status"/> umówiona </div>
+                                                                               <div><input type="radio" value="w.status" /> odwołana</div>
+                                                                               <div><input type="radio" value="w.status"  checked /> www</div>
+                                                                               <div><input type="radio" value="w.status" /> odwołana www</div>
                                                                             {% endif %}
                                                                         </td>
                                                                         <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                        <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                                                                         <td>{{ w.visit }}</td>
                                                                     </tr>
                                                                    {% endif %}
@@ -401,6 +412,7 @@
                                                                     <th>Godz.</th>
                                                                     <th>Status</th>
                                                                     <th>Cel wizyty</th>
+                                                                    <th>Gabinet</th>
                                                                     <th>Nr</th>
                                                                 </tr>
                                                               </thead>
@@ -414,6 +426,7 @@
                                                                         <td>{{ w.time }}</td>
                                                                         <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}</td>
                                                                         <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+                                                                        <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                                                                         <td>{{ w.visit }}</td>
 
                                                                    </tr>

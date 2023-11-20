@@ -52,7 +52,7 @@
                                          <td>{{ hour }}</td>
                                             {% if visit.status == '0' %}
                                                <td>-</td>
-                                               <td>-</td>
+                                               <td>przerwa</td>
                                                <td>-</td>
                                             {% else %}
                                                <td class="text-bold-500">
@@ -134,9 +134,11 @@
               </div>
               <div class="col-12 col-md-6">
                 <div class="card">
+
                   <div class="card-header">
                     <h4 class="card-title">Gabinet fizykoterapii - GODZINY PRACY: 08:00-21:00  </h4>
                   </div>
+                    {% include 'vita/messages.html' %}
                   <div class="card-content">
                     <!-- Table with no outer spacing -->
                     <div class="table-responsive">
@@ -159,7 +161,7 @@
                                          <td>{{ hour_f }}</td>
                                             {% if visit_f.status == '0' %}
                                                <td>-</td>
-                                               <td>-</td>
+                                               <td>przerwa</td>
                                                <td>-</td>
                                             {% else %}
                                                <td class="text-bold-500">
@@ -206,7 +208,7 @@
                                            <div class="d-flex flex-row">
 
                                              <div class="row" style="padding-right: 3px;">
-                                              <form novalidate="" method="POST" action="{% url 'create_visit_f' %}" enctype="multipart/form-data">
+                                              <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                  {% csrf_token %}
                                                   <input type="hidden" name="date" value="{{get_date}}" />
                                                   <input type="hidden" name="time" value="{{hour_f}}" />
@@ -220,7 +222,7 @@
                                                  {% csrf_token %}
                                                   <input type="hidden" name="date" value="{{get_date}}" />
                                                   <input type="hidden" name="time" value="{{hour_f}}" />
-                                                  <input type="hidden" name="office" value="1" />
+                                                  <input type="hidden" name="office" value="2" />
                                                   <input type="submit" class="btn btn-sm btn-info"  value="Przerwa" />
 
                                               </form>

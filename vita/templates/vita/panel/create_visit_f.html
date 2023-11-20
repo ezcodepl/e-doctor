@@ -21,7 +21,7 @@
                 </script>
 
                 <div class="card-body">
-                    <form class="row g-3 needs-validation" name="v_form_f" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit_f' %}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" name="v_form_f" id="patient" novalidate="" method="POST" action="{% url 'create_new_visit' %}" enctype="multipart/form-data">
                       {% csrf_token %}
                       {{ form.errors }}
                     <div style="text-align:left;">
@@ -113,11 +113,11 @@
                                    <div class="row align-items-start p-4">
                                        <input type="submit" class="btn btn-success form-control"  value="Dodaj nową wizytę" />
                                    </div>
-                         </form>
+
                      </fieldset>
                   </div>
                 </p>
-
+                </form>
             </div>
         </section>
     </div>

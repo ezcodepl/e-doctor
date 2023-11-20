@@ -398,6 +398,7 @@ def patients_files(request, pk):
                                                                                                          'prupose_visit_id',
                                                                                                          'visit',
                                                                                                          'status',
+                                                                                                         'office',
                                                                                                          'time',
                                                                                                          'date')
     visits_can = Visits.objects.select_related('pruposevisit').filter(Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
@@ -405,20 +406,25 @@ def patients_files(request, pk):
                                                                                                                                        'prupose_visit_id',
                                                                                                                                        'visit',
                                                                                                                                        'status',
+                                                                                                                                       'office',
                                                                                                                                        'time',
                                                                                                                                        'date')
 
     # get patient visites fiz active and cancel
-    visits_akt_f = Visits_f.objects.select_related('pruposevisit').filter(patient=pk).order_by('-id').values('patient',
+    visits_akt_f = Visits.objects.select_related('pruposevisit').filter(patient=pk).order_by('-id').values('patient',
                                                                                                          'prupose_visit__purpose_name',
                                                                                                          'prupose_visit_id',
                                                                                                          'visit',
                                                                                                          'status',
+                                                                                                         'office',
                                                                                                          'time', 'date')
-    visits_can_f = Visits_f.objects.select_related('pruposevisit').filter(
+    visits_can_f = Visits.objects.select_related('pruposevisit').filter(
         Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient', 'prupose_visit__purpose_name',
-                                                                         'prupose_visit_id', 'visit', 'status', 'time',
+                                                                         'prupose_visit_id', 'visit', 'status','office', 'time',
                                                                          'date')
+    # visits_count = Visits.objects.filter(patient_id=pk).count()
+    # visit_f_count = Visits_f.objects.filter(patient_id=pk).count()
+    # total_count = visits_count + visit_f_count
 
     return render(request, 'vita/panel/patient_details.html',{'patient': patient,'form': form, 'all_files':all_files,'templates': templates, 'visits_akt':visits_akt,'visits_can':visits_can, 'visits_akt_f':visits_akt_f,'visits_can_f':visits_can_f, 'today': today })
 
@@ -701,7 +707,7 @@ def panel(request, date):
         end_time = datetime(1, 1, 1, end_hour)
         h =[] #empty hour list
 
-        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
+        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0], office=1).select_related(
         'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
 
 
@@ -738,7 +744,7 @@ def panel(request, date):
     else:
         if day_type.count() == 0:
              freeday = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz')
+             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza')
         else:
             if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
                 freeday = 'Dzień wolny od pracy'
@@ -772,7 +778,7 @@ def panel(request, date):
         end_time_f = datetime(1, 1, 1, end_hour_f)
         hf =[] #empty hour list
 
-        check_visit_f = Visits_f.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0]).select_related(
+        check_visit_f = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0], office=2).select_related(
         'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
 
 
@@ -809,7 +815,7 @@ def panel(request, date):
     else:
         if day_type_f.count() == 0:
              freeday_f = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz')
+             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii')
         else:
             if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Wolny'):
                 freeday_f = 'Dzień wolny od pracy'
@@ -1182,7 +1188,7 @@ def create_new_visit(request):
         #    print(f"{key}: {value}")
         cform = RegisterUserForm(request.POST)
         cp_form = PatientRegisterForm(request.POST)
-        v_form = VisitForm_f(request.POST)
+        v_form = VisitForm(request.POST)
 
         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
@@ -1192,7 +1198,9 @@ def create_new_visit(request):
 
               person = request.POST['person'].split(' ') #split data from autocomplete field
               pid = person[0] #patient_id
-              pln = person[1] #patient last_name
+              print(pid)
+              pln = person[1]  # patient last_name
+              print(pln)
               pfn = person[2] #patient first_name
               pst = person[3] #patient street
               pc = person[4] #patient city
@@ -1204,8 +1212,14 @@ def create_new_visit(request):
                   vv_form.time = request.POST['time']
                   vv_form.status = '1'
                   check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()#check visist number
-                  if check_visit_nr['visit']:
-                      visit_nr = int(check_visit_nr['visit']) + 1
+                  if check_visit_nr:
+                      #visit_nr = int(check_visit_nr['visit']) + 1
+                      visits_count = Visits.objects.filter(patient_id=pid).count()
+                      visit_f_count = Visits_f.objects.filter(patient_id=pid).count()
+                      total_count = visits_count + visit_f_count
+                      print(total_count)
+                      visit_nr = total_count + 1
+                      print(visit_nr)
                   else:
                       visit_nr = '1'
                   vv_form.visit = visit_nr
@@ -1303,7 +1317,9 @@ def create_new_visit_f(request):
 
               person = request.POST['person'].split(' ') #split data from autocomplete field
               pid = person[0] #patient_id
+              print(pid)
               pln = person[1] #patient last_name
+              print(pln)
               pfn = person[2] #patient first_name
               pst = person[3] #patient street
               pc = person[4] #patient city
@@ -1317,7 +1333,12 @@ def create_new_visit_f(request):
                   check_visit_nr_f = Visits_f.objects.filter(patient_id = pid).values().last()#check visist number
 
                   if check_visit_nr_f:
-                      visit_nr_f = int(check_visit_nr_f['visit']) + 1
+                      visits_count_f = Visits.objects.filter(patient_id=int(check_visit_nr_f['visit'])).count()
+                      visit_f_count_f = Visits_f.objects.filter(patient_id=int(check_visit_nr_f['visit'])).count()
+                      total_count_f = visits_count_f + visit_f_count_f
+                      print(total_count_f)
+                      visit_nr_f = total_count_f + 1
+                      print(visit_nr_f)
                   else:
                       visit_nr_f = '1'
 
