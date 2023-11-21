@@ -826,9 +826,12 @@ def panel(request, date):
         visits_dict_f = ''
         get_patient_f = ''
 
-
     date_check_f = datetime.today()
     td_f = date_check_f.strftime('%Y-%m-%d')
+
+    # information about visits www and cancel
+    count_v_www = Visits.objects.filter(status=5).count()
+    count_cancel = Visits.objects.filter(status=2).count()
 
     context = {
         'td': td,
@@ -841,7 +844,9 @@ def panel(request, date):
         'patient_name': get_patient,
         'freeday': freeday,
         'freeday_f': freeday_f,
-        'today': today
+        'today': today,
+        'count_www': count_v_www,
+        'count_cancel': count_cancel
     }
 
     return render(request, "vita/panel/panel.html", context)
@@ -941,6 +946,7 @@ def login_request(request):
         else:
             messages.error(request, "Nieprawidłowa nazwa użytkownika lub hasło.")
     form = AuthenticationForm()
+
 
     return render(request, "vita/login.html", {"login_form": form})
 
