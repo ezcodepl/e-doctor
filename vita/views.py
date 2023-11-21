@@ -780,7 +780,7 @@ def panel(request, date):
         #time__gte=sh[0], time__lte=eh[0],
         check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
         'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
-        print(check_visit_f)
+
 
         while start_time_f <= end_time_f:
             hf.append(start_time_f.strftime("%H:%M"))

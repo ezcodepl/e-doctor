@@ -320,15 +320,17 @@
 <!--    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/app.js"></script>-->
                 <script>
                    document.getElementById('toggleBtn').addEventListener('click', function () {
-                      var sidebar = document.getElementById('sidebar-menu');
+                      var sidebar = document.getElementById('sidebar');
                       var content = document.getElementById('main');
 
-                      if (sidebar.style.left === '-250px') {
+                      if (sidebar.style.left === '-300px') {
                         sidebar.style.left = '0';
-                        content.style.marginLeft = '250px';
+                        content.style.marginLeft = '300px';
+                        sidebar.classList.add('active');
                       } else {
-                        sidebar.style.left = '-250px';
+                        sidebar.style.left = '-300px';
                         content.style.marginLeft = '0';
+                        sidebar.classList.remove('active');
                       }
                     });
                 </script>

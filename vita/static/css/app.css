@@ -10,5 +10,5 @@
 
 
 .table-md.dataTable-table tr td, .table-md.dataTable-table tr th, .table-sm.dataTable-table tr td, .table-sm.dataTable-table tr th, .table.table-md tr td, .table.table-md tr th, .table.table-sm tr td, .table.table-sm tr th {
-    padding: 0.2rem 0.2rem 0.2rem 0.5rem;
+    padding: 0.12rem 0.12rem 0.12rem 0.3rem;
 }
