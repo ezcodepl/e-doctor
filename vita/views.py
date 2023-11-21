@@ -706,8 +706,8 @@ def panel(request, date):
         start_time = datetime(1,1,1, start_hour)
         end_time = datetime(1, 1, 1, end_hour)
         h =[] #empty hour list
-
-        check_visit = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0], office=1).select_related(
+        # time__gte=sh[0], time__lte=eh[0],
+        check_visit = Visits.objects.filter(date=get_date,office=1).select_related(
         'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
 
 
@@ -777,10 +777,10 @@ def panel(request, date):
         start_time_f = datetime(1,1,1, start_hour_f)
         end_time_f = datetime(1, 1, 1, end_hour_f)
         hf =[] #empty hour list
-
-        check_visit_f = Visits.objects.filter(date=get_date, time__gte=sh[0], time__lte=eh[0], office=2).select_related(
-        'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
-
+        #time__gte=sh[0], time__lte=eh[0],
+        check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
+        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
+        print(check_visit_f)
 
         while start_time_f <= end_time_f:
             hf.append(start_time_f.strftime("%H:%M"))
@@ -1434,32 +1434,12 @@ def pause_visit(request):
             form.patient_id = request.user.id
         form.save()
     else:
+        print(vform.errors)
         print('')
 
     return redirect(f'/panel/{request.POST["date"]}')
 
-def pause_visit(request):
-    full_path = request.get_full_path()
-    current_path = full_path[full_path.index('/', 1):]
 
-    get_date = current_path.replace('/', '')
-    vform = VisitForm(request.POST)
-    if request.method == 'POST':
-
-        form = vform.save(commit=False)
-        form.date = request.POST['date']
-        form.time = request.POST['time']
-        form.status = '0'
-        form.visit = '0'
-        form.office = request.POST['office']
-        form.prupose_visit_id = '5'
-        if request.user.username == 'lekarz':
-            form.patient_id = request.user.id
-        form.save()
-    else:
-        print('')
-
-    return redirect(f'/panel/{request.POST["date"]}')
 
 
 

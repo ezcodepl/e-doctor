@@ -9,14 +9,10 @@
                 </div>
                 <div class="card-content">
 
-
                 </div>
             </div>
-
-            <div id="calendar-container"></div>
-
         </div>
-
+        <div id="calendar-container" ></div>
 
           <section class="section">
 
@@ -64,7 +60,7 @@
                                                    {% elif visit.status == '3' %}
                                                          NIE ODBYŁA SIĘ
                                                    {% elif visit.status == '5' %}
-                                                    <select name="status">
+                                                    <select name="status" style="font-size:12px;">
                                                          <option value="1">UMÓWIONA</option>
                                                          <option value="2">ODBYŁA SIĘ</option>
                                                          <option value="3">NIE ODBYŁA SIĘ</option>
@@ -73,7 +69,7 @@
                                                          <option value="6">ODWOŁANA WWW</option>
                                                      </select>
                                                    {% else %}
-                                                     <select name="status">
+                                                     <select name="status" style="font-size:12px;">
                                                          <option value="1" selected>UMÓWIONA</option>
                                                          <option value="2">ODBYŁA SIĘ</option>
                                                          <option value="3">NIE ODBYŁA SIĘ</option>
@@ -132,6 +128,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="col-12 col-md-6">
                 <div class="card">
 
@@ -156,6 +153,7 @@
                           <tbody>
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday_f }}</td></tr>
                                 {% for hour_f, visit_f in visits_f.items %}
+
                                     {% if visit_f %}
                                        <tr>
                                          <td>{{ hour_f }}</td>
@@ -173,7 +171,7 @@
                                                    {% elif visit_f.status == '3' %}
                                                          NIE ODBYŁA SIĘ
                                                    {% elif visit_f.status == '5' %}
-                                                    <select name="status">
+                                                    <select name="status" style="font-size:12px;">
                                                          <option value="1">UMÓWIONA</option>
                                                          <option value="2">ODBYŁA SIĘ</option>
                                                          <option value="3">NIE ODBYŁA SIĘ</option>
@@ -182,7 +180,7 @@
                                                          <option value="6">ODWOŁANA WWW</option>
                                                      </select>
                                                    {% else %}
-                                                     <select name="status">
+                                                     <select name="status" style="font-size:12px;">
                                                          <option value="1" selected>UMÓWIONA</option>
                                                          <option value="2">ODBYŁA SIĘ</option>
                                                          <option value="3">NIE ODBYŁA SIĘ</option>
@@ -254,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
     calendarContainer.innerHTML = '';
 
     var calendarTable = document.createElement('table');
-    calendarTable.classList.add('table', 'table-sm', 'table-bordered');
+   calendarTable.classList.add('text-sm');
     calendarTable.style.width = '25%';
 
     var monthRow = calendarTable.createTHead().insertRow();
@@ -358,7 +356,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function createButton(text, clickHandler) {
     var button = document.createElement('button');
     button.textContent = text;
-    button.classList.add('btn', 'btn-primary', 'mr-2');
+    button.classList.add('btn', 'btn-sm','mr-1');
+    button.style.background='#58CAEB'
+    button.style.color='#fff'
     button.addEventListener('click', clickHandler);
     return button;
   }

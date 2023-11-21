@@ -65,6 +65,7 @@
           padding: 2px 2px;
           font-size: 10px;
         }
+
     </style>
 </head>
 
@@ -92,7 +93,8 @@
 <!--                        </div>-->
                     </div>
                 </div>
-                <div class="sidebar-menu">
+
+                <div class="sidebar-menu" id="sidebarmenu">
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
 
@@ -171,7 +173,7 @@
             <header class='mb-3'>
                 <nav class="navbar navbar-expand navbar-light navbar-top">
                     <div class="container-fluid">
-                        <a href="#" class="burger-btn d-block">
+                        <a href="#" class="burger-btn d-block" id="toggleBtn">
                             <i class="bi bi-justify fs-3"></i>
                         </a>
 
@@ -314,7 +316,22 @@
         </div>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
 <!--    <script src="https://zuramai.github.io/mazer/demo/assets/compiled/js/app.js"></script>-->
+                <script>
+                   document.getElementById('toggleBtn').addEventListener('click', function () {
+                      var sidebar = document.getElementById('sidebar-menu');
+                      var content = document.getElementById('main');
+
+                      if (sidebar.style.left === '-250px') {
+                        sidebar.style.left = '0';
+                        content.style.marginLeft = '250px';
+                      } else {
+                        sidebar.style.left = '-250px';
+                        content.style.marginLeft = '0';
+                      }
+                    });
+                </script>
 </body>
 
 </html>
