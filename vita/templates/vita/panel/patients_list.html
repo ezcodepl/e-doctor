@@ -40,6 +40,7 @@
                         <thead class="text-light" style="background: #26396F;">
                             <tr>
                                 <th>Lp.</th>
+                                <th>ID</th>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
                                 <th>Adres</th>
@@ -56,6 +57,7 @@
 
                             <tr>
                                 <td>{{forloop.counter0|add:page_obj.start_index}}</td>
+                                <td>{{patient.id}}</td>
                                 <td>{{patient.user.first_name}}</td>
                                 <td>{{patient.user.last_name}}</td>
                                 <td>{{patient.street}}</td>

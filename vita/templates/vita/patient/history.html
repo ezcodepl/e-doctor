@@ -1,8 +1,103 @@
 {% extends 'base1.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="container py-5">
-        {% include 'vita/messages.html' %}
-            <h2 style="color:#32AFC7">Historia wizyt</h2>
+<div class="container py-5">
+    {% include 'vita/messages.html' %}
+    <h2 style="color:#32AFC7">Historia wizyt</h2>
+    <div class="row" id="basic-table">
+        <div class="col-12 col-md-6" style="padding:10px;">
+            <div>
+                <div class="text-center mb-4">
+                    <h5 class="card-title text-success">Wizyty, które się odbyły</h5>
+                </div>
+                <div>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Lp.</th>
+                                <th>Data</th>
+                                <th>Godz.</th>
+                                <th>Status</th>
+                                <th>Cel wizyty</th>
+                                <th>Gabinet</th>
+                                <th>Nr</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-success">
+                            {% for w in visits_akt %}
+                            {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ w.date|date:"Y-m-d" }}</td>
+                                <td>{{ w.time }}</td>
+                                <td class="col">
+                                    {% if w.status == '1' %}
+                                    umówiona
+                                    {% elif w.status == '2' %}
+                                    odbyła się
+                                    {% else %}
+                                    www
+                                    {% endif %}
+                                </td>
+                                <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+
+                                <td> {% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
+                                <td>{{ w.visit }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6" style="padding:10px;">
+            <div>
+                <div class="text-center mb-4">
+                    <h5 class="card-title text-danger">Wizyty odwołane i te, które się nie odbyły</h5>
+                </div>
+                <div>
+                    <!-- Table with no outer spacing -->
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Lp.</th>
+                                <th>Data</th>
+                                <th>Godz.</th>
+                                <th>Status</th>
+                                <th>Cel wizyty</th>
+                                <th>Gabinet</th>
+                                <th>Nr</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-danger">
+                            {% for w in visits_can %}
+                            <tr>
+
+                                <td><input type="checkbox"/></td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ w.date|date:"Y-m-d" }}</td>
+                                <td>{{ w.time }}</td>
+                                <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif
+                                    w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}
+                                </td>
+                                <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+
+                                <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
+                                <td>{{ w.visit }}</td>
+
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-{% endblock %}
+    {% endblock %}

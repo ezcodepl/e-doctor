@@ -9,7 +9,7 @@ from itertools import groupby, zip_longest
 from django import template
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -861,11 +861,62 @@ def new_visit(request):
 
 
 def appointments(request):
-    return render(request, "vita/patient/appointments.html")
+    if request.user.is_authenticated:
+        user_id = request.user.id
+
+        # get patient visites active and cancel
+        visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by('-id').values(
+            'patient', 'prupose_visit__purpose_name',
+            'prupose_visit_id', 'visit',
+            'status',
+            'office',
+            'time', 'date')
+    else:
+        return HttpResponseForbidden('Dostęp tylko dla zalogowanych użytkowników')
+    return render(request, "vita/patient/appointments.html", context={'visits_akt': visits_akt})
 
 
 def history(request):
-    return render(request, "vita/patient/history.html")
+    if request.user.is_authenticated:
+        user_id = request.user.id
+
+        # get patient visites active and cancel
+        visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by('-id').values(
+            'patient', 'prupose_visit__purpose_name',
+            'prupose_visit_id', 'visit',
+            'status',
+            'office',
+            'time', 'date')
+        #print(visits_akt.query)
+        visits_can = Visits.objects.select_related('pruposevisit').filter(
+            Q(patient=user_id) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
+                                                                                           'prupose_visit__purpose_name',
+                                                                                           'prupose_visit_id',
+                                                                                           'visit',
+                                                                                           'status',
+                                                                                           'office',
+                                                                                           'time',
+                                                                                           'date')
+
+        # get patient visites fiz active and cancel
+        visits_akt_f = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by(
+            '-id').values('patient',
+                          'prupose_visit__purpose_name',
+                          'prupose_visit_id',
+                          'visit',
+                          'status',
+                          'office',
+                          'time', 'date')
+        visits_can_f = Visits.objects.select_related('pruposevisit').filter(
+            Q(patient=user_id) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
+                                                                                           'prupose_visit__purpose_name',
+                                                                                           'prupose_visit_id', 'visit',
+                                                                                           'status', 'office', 'time',
+                                                                                           'date')
+    else:
+        return HttpResponseForbidden('Treść widowczna tylo dla zalogowanych użytkowników')
+
+    return render(request, "vita/patient/history.html", context={'visits_akt': visits_akt})
 
 
 def news(request):

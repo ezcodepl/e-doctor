@@ -4,5 +4,56 @@
     <div class="container py-5">
         {% include 'vita/messages.html' %}
             <h2 style="color:#32AFC7">Umówione wizyty</h2>
+         <div class="row" id="basic-table">
+        <div class="col-12 col-md-6" style="padding:10px;">
+            <div>
+                <div class="mt-5">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Lp.</th>
+                                <th>Data</th>
+                                <th>Godz.</th>
+                                <th>Status</th>
+                                <th>Cel wizyty</th>
+                                <th>Gabinet</th>
+                                <th>Nr</th>
+                                <th>Akcja</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for w in visits_akt %}
+                            {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                            <tr>
+                                <td><input type="checkbox" name="check" /></td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ w.date|date:"Y-m-d" }}</td>
+                                <td>{{ w.time }}</td>
+                                <td class="col">
+                                    {% if w.status == '1' %}
+                                    umówiona
+                                    {% elif w.status == '2' %}
+                                    odbyła się
+                                    {% else %}
+                                    www
+                                    {% endif %}
+                                </td>
+                                <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
+
+                                <td> {% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
+                                <td>{{ w.visit }}</td>
+                                <td><input type="submit" class="btn btn-sm btn-danger" value="odwołaj" /></td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
