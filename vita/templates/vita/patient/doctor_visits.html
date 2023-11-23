@@ -1,0 +1,39 @@
+{% extends 'base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container py-5">
+    {% include 'vita/messages.html' %}
+    <h2 style="color:#32AFC7">Umówione wizyty</h2>
+    <div class="row" id="basic-table">
+        <table>
+    <thead>
+        <tr>
+            <th>Godzina</th>
+            <th>Pacjent</th>
+            <th>Wizyta</th>
+            <th>Status</th>
+            <th>Akcja</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for hour, visit in visits_dict.items %}
+            <tr>
+                <td>{{ hour }}</td>
+                {% if visit %}
+                    <td>{{ visit.patient__user__first_name }} {{ visit.patient__user__last_name }}</td>
+                    <td>{{ visit.prupose_visit__purpose_name }}</td>
+                    <td>{{ visit.status }}</td>
+                    <td>Akcja przypisana do przycisku Nowa Wizyta</td>
+                {% else %}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><a href="#">Nowa Wizyta</a></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+     </div>
+</div>
+{% endblock %}
