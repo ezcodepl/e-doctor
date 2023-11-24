@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
-    patients_files, delete_patient_files, update_patient, create_visit, pause_visit
+    patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits
 
 
 class DateConverter:
@@ -41,7 +41,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('vita.urls')),
     path('tinymce/', include('tinymce.urls')),
-    path('panel/<date:date>/', panel , name="panel"),
+    path('panel/<date:date>/', panel, name="panel"),
     path('panel/delete_news/<int:pk>', delete_news, name="delete_news"),
     path('panel/edit_news/<int:pk>', edit_news, name="edit_news"),
     path('panel/update_news/<int:pk>', update_news, name="update_news"),
@@ -51,6 +51,7 @@ urlpatterns = [
     path('panel/patients/<int:pk>', patients_files, name="patients_files"),
     path('panel/patients/<int:pk>/delete', delete_patient_files, name="delete_patient_files"),
     path('panel/patients/<int:pk>/updates', update_patient, name="update_patient"),
+
 
 
    # path('create_visit/date=<str:get_date>&time=<int:hour>', create_visit, name='create_visit'),

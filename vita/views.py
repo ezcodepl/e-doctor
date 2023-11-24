@@ -2,6 +2,9 @@ import calendar
 import locale
 import random
 import os
+
+from babel.dates import parse_date
+from dateutil.parser import parser
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -22,7 +25,7 @@ from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRe
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, \
     Visits_f
 from django.contrib.auth.models import User
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 import time
 from django.contrib.auth.decorators import login_required
 from calendar import HTMLCalendar
@@ -91,9 +94,17 @@ def docschedule(request):
         btn_y = today.year
 
     #check_schedule = DoctorSchedule.objects.all().values('date')
+    dsdm = request.GET.get('month')
+    dsdy = request.GET.get('year')
+    dsdd = '10'
+    dsd = f'{dsdy}-{dsdm}-{dsdd}'
 
-    check_schedule = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
+    check_schedule = DoctorSchedule.objects.filter(date=dsd).exists() #today.strftime('%Y-%m-%d')
+
     if check_schedule:
+        messages.warning(request, "Na ten miesiąc już utworzono kalendarz")
+        x = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d'))
+        print(x.query)
         form = DoctorsScheduleForm(request.POST)
 
         if request.method == 'POST':
@@ -126,7 +137,9 @@ def docschedule(request):
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
+
         form = DoctorsScheduleForm(request.POST)
+        print(form.errors)
         if request.method == "POST":
 
             if form.is_valid():
@@ -857,7 +870,13 @@ def test(request):
 
 
 def new_visit(request):
-    return render(request, "vita/patient/new_visit.html")
+    today = date.today()
+    full_path = request.get_full_path()
+    current_path = full_path[full_path.index('/', 1):]
+    today.isoformat()
+
+
+    return render(request, "vita/patient/new_visit.html", context={'today':today})
 
 
 def appointments(request):
@@ -1539,76 +1558,21 @@ def get_week_dates(base_date):
     return start_of_week, end_of_week
 
 
-def doctor_visits(request):
-    today = date.today()
-    full_path = request.get_full_path()
-    current_path = full_path[full_path.index('/', 1):]
-    get_date = '2023-11-22'#current_path.replace('/', '')
+def doctor_visits(request, date=None):
+    today = datetime.now().date()
 
-
-    try:
-        base_date = today if not get_date else date(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:]))
-    except ValueError:
-        base_date = today
-
-    start_of_week = base_date - timedelta(days=base_date.weekday())
-    end_of_week = start_of_week + timedelta(days=6)
-
-    doctor_schedule = DoctorSchedule.objects.filter(date__range=[start_of_week, end_of_week]).first()
-
-    if doctor_schedule and doctor_schedule.day_type == 'Pracujący':
-        work_hours = doctor_schedule.work_hours.split('-')
-        start_hour = int(work_hours[0].split(':')[0])
-        end_hour = int(work_hours[1].split(':')[0])
-        scheme = 30
-
-        start_time = datetime(1, 1, 1, start_hour)
-        end_time = datetime(1, 1, 1, end_hour)
-
-        hours = []
-        check_visit = Visits.objects.filter(date=get_date, office=1).select_related(
-            'patient__user__pruposevisit__statusvisist'
-        ).values('patient__user__first_name', 'patient__user__last_name', 'date', 'time', 'patient_id',
-                 'patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id', 'visit', 'status')
-
-        while start_time <= end_time:
-            hours.append(start_time.strftime("%H:%M"))
-            start_time = start_time + timedelta(minutes=scheme)
-
-        visits_dict = {}
-        for hour in hours:
-            for visit in check_visit:
-                if visit['time'] == hour:
-                    visits_dict[hour] = visit
-                    break
-            else:
-                visits_dict[hour] = None
-
-        if len(check_visit) > 0:
-            get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
-        else:
-            get_patient = ''
-
-        freeday = ''
+    if date is None:
+        date = today.isoformat()
     else:
-        if doctor_schedule.count() == 0:
-            freeday = ''
-            messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza')
-        else:
-            if doctor_schedule.day_type == 'Wolny':
-                freeday = 'Dzień wolny od pracy'
-            else:
-                freeday = ''
+        try:
+            date = parser.parse(date).isoformat()
+        except ValueError:
+            date = today.isoformat()
 
-        hours = ''
-        visits_dict = ''
-        get_patient = ''
+    current_date = datetime.strptime(date, "%Y-%m-%d").date()
 
-    date_check = datetime.today()
-    td = date_check.strftime('%Y-%m-%d')
+    schedules = DoctorSchedule.objects.filter(date__week=current_date.isocalendar()[1],
+                                              date__year=current_date.year).order_by('date')
 
-
-
-    return render(request, "vita/patient/doctor_visits.html",
-                  {'hours': hours, 'visits_dict': visits_dict, 'get_patient': get_patient, 'freeday': freeday,
-                   'base_date': base_date})
+    context = {'schedules': schedules, 'current_date': current_date}
+    return render(request, 'vita/patient/doctor_visits.html', context)
