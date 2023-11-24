@@ -3,8 +3,7 @@ import locale
 import random
 import os
 
-from babel.dates import parse_date
-from dateutil.parser import parser
+
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -1552,27 +1551,91 @@ def day_view(request, year, month, day):
     return render(request, 'day.html', {'date': date})
 
 
-def get_week_dates(base_date):
-    start_of_week = base_date - timedelta(days=base_date.weekday())
-    end_of_week = start_of_week + timedelta(days=6)
-    return start_of_week, end_of_week
+# def get_week_dates(base_date):
+#     start_of_week = base_date - timedelta(days=base_date.weekday())
+#     end_of_week = start_of_week + timedelta(days=6)
+#     return start_of_week, end_of_week
 
 
-def doctor_visits(request, date=None):
-    today = datetime.now().date()
+def doctor_visits(request, offset=0):
+    # today = datetime.today()
+    # week_start = today - timedelta(days=today.weekday())
+    # days_of_week = [week_start + timedelta(days=i) for i in range(7)]
+    #
+    # schedule_table = []
+    # time_slots = []
+    #
+    # start_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=8)
+    # end_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=21)
+    #
+    # while start_time <= end_time:
+    #     time_str = start_time.strftime("%H:%M")
+    #     time_slots.append({
+    #         'time': time_str,
+    #         'header': start_time.strftime("%H:%M")
+    #     })
+    #     start_time += timedelta(minutes=30)
+    #
+    # for day in days_of_week:
+    #     day_schedule = {
+    #         'date': day,
+    #         'schedule': []
+    #     }
+    #
+    #     for time_slot in time_slots:
+    #         has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+    #         day_schedule['schedule'].append({
+    #             'time': time_slot['time'],
+    #             'header': time_slot['header'],
+    #             'has_visit': has_visit
+    #         })
+    #
+    #     schedule_table.append(day_schedule)
+    #
+    # context = {
+    #     'schedule_table': schedule_table,
+    #     'time_slots': time_slots,
+    #     'visits': Visits.objects.all()
+    # }
+    today = datetime.today()
+    week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
+    days_of_week = [week_start + timedelta(days=i) for i in range(7)]
 
-    if date is None:
-        date = today.isoformat()
-    else:
-        try:
-            date = parser.parse(date).isoformat()
-        except ValueError:
-            date = today.isoformat()
+    schedule_table = []
+    time_slots = []
 
-    current_date = datetime.strptime(date, "%Y-%m-%d").date()
+    start_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=8)
+    end_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=21)
 
-    schedules = DoctorSchedule.objects.filter(date__week=current_date.isocalendar()[1],
-                                              date__year=current_date.year).order_by('date')
+    while start_time <= end_time:
+        time_str = start_time.strftime("%H:%M")
+        time_slots.append({
+            'time': time_str,
+            'header': start_time.strftime("%H:%M")
+        })
+        start_time += timedelta(minutes=30)
 
-    context = {'schedules': schedules, 'current_date': current_date}
+    for day in days_of_week:
+        day_schedule = {
+            'date': day,
+            'schedule': []
+        }
+
+        for time_slot in time_slots:
+            has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+            day_schedule['schedule'].append({
+                'time': time_slot['time'],
+                'header': time_slot['header'],
+                'has_visit': has_visit
+            })
+
+        schedule_table.append(day_schedule)
+
+    context = {
+        'schedule_table': schedule_table,
+        'time_slots': time_slots,
+        'visits': Visits.objects.all(),
+        'current_week_offset': offset
+    }
+
     return render(request, 'vita/patient/doctor_visits.html', context)

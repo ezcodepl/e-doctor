@@ -1,45 +1,74 @@
 {% extends 'base1.html' %}
+{% load custom_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
+
 <div class="container py-5">
     {% include 'vita/messages.html' %}
-    <h2 style="color:#32AFC7">Umówione wizyty</h2>
+    <h5 style="color:#32AFC7">wybierz wizytę lub wizyty</h5>
     <div class="row" id="basic-table">
-        <p>Data: {{ current_date }}</p>
+<div class="row mb-2" style="margin:0 auto;text-align:center;">
+    <div class="col">
+    {% if current_week_offset > 0 %}
+    {# Jeśli offset jest większy niż zero, to normalnie odejmujemy 1 #}
+    <a href="{% url 'doctor_visits' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
+{% else %}
+    {# Jeśli offset jest mniejszy lub równy zero, ustawiamy offset na 0 #}
+    <a href="{% url 'doctor_visits' offset=0 %}" class="btn btn-primary text-light disabled" >Poprzedni tydzień</a>
+{% endif %}
+    </div>
+    <div class="col">
+        <button class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
+    </div>
+    <div class="col">
+        <a href="{% url 'doctor_visits' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
+    </div>
+</div>
+</div>
+        <table class="table table-sm">
+            <tr>
+                {% for day_schedule in schedule_table %}
+                <th style="text-align:center;" class="bg-info">{{ day_schedule.date|date:'l' }} <br>
+                    {{ day_schedule.date|date:'Y-m-d' }}
+                </th>
+                {% endfor %}
+            </tr>
+            {% for time_slot in time_slots %}
+            <tr {% if forloop.counter0|divisibleby:2 %}class="bg-light" {% endif %}>
 
-{% for schedule in schedules %}
-  <h3>{{ schedule.date }}</h3>
-  <ul>
-    {% for hour, status in schedule.availability.items %}
-      <li>
-        {{ hour }} -
-        {% if status == 'available' %}
-          <form method="post" action="{% url 'add_visit' %}">
-            {% csrf_token %}
-            <input type="hidden" name="date" value="{{ schedule.date }}">
-            <input type="hidden" name="time" value="{{ hour }}">
-            <button type="submit">Nowa wizyta</button>
-          </form>
-        {% else %}
-          {% with appointments=schedule.visits_set.all %}
-            {% with appointment_found=appointments|dictlookup:hour %}
-              {% if appointment_found %}
-                {{ appointment_found.status }}
-                <form method="post" action="{% url 'delete_visit' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="visit_id" value="{{ appointment_found.id }}">
-                  <button type="submit">Usuń wizytę</button>
-                </form>
-              {% else %}
-                Brak wizyt
-              {% endif %}
-            {% endwith %}
-          {% endwith %}
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-{% endfor %}
+                {% for day_schedule in schedule_table %}
+                {% with visit=day_schedule.schedule|get_by_time:time_slot.time %}
+                <td class="text-sm">
+                    <input type="checkbox" name="select_visit"/>
+                    {{ time_slot.time }}
+                    {% if visit and visit.has_visit %}
+                    <span class="bg-success text-light text-sm p-1 m-1">umówiona</span>
+                    {% else %}
+                    <select name="pruposal" style="font-size:14px;">
+                        <option value="1">masaż</option>
+                        <option value="3">masaż karnet</option>
+                        <option value="2">badanie</option>
+                        <option value="4">akupunktura</option>
+                    </select>
+                    {% endif %}
+                </td>
+                {% endwith %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="row" style="margin:0 auto;text-align:center;">
+            <div class="col">
+                <button class="btn btn-info text-light">Poprzedni tydzień</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-info text-light">Następny tydzień</button>
+            </div>
+        </div>
 
     </div>
 </div>
