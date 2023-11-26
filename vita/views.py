@@ -9,6 +9,9 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from itertools import groupby, zip_longest
 from django import template
+from django.urls import resolve, reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
@@ -20,7 +23,7 @@ from django.views.decorators.http import require_GET
 
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
-    VisitForm, VisitForm_f
+    VisitForm, VisitForm_f, DoctorVisitsForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, \
     Visits_f
 from django.contrib.auth.models import User
@@ -1550,17 +1553,12 @@ def day_view(request, year, month, day):
     # render the day template with the date
     return render(request, 'day.html', {'date': date})
 
+def doctor_visits(request, offset=0, num_days=14):
 
-# def get_week_dates(base_date):
-#     start_of_week = base_date - timedelta(days=base_date.weekday())
-#     end_of_week = start_of_week + timedelta(days=6)
-#     return start_of_week, end_of_week
-
-
-def doctor_visits(request, offset=0):
     # today = datetime.today()
-    # week_start = today - timedelta(days=today.weekday())
-    # days_of_week = [week_start + timedelta(days=i) for i in range(7)]
+    # # Przesuń o dwa tygodnie zamiast o wartość parametru offset
+    # week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
+    # days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
     #
     # schedule_table = []
     # time_slots = []
@@ -1576,30 +1574,38 @@ def doctor_visits(request, offset=0):
     #     })
     #     start_time += timedelta(minutes=30)
     #
-    # for day in days_of_week:
-    #     day_schedule = {
-    #         'date': day,
-    #         'schedule': []
-    #     }
+    # for i in range(0, num_days, 7):
+    #     week_schedule = []
+    #     for j in range(7):
+    #         day = days_of_week[i + j]
+    #         day_schedule = {
+    #             'date': day,
+    #             'schedule': []
+    #         }
     #
-    #     for time_slot in time_slots:
-    #         has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
-    #         day_schedule['schedule'].append({
-    #             'time': time_slot['time'],
-    #             'header': time_slot['header'],
-    #             'has_visit': has_visit
-    #         })
+    #         for time_slot in time_slots:
+    #             has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+    #             day_schedule['schedule'].append({
+    #                 'time': time_slot['time'],
+    #                 'header': time_slot['header'],
+    #                 'has_visit': has_visit
+    #             })
     #
-    #     schedule_table.append(day_schedule)
+    #         week_schedule.append(day_schedule)
+    #
+    #     schedule_table.append(week_schedule)
     #
     # context = {
     #     'schedule_table': schedule_table,
     #     'time_slots': time_slots,
-    #     'visits': Visits.objects.all()
+    #     'visits': Visits.objects.all(),
+    #     'current_week_offset': offset
     # }
+    # return render(request, 'vita/patient/doctor_visits.html', context)
+
     today = datetime.today()
-    week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
-    days_of_week = [week_start + timedelta(days=i) for i in range(7)]
+    week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
+    days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
 
     schedule_table = []
     time_slots = []
@@ -1615,27 +1621,59 @@ def doctor_visits(request, offset=0):
         })
         start_time += timedelta(minutes=30)
 
-    for day in days_of_week:
-        day_schedule = {
-            'date': day,
-            'schedule': []
-        }
+    for i in range(0, num_days, 7):
+        week_schedule = []
+        for j in range(7):
+            day = days_of_week[i + j]
+            day_schedule = {
+                'date': day,
+                'schedule': []
+            }
 
-        for time_slot in time_slots:
-            has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
-            day_schedule['schedule'].append({
-                'time': time_slot['time'],
-                'header': time_slot['header'],
-                'has_visit': has_visit
-            })
+            for time_slot in time_slots:
+                has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+                day_schedule['schedule'].append({
+                    'time': time_slot['time'],
+                    'header': time_slot['header'],
+                    'has_visit': has_visit
+                })
 
-        schedule_table.append(day_schedule)
+            week_schedule.append(day_schedule)
+
+        schedule_table.append(week_schedule)
+
+    available_slots = [
+        (f"{day_schedule['date']} {time_slot['time']}", f"{day_schedule['date']} {time_slot['time']}")
+        for week_schedule in schedule_table
+        for day_schedule in week_schedule
+        for time_slot in day_schedule['schedule']
+        if not time_slot['has_visit']
+    ]
+
+    if request.method == 'POST':
+        form = DoctorVisitsForm(request.POST, available_slots=available_slots)
+        print(request.POST)
+        if form.is_valid():
+            selected_slots = form.cleaned_data['sel_visit']
+            print(f"Selected Slots: {selected_slots}")
+            for selected_slot in selected_slots:
+                date, time = selected_slot.split()
+                print(f"Adding Visit - Date: {date}, Time: {time}")
+                visit = Visits(date=date, time=time, patient=request.user.patient_profile, prupose_visit_id=prupose)
+                visit.save()
+        else:
+            print(f"Form Errors: {form.errors}")
+    else:
+        form = DoctorVisitsForm(available_slots=available_slots)
 
     context = {
         'schedule_table': schedule_table,
         'time_slots': time_slots,
         'visits': Visits.objects.all(),
-        'current_week_offset': offset
+        'current_week_offset': offset,
+        'form': form,
+        'today': today
     }
+
 
     return render(request, 'vita/patient/doctor_visits.html', context)

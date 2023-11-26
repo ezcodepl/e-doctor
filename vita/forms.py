@@ -159,3 +159,13 @@ class PersonForm(forms.Form):
         widget=forms.Select(attrs={"autocomplete": "on"}),
         limit_choices_to=Q(first_name__startswith="A"),
     )
+
+class DoctorVisitsForm(forms.Form):
+    sel_visit = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        available_slots = kwargs.pop('available_slots', [])
+
+        super(DoctorVisitsForm, self).__init__(*args, **kwargs)
+
+        self.fields['sel_visit'].choices = available_slots

@@ -7,69 +7,90 @@
     {% include 'vita/messages.html' %}
     <h5 style="color:#32AFC7">wybierz wizytę lub wizyty</h5>
     <div class="row" id="basic-table">
-<div class="row mb-2" style="margin:0 auto;text-align:center;">
-    <div class="col">
-    {% if current_week_offset > 0 %}
-    {# Jeśli offset jest większy niż zero, to normalnie odejmujemy 1 #}
-    <a href="{% url 'doctor_visits' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
-{% else %}
-    {# Jeśli offset jest mniejszy lub równy zero, ustawiamy offset na 0 #}
-    <a href="{% url 'doctor_visits' offset=0 %}" class="btn btn-primary text-light disabled" >Poprzedni tydzień</a>
-{% endif %}
-    </div>
-    <div class="col">
-        <button class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
-    </div>
-    <div class="col">
-        <a href="{% url 'doctor_visits' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
-    </div>
-</div>
-</div>
-        <table class="table table-sm">
-            <tr>
-                {% for day_schedule in schedule_table %}
-                <th style="text-align:center;" class="bg-info">{{ day_schedule.date|date:'l' }} <br>
-                    {{ day_schedule.date|date:'Y-m-d' }}
-                </th>
-                {% endfor %}
-            </tr>
-            {% for time_slot in time_slots %}
-            <tr {% if forloop.counter0|divisibleby:2 %}class="bg-light" {% endif %}>
 
-                {% for day_schedule in schedule_table %}
-                {% with visit=day_schedule.schedule|get_by_time:time_slot.time %}
-                <td class="text-sm">
-                    <input type="checkbox" name="select_visit"/>
-                    {{ time_slot.time }}
-                    {% if visit and visit.has_visit %}
-                    <span class="bg-success text-light text-sm p-1 m-1">umówiona</span>
-                    {% else %}
-                    <select name="pruposal" style="font-size:14px;">
-                        <option value="1">masaż</option>
-                        <option value="3">masaż karnet</option>
-                        <option value="2">badanie</option>
-                        <option value="4">akupunktura</option>
-                    </select>
-                    {% endif %}
-                </td>
-                {% endwith %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
-
-        <div class="row" style="margin:0 auto;text-align:center;">
+        <div class="row mb-2" style="margin:0 auto;text-align:center;">
             <div class="col">
-                <button class="btn btn-info text-light">Poprzedni tydzień</button>
+                {% if current_week_offset > 0 %}
+                {# Jeśli offset jest większy niż zero, to normalnie odejmujemy 1 #}
+                <a href="{% url 'doctor_visits' offset=current_week_offset|add:'-1' %}"
+                   class="btn btn-primary text-light">Poprzedni tydzień</a>
+                {% else %}
+                {# Jeśli offset jest mniejszy lub równy zero, ustawiamy offset na 0 #}
+                <a href="{% url 'doctor_visits' offset=0 %}" class="btn btn-primary text-light disabled">Poprzedni
+                    tydzień</a>
+                {% endif %}
             </div>
             <div class="col">
                 <button class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
             </div>
             <div class="col">
-                <button class="btn btn-info text-light">Następny tydzień</button>
+                <a href="{% url 'doctor_visits' offset=current_week_offset|add:'1' %}"
+                   class="btn btn-primary text-light">Następny tydzień</a>
             </div>
         </div>
-
     </div>
+    <form method="post" action="{% url 'doctor_visits' %}">
+        {% csrf_token %}
+
+        <table class="table table-sm">
+            <tbody>
+            {% for week_schedule in schedule_table %}
+            <tr>
+                {% for day_schedule in week_schedule %}
+                    {% if day_schedule.date|date:'Y-m-d' < today.date|date:'Y-m-d' %}
+                    <td>
+                        <div class="mb-2 align-middle">
+                            <div class="bg-info text-light p-2 text-center">
+                                        {{ day_schedule.date|date:'l' }} <br>{{ day_schedule.date|date:'Y-m-d' }}<br>
+                                    </div>
+                             <div class="align-middle mt-2 text-center">
+
+                                                <span class="">brak wolnych<br> terminów</span>
+                                            </div>
+                        </div>
+                    </td>
+
+                    {% else %}
+                            <td>
+                                <div class="mb-2 align-middle">
+                                    <div class="bg-info text-light p-2 text-center">
+                                        {{ day_schedule.date|date:'l' }} <br>{{ day_schedule.date|date:'Y-m-d' }}<br>
+                                    </div>
+                                    {% for time_slot in day_schedule.schedule %}
+                                        {% if time_slot.has_visit == True %}
+
+                                            <div class="align-middle mt-2 text-center">
+                                                <input type="checkbox" disabled/> {{ time_slot.time }}
+                                                <span class="badge bg-success">umówiona</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="align-middle mt-2 text-center">
+                                                <input type="checkbox"
+                                                       name="sel_visit_{{ day_schedule.date|date:'Y-m-d' }}_{{ time_slot.time }}"
+                                                       value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }}"/>
+                                                {{ time_slot.time }}
+                                                <select name="prupose" style="font-size: 12px;">
+                                                    <option value="1">masaż</option>
+                                                    <option value="2">masaż karnet</option>
+                                                    <option value="3">badanie</option>
+                                                    <option value="4">akupunktura</option>
+                                                </select>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                    {% endif %}
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
+    </form>
+
+
+</div>
 </div>
 {% endblock %}
