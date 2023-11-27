@@ -163,9 +163,6 @@ class PersonForm(forms.Form):
 class DoctorVisitsForm(forms.Form):
     sel_visit = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
-    def __init__(self, *args, **kwargs):
-        available_slots = kwargs.pop('available_slots', [])
-
-        super(DoctorVisitsForm, self).__init__(*args, **kwargs)
-
-        self.fields['sel_visit'].choices = available_slots
+    class Meta:
+        model = Visits
+        fields = ['date', 'time']

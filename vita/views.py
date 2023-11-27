@@ -1649,22 +1649,31 @@ def doctor_visits(request, offset=0, num_days=14):
         for time_slot in day_schedule['schedule']
         if not time_slot['has_visit']
     ]
-
     if request.method == 'POST':
-        form = DoctorVisitsForm(request.POST, available_slots=available_slots)
-        print(request.POST)
+        form = DoctorVisitsForm(request.POST)
+
         if form.is_valid():
-            selected_slots = form.cleaned_data['sel_visit']
-            print(f"Selected Slots: {selected_slots}")
-            for selected_slot in selected_slots:
-                date, time = selected_slot.split()
-                print(f"Adding Visit - Date: {date}, Time: {time}")
-                visit = Visits(date=date, time=time, patient=request.user.patient_profile, prupose_visit_id=prupose)
+
+            selected_slots = form.cleaned_data.get('sel_visit', [])
+
+            print("Selected Slots:", selected_slots)
+
+            for slot in selected_slots:
+                date_str, time_str = slot.split(' ')
+                date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                time = datetime.strptime(time_str, '%H:%M').time()
+                purpose = form.cleaned_data.get('prupose')
+
+                visit = Visits(date=date, time=time, purpose=purpose)
+
                 visit.save()
+
+
+
         else:
-            print(f"Form Errors: {form.errors}")
+            print(f"Błędy formularza: {form.errors}")
     else:
-        form = DoctorVisitsForm(available_slots=available_slots)
+        form = DoctorVisitsForm()
 
     context = {
         'schedule_table': schedule_table,
@@ -1674,6 +1683,5 @@ def doctor_visits(request, offset=0, num_days=14):
         'form': form,
         'today': today
     }
-
 
     return render(request, 'vita/patient/doctor_visits.html', context)

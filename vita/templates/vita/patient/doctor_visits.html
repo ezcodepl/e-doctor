@@ -60,21 +60,22 @@
                                         {% if time_slot.has_visit == True %}
 
                                             <div class="align-middle mt-2 text-center">
-                                                <input type="checkbox" disabled/> {{ time_slot.time }}
+                                                <input type="checkbox" name="sel_visit" value="0" disabled/> {{ time_slot.time }}
                                                 <span class="badge bg-success">umówiona</span>
                                             </div>
                                         {% else %}
                                             <div class="align-middle mt-2 text-center">
                                                 <input type="checkbox"
-                                                       name="sel_visit_{{ day_schedule.date|date:'Y-m-d' }}_{{ time_slot.time }}"
+                                                       name="sel_visit"
                                                        value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }}"/>
                                                 {{ time_slot.time }}
                                                 <select name="prupose" style="font-size: 12px;">
-                                                    <option value="1">masaż</option>
-                                                    <option value="2">masaż karnet</option>
-                                                    <option value="3">badanie</option>
-                                                    <option value="4">akupunktura</option>
+                                                    <option value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }} 1">masaż</option>
+                                                    <option value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }} 2">masaż karnet</option>
+                                                    <option value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }} 3">badanie</option>
+                                                    <option value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }} 4">akupunktura</option>
                                                 </select>
+
                                             </div>
                                         {% endif %}
                                     {% endfor %}
@@ -87,7 +88,7 @@
             {% endfor %}
             </tbody>
         </table>
-        <button type="submit" class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
+        <input type="submit" class="btn btn-success text-light" value="Zarezerwuj wybrany termin" />
     </form>
 
 
