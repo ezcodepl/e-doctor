@@ -56,7 +56,7 @@
                                         <div class="align-middle mt-2 text-center">
                                             <input type="checkbox" name="sel_visit" value="{{ day_schedule.date|date:'Y-m-d' }} {{ time_slot.time }}" />
                                             {{ time_slot.time }}
-                                            <select style="font-size: 12px;">
+                                            <select name="purpose" style="font-size: 12px;">
                                                 <option value="1">masaż</option>
                                                 <option value="2">masaż karnet</option>
                                                 <option value="3">badanie</option>
@@ -73,6 +73,7 @@
             {% endfor %}
         </tbody>
     </table>
+
     <button type="submit" class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
 </form>
 

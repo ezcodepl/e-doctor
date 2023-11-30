@@ -1603,26 +1603,32 @@ def doctor_visits(request, offset=0, num_days=14):
     ]
     if request.method == 'POST':
         form = DoctorVisitsForm(request.POST)
-        print('post')
-        print(request.POST)
 
         if form.is_valid():
             for sel in request.POST.getlist('sel_visit'):
                 sel_visit = sel.split(' ')
 
                 # Sprawdzenie, czy wizyta już istnieje w bazie danych
-                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id='5').first()
+                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id).first()
+                existing_schedule = DoctorSchedule.objects.filter(date=sel_visit[0]).first()
+                print(connection.queries[-1]['sql'])
 
-                if existing_visit is None:
-                    # Wizyta nie istnieje, więc możemy ją dodać
-                    s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='1', visit='1', office='1',pay='0',
-                                    cancel='0', prupose_visit_id='1', patient_id=request.user.id)
-                    s_form.save()
-                    messages.success(request, (
-                        f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} "))
-                else:
+                if existing_schedule is None:
                     messages.warning(request, (
-                        f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana: "))
+                        f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz "))
+                else:
+
+                    if existing_visit is None:
+                        # Wizyta nie istnieje, więc możemy ją dodać
+
+                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='1',
+                                        pay='0', cancel='0', prupose_visit_id='2', patient_id=request.user.id)
+                        s_form.save()
+                        messages.success(request, (
+                            f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} "))
+                    else:
+                        messages.warning(request, (
+                            f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana "))
 
             return redirect('/patient/appointments')
         else:
