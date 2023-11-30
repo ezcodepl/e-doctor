@@ -39,12 +39,30 @@
                               {% if day_schedule.date|date:'Y-m-d' < today.date|date:'Y-m-d' %}
                                  <div class="bg-info text-light p-2 text-center">
                                    {{ day_schedule.date|date:'l' }} <br>{{ day_schedule.date|date:'Y-m-d' }}<br>
+                                     {% for d in day_type %}
+                                       {% if day_schedule.date|date:'Y-m-d' == d.date|date:'Y-m-d' %}
+                                           {{ d.day_type}}
+                                        {% else %}
+                                       {%endif%}
+                                     {% endfor %}
                                 </div>
                                 <div class="text-center p-2">brak wolnych<br> terminów</div>
                                {% else %}
                                 <div class="bg-info text-light p-2 text-center">
                                     {{ day_schedule.date|date:'l' }} <br>{{ day_schedule.date|date:'Y-m-d' }}<br>
+                                    {% for d in day_type %}
+                                       {% if day_schedule.date|date:'Y-m-d' == d.date|date:'Y-m-d' %}
+                                           {{ d.day_type}}
+                                        {% else %}
+                                       {%endif%}
+                                     {% endfor %}
                                 </div>
+                                     {% for d in day_type %}
+                                       {% if day_schedule.date|date:'Y-m-d' == d.date|date:'Y-m-d' %}
+
+                                        {% else %}
+                                        {%endif%}
+                                     {% endfor %}
                                 {% for time_slot in day_schedule.schedule %}
                                     {% if time_slot.has_visit == True  %}
 

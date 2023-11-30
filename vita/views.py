@@ -1636,13 +1636,16 @@ def doctor_visits(request, offset=0, num_days=14):
     else:
         form = DoctorVisitsForm()
 
+    day_type = DoctorSchedule.objects.all().values()
+
     context = {
         'schedule_table': schedule_table,
         'time_slots': time_slots,
         'visits': Visits.objects.all(),
         'current_week_offset': offset,
         'form': form,
-        'today': today
+        'today': today,
+        'day_type': day_type
     }
 
     return render(request, 'vita/patient/doctor_visits.html', context)
