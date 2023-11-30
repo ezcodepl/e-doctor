@@ -1557,7 +1557,9 @@ def doctor_visits(request, offset=0, num_days=14):
 
     today = datetime.today()
     week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
-    days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
+    #days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
+    days_of_week = [week_start + timedelta(days=i) for i in range(num_days) if
+                    (week_start + timedelta(days=i)).weekday() < 5]
 
     schedule_table = []
     time_slots = []
@@ -1576,24 +1578,25 @@ def doctor_visits(request, offset=0, num_days=14):
     for i in range(0, num_days, 7):
         week_schedule = []
         for j in range(7):
-            day = days_of_week[i + j]
-            day_schedule = {
-                'date': day,
-                'schedule': []
-            }
+            # Sprawdź, czy indeks nie wykracza poza długość listy
+            if i + j < len(days_of_week):
+                day = days_of_week[i + j]
+                day_schedule = {
+                    'date': day,
+                    'schedule': []
+                }
 
-            for time_slot in time_slots:
-                has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
-                day_schedule['schedule'].append({
-                    'time': time_slot['time'],
-                    'header': time_slot['header'],
-                    'has_visit': has_visit
-                })
+                for time_slot in time_slots:
+                    has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+                    day_schedule['schedule'].append({
+                        'time': time_slot['time'],
+                        'header': time_slot['header'],
+                        'has_visit': has_visit
+                    })
 
-            week_schedule.append(day_schedule)
+                week_schedule.append(day_schedule)
 
         schedule_table.append(week_schedule)
-
     available_slots = [
         (f"{day_schedule['date']} {time_slot['time']}", f"{day_schedule['date']} {time_slot['time']}")
         for week_schedule in schedule_table
