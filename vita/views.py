@@ -1555,54 +1555,6 @@ def day_view(request, year, month, day):
 
 def doctor_visits(request, offset=0, num_days=14):
 
-    # today = datetime.today()
-    # # Przesuń o dwa tygodnie zamiast o wartość parametru offset
-    # week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
-    # days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
-    #
-    # schedule_table = []
-    # time_slots = []
-    #
-    # start_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=8)
-    # end_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=21)
-    #
-    # while start_time <= end_time:
-    #     time_str = start_time.strftime("%H:%M")
-    #     time_slots.append({
-    #         'time': time_str,
-    #         'header': start_time.strftime("%H:%M")
-    #     })
-    #     start_time += timedelta(minutes=30)
-    #
-    # for i in range(0, num_days, 7):
-    #     week_schedule = []
-    #     for j in range(7):
-    #         day = days_of_week[i + j]
-    #         day_schedule = {
-    #             'date': day,
-    #             'schedule': []
-    #         }
-    #
-    #         for time_slot in time_slots:
-    #             has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
-    #             day_schedule['schedule'].append({
-    #                 'time': time_slot['time'],
-    #                 'header': time_slot['header'],
-    #                 'has_visit': has_visit
-    #             })
-    #
-    #         week_schedule.append(day_schedule)
-    #
-    #     schedule_table.append(week_schedule)
-    #
-    # context = {
-    #     'schedule_table': schedule_table,
-    #     'time_slots': time_slots,
-    #     'visits': Visits.objects.all(),
-    #     'current_week_offset': offset
-    # }
-    # return render(request, 'vita/patient/doctor_visits.html', context)
-
     today = datetime.today()
     week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
     days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
@@ -1651,27 +1603,30 @@ def doctor_visits(request, offset=0, num_days=14):
     ]
     if request.method == 'POST':
         form = DoctorVisitsForm(request.POST)
+        print('post')
+        print(request.POST)
 
         if form.is_valid():
+            for sel in request.POST.getlist('sel_visit'):
+                sel_visit = sel.split(' ')
 
-            selected_slots = form.cleaned_data.get('sel_visit', [])
+                # Sprawdzenie, czy wizyta już istnieje w bazie danych
+                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id='5').first()
 
-            print("Selected Slots:", selected_slots)
+                if existing_visit is None:
+                    # Wizyta nie istnieje, więc możemy ją dodać
+                    s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='1', visit='1', office='1',pay='0',
+                                    cancel='0', prupose_visit_id='1', patient_id=request.user.id)
+                    s_form.save()
+                    messages.success(request, (
+                        f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} "))
+                else:
+                    messages.warning(request, (
+                        f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana: "))
 
-            for slot in selected_slots:
-                date_str, time_str = slot.split(' ')
-                date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                time = datetime.strptime(time_str, '%H:%M').time()
-                purpose = form.cleaned_data.get('prupose')
-
-                visit = Visits(date=date, time=time, purpose=purpose)
-
-                visit.save()
-
-
-
+            return redirect('/patient/appointments')
         else:
-            print(f"Błędy formularza: {form.errors}")
+            print("Formularz nie jest poprawny:", form.errors)
     else:
         form = DoctorVisitsForm()
 

@@ -1,3 +1,5 @@
+from datetime import timezone, timedelta, datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -161,8 +163,62 @@ class PersonForm(forms.Form):
     )
 
 class DoctorVisitsForm(forms.Form):
-    sel_visit = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-
     class Meta:
         model = Visits
-        fields = ['date', 'time']
+        fields = ['date', 'time', 'status', 'visit', 'office', 'prupose_visit_id']
+    # purpose_choices = [
+    #     ('masaż', 'Masaż'),
+    #     ('masaż_karnet', 'Masaż karnet'),
+    #     ('badanie', 'Badanie'),
+    #     ('akupunktura', 'Akupunktura'),
+    # ]
+    #
+    # days_of_week = [
+    #     ('monday', 'Monday'),
+    #     ('tuesday', 'Tuesday'),
+    #     ('wednesday', 'Wednesday'),
+    #     ('thursday', 'Thursday'),
+    #     ('friday', 'Friday'),
+    #     ('saturday', 'Saturday'),
+    #     ('sunday', 'Sunday'),
+    # ]
+    #
+    # def __init__(self, *args, **kwargs):
+    #     super(DoctorVisitsForm, self).__init__(*args, **kwargs)
+    #     self.fields['sel_visit'].choices = self.generate_visit_choices()
+    #
+    # def generate_time_slots(self):
+    #     start_time = datetime(2000, 1, 1, 8, 0, 0)
+    #     end_time = datetime(2000, 1, 1, 21, 0, 0)
+    #
+    #     return [
+    #         (
+    #             (start_time + timedelta(minutes=i * 30)).time(),
+    #             (start_time + timedelta(minutes=(i + 1) * 30)).time()
+    #         )
+    #         for i in range(int((end_time - start_time).total_seconds() / 60 / 30))
+    #     ]
+    #
+    # def generate_visit_choices(self):
+    #     time_slots = self.generate_time_slots()
+    #
+    #     return [
+    #         (
+    #             f"{day}_{slot_start.strftime('%H:%M')}_{slot_end.strftime('%H:%M')}",
+    #             f"{day} - {slot_start.strftime('%H:%M')} - {slot_end.strftime('%H:%M')}"
+    #         )
+    #         for day in self.days_of_week
+    #         for (slot_start, slot_end) in time_slots
+    #     ]
+    #
+    # sel_visit = forms.MultipleChoiceField(
+    #     choices=[],  # Puste, ponieważ zostanie ustawione w __init__
+    #     widget=forms.CheckboxSelectMultiple(),
+    #     required=True,
+    # )
+    #
+    # purpose = forms.ChoiceField(
+    #     choices=purpose_choices,
+    #     widget=forms.Select(),
+    #     required=True,
+    # )
