@@ -45,7 +45,8 @@
                                                  {% for d in day_type %}
                                                    {% if day_schedule.date|date:'Y-m-d' == d.date|date:'Y-m-d' %}
                                                        {{ d.day_type}}
-                                                    {% else %}
+                                                   {% else %}
+
                                                    {%endif%}
                                                  {% endfor %}
                                              </div>
@@ -61,6 +62,7 @@
 
                                   {% endfor %}
                               {% else %}
+
                                 <div class="bg-info text-light p-2 text-center">
                                     {{ day_schedule.date|date:'l' }} <br>{{ day_schedule.date|date:'Y-m-d' }}<br>
                                 </div>
@@ -85,6 +87,7 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
+                                
                               {% endif  %}
                             </div>
                         </td>
@@ -95,6 +98,7 @@
     </table>
 
     <button type="submit" class="btn btn-success text-light">Zarezerwuj wybrany termin</button>
+    <a href="/patient/doctor_visits" role="button" class="btn btn-danger text-light">Resetuj kalendarz wizyt</a>
 </form>
 
 

@@ -1557,9 +1557,14 @@ def doctor_visits(request, offset=0, num_days=14):
 
     today = datetime.today()
     week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
-    #days_of_week = [week_start + timedelta(days=i) for i in range(num_days)]
-    days_of_week = [week_start + timedelta(days=i) for i in range(num_days) if
-                    (week_start + timedelta(days=i)).weekday() < 5]
+    days_of_week = []
+
+    # Dodaj warunek sprawdzający, czy data istnieje w tabeli doctorschedule
+    for i in range(num_days):
+        current_day = week_start + timedelta(days=i)
+        if current_day.weekday() < 5 and current_day >= today and DoctorSchedule.objects.filter(
+                date=current_day).exists():
+            days_of_week.append(current_day)
 
     schedule_table = []
     time_slots = []
@@ -1597,6 +1602,7 @@ def doctor_visits(request, offset=0, num_days=14):
                 week_schedule.append(day_schedule)
 
         schedule_table.append(week_schedule)
+
     available_slots = [
         (f"{day_schedule['date']} {time_slot['time']}", f"{day_schedule['date']} {time_slot['time']}")
         for week_schedule in schedule_table
@@ -1611,7 +1617,7 @@ def doctor_visits(request, offset=0, num_days=14):
             for sel in request.POST.getlist('sel_visit'):
                 sel_visit = sel.split(' ')
 
-                # Sprawdzenie, czy wizyta już istnieje w bazie danych
+               #check visit if exists
                 existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id).first()
                 existing_schedule = DoctorSchedule.objects.filter(date=sel_visit[0]).first()
                 print(connection.queries[-1]['sql'])
