@@ -50,7 +50,7 @@ def home(request):
 def docschedule(request):
 
     today = datetime.now()
-
+    locale.setlocale(locale.LC_TIME, 'pl_PL')
     def months():
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
                   '7': 'Lipiec',
@@ -137,12 +137,20 @@ def docschedule(request):
                     form.save()
                 messages.success(request, "Terminarz Lekarza został zaktualizowany")
             else:
+                #check doctor shedule - visit today
+                # ch_v = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
+                #
+                # if ch_v:
+                #     messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
+                # else:
                  print('')
+
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
-        form = DoctorsScheduleForm(request.POST)
 
+        form = DoctorsScheduleForm(request.POST)
+        print(form.errors)
         if request.method == "POST":
 
             if form.is_valid():
@@ -159,7 +167,7 @@ def docschedule(request):
                       #print(post_dict)
                       form = DoctorsScheduleForm(post_dict)
                       form.save()
-                  messages.success(request, "Terminarz Lekarza został zaktualizowany")
+
             else:
                 form = DoctorsScheduleForm()
 

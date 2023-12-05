@@ -26,7 +26,7 @@
                             </thead>
                             <tbody class="text-success">
                             {% for w in visits_akt %}
-                            {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                            {% if w.status == '2'%}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ w.date|date:"Y-m-d" }}</td>

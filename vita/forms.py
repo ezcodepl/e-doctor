@@ -61,7 +61,11 @@ class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email'] #'username',
+        fields = ['first_name', 'last_name', 'email', 'username'] #'username',
+
+
+
+
 class PatientUpdateForm(forms.ModelForm):
     street = forms.CharField(required=True, label='Adres')
     post_code = forms.CharField(required=True, label='Kod pocztowy')

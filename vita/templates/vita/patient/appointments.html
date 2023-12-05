@@ -24,8 +24,10 @@
                             </tr>
                             </thead>
                             <tbody>
+
                             {% for w in visits_akt %}
-                            {% if w.status == '1' or w.status == '2' or w.status == '5' %}
+                            {% if w.status == '1' or w.status == '5' %}
+
                             <tr>
                                 <td><input type="checkbox" name="check" /></td>
                                 <td>{{ forloop.counter }}</td>
@@ -46,6 +48,7 @@
                                 <td>{{ w.visit }}</td>
                                 <td><input type="submit" class="btn btn-sm btn-danger" value="odwołaj" /></td>
                             </tr>
+
                             {% endif %}
                             {% endfor %}
 
