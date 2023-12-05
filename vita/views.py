@@ -50,7 +50,7 @@ def home(request):
 def docschedule(request):
 
     today = datetime.now()
-    locale.setlocale(locale.LC_TIME, 'pl_PL')
+
     def months():
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
                   '7': 'Lipiec',
@@ -95,16 +95,25 @@ def docschedule(request):
     else:
         btn_y = today.year
 
-    #check_schedule = DoctorSchedule.objects.all().values('date')
-    dsdm = request.GET.get('month')
-    dsdy = request.GET.get('year')
-    dsdd = '10'
-    dsd = f'{dsdy}-{dsdm}-{dsdd}'
+    #check if date exist in docschedule
 
-    check_schedule = DoctorSchedule.objects.filter(date=dsd).exists() #today.strftime('%Y-%m-%d')
+    if request.GET.get('month') == None and request.GET.get('year') == None:
+
+        dsd = today.date()
+        formatted_date = dsd.strftime('%Y-%m-%d')
+    else:
+        dsdm = request.GET.get('month')
+        dsdy = request.GET.get('year')
+        dsdd = '01'
+        dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
+        print(type(dsd))
+        formatted_date = dsd.strftime('%Y-%m-%d')
+
+
+    check_schedule = DoctorSchedule.objects.filter(date=formatted_date).first() #today.strftime('%Y-%m-%d')
 
     if check_schedule:
-        messages.warning(request, "Na ten miesiąc już utworzono kalendarz")
+        messages.error(request, "Na ten miesiąc już utworzono kalendarz")
         x = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d'))
         print(x.query)
         form = DoctorsScheduleForm(request.POST)
@@ -128,20 +137,12 @@ def docschedule(request):
                     form.save()
                 messages.success(request, "Terminarz Lekarza został zaktualizowany")
             else:
-                #check doctor shedule - visit today
-                # ch_v = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
-                #
-                # if ch_v:
-                #     messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
-                # else:
                  print('')
-
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
         # if schedule not save in datebase - create it
-
         form = DoctorsScheduleForm(request.POST)
-        print(form.errors)
+
         if request.method == "POST":
 
             if form.is_valid():
@@ -158,7 +159,7 @@ def docschedule(request):
                       #print(post_dict)
                       form = DoctorsScheduleForm(post_dict)
                       form.save()
-
+                  messages.success(request, "Terminarz Lekarza został zaktualizowany")
             else:
                 form = DoctorsScheduleForm()
 
@@ -759,7 +760,7 @@ def panel(request, date):
     else:
         if day_type.count() == 0:
              freeday = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza')
+             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza', extra_tags='ds')
         else:
             if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
                 freeday = 'Dzień wolny od pracy'
@@ -830,7 +831,7 @@ def panel(request, date):
     else:
         if day_type_f.count() == 0:
              freeday_f = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii')
+             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii', extra_tags='df')
         else:
             if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Wolny'):
                 freeday_f = 'Dzień wolny od pracy'

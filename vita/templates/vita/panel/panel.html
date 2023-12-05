@@ -23,7 +23,7 @@
                   </div>
                   <div class="card-content">
                     <div>
-                        {% include 'vita/messages.html' %}
+
                       <div class="table-responsive">
                         <table class="table table-sm">
                           <thead>
@@ -35,7 +35,22 @@
                                 <th>Cel</th>
                                 <th>Akcja</th>
                             </tr>
+
                           </thead>
+                            <div >
+                                 {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'ds' %}
+                                           <div class="container">
+                                              <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                {{ message }}
+                                              </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                 {% endif %}
+                           </div>
                           <tbody>
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
                                 {% for hour, visit in visits.items %}
@@ -131,11 +146,11 @@
                   <div class="card-header">
                     <h4 class="card-title">Gabinet fizykoterapii - GODZINY PRACY: 08:00-21:00  </h4>
                   </div>
-                    {% include 'vita/messages.html' %}
+
                   <div class="card-content">
                     <!-- Table with no outer spacing -->
                     <div class="table-responsive">
-                         <table class="table table-sm">
+                         <table class="table table-sm" id="df">
                           <thead>
                             <tr>
                                 <th>Godz.</th>
@@ -146,6 +161,20 @@
                                 <th>Akcja</th>
                             </tr>
                           </thead>
+                             <div >
+                                 {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'df' %}
+                                           <div class="container">
+                                              <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                {{ message }}
+                                              </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                 {% endif %}
+                           </div>
                           <tbody>
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday_f }}</td></tr>
                                 {% for hour_f, visit_f in visits_f.items %}
