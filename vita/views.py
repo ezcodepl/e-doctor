@@ -25,7 +25,7 @@ from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRe
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, VisitForm_f, DoctorVisitsForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, \
-    Visits_f
+    Visits_f, ReversList
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta, timezone
 import time
@@ -1666,7 +1666,31 @@ def doctor_visits(request, offset=0, num_days=14):
 
 def reserve_list(request):
 
-    context = {
+    get_all = ReversList.objects.all().values()
 
+    if get_all:
+        print('')
+    else:
+        messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
+
+    context = {
+    }
+    return render(request, 'vita/panel/reserve_list.html', context)
+
+def create_reserve_list(request):
+
+    get_all = ReversList.objects.filter(patient_id=2).all()
+    print(get_all[10]['patient_id'])
+    # get_patient = Patient.objects.filter(id_patient=get_all[2]['patient_id']).values()
+    # get_visit = Visits.objects.filter(patient_id=get_all['patient_id']).values()
+    #
+    # check_visist_reserve = ReversList.objects.filter(date=request.POST['date']).values()
+
+    if get_all:
+        print('')
+    else:
+        messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
+
+    context = {
     }
     return render(request, 'vita/panel/reserve_list.html', context)
