@@ -24,6 +24,7 @@ urlpatterns = [
     path('panel/create_visit_f', views.create_visit_f, name='create_visit_f'),
     path('panel/create_new_visit_f', views.create_new_visit_f, name='create_new_visit_f'),
     path('panel/pause_visit', views.pause_visit, name='pause_visit'),
+    path('panel/reserve_list', views.reserve_list, name='reserve_list'),
 
 
 

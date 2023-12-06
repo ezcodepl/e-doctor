@@ -50,7 +50,6 @@ def home(request):
 def docschedule(request):
 
     today = datetime.now()
-    locale.setlocale(locale.LC_TIME, 'pl_PL')
     def months():
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
                   '7': 'Lipiec',
@@ -178,8 +177,6 @@ def docschedule(request):
 
 def fizschedule(request):
     today = datetime.now()
-    locale.setlocale(locale.LC_TIME, 'pl_PL')
-
     def months():
 
         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
@@ -228,9 +225,22 @@ def fizschedule(request):
         btn_y = today.year
 
     # check_schedule = DoctorSchedule.objects.all().values('date')
+    if request.GET.get('month') == None and request.GET.get('year') == None:
 
-    check_schedule = FizSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
+        dsd = today.date()
+        formatted_date = dsd.strftime('%Y-%m-%d')
+    else:
+        dsdm = request.GET.get('month')
+        dsdy = request.GET.get('year')
+        dsdd = '01'
+        dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
+        print(type(dsd))
+        formatted_date = dsd.strftime('%Y-%m-%d')
+
+    check_schedule = FizSchedule.objects.filter(date=formatted_date).first()
+
     if check_schedule:
+        messages.error(request, "Na ten miesiąc już utworzono kalendarz")
         form = FizScheduleForm(request.POST)
 
         if request.method == 'POST':
@@ -1034,7 +1044,7 @@ def login_request(request):
 
 def logout_request(request):
     logout(request)
-    # messages.info(request, "You have successfully logged out.")
+    messages.info(request, "Zostałeś poprawnie wylogowany.")
     return redirect("/")
 
 
@@ -1085,10 +1095,6 @@ def create_visit(request):
     vo = request.POST.get('office')
 
     persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street',) #filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)
-
-
-        # data = {"options": [str(p) for p in persons]}
-        # return JsonResponse(data)
 
     if request.method == "POST":
 
@@ -1163,7 +1169,6 @@ def create_visit(request):
     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
     user_x = x
 
-
     return render(request, 'vita/panel/create_visit.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd': vdate, 'vt': vtime, 'vo': vo, 'persons': persons })
 
 
@@ -1177,11 +1182,7 @@ def create_visit_f(request):
     vtime_f = request.POST.get('time')
     vo_f = request.POST.get('office')
 
-    persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street',) #filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)
-
-
-        # data = {"options": [str(p) for p in persons]}
-        # return JsonResponse(data)
+    persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street')
 
     if request.method == "POST":
 
@@ -1527,9 +1528,6 @@ def pause_visit(request):
     return redirect(f'/panel/{request.POST["date"]}')
 
 
-
-
-
 def calendar_view(request, year=None, month=None):
     if year is None:
         year = date.today().year
@@ -1547,9 +1545,7 @@ def calendar_view(request, year=None, month=None):
                 week_links.append('')
             else:
                 print('')
-                # otherwise, create a link to the day view with the date as parameter
-                #link = reverse(day, args=[year, month, day])
-                #week_links.append(link)
+
         links.append(week_links)
     # render the calendar template with the links
     return render(request, 'calendar.html', {'cal': cal, 'links': links})
@@ -1667,3 +1663,10 @@ def doctor_visits(request, offset=0, num_days=14):
     }
 
     return render(request, 'vita/patient/doctor_visits.html', context)
+
+def reserve_list(request):
+
+    context = {
+
+    }
+    return render(request, 'vita/panel/reserve_list.html', context)
