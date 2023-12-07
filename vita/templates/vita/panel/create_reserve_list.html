@@ -5,14 +5,110 @@
         <div class="page-title">
             <div class="row mb-2">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Lista rezerwowa oczekujących pacjętów na wizytę</h3>
+                    <h3>Dodaj nowego pacjenta do listy rezerwowej</h3>
                 </div>
             </div>
         </div>
-        <section class="section">
+         <section class="section">
             <div class="card">
+                 <script>
+                    function swapConfig(x) {
+                    var radioName = document.getElementsByName(x.name);
+                    for(i = 0 ; i < radioName.length; i++){
+                      document.getElementById(radioName[i].id.concat("Settings")).style.display="none";
+                    }
+                    document.getElementById(x.id.concat("Settings")).style.display="initial";
+                  }
+                </script>
+
                 <div class="card-body">
+                    <form class="row g-3 needs-validation" name="v_form" id="patient" novalidate="" method="POST" action="{% url 'create_reserve_list' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {{ form.errors }}
+                    <div style="text-align:left;">
+                        <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0" checked="checked"/>
+                        <label for="production">Pacjent figurujący w bazie danych</label>
+                    </div>
+                    <div id="productionSettings">
+                        <p>
+                            <div class="input-group flex-nowrap">
+                              <span class="input-group-text" id="addon-wrapping">
+                                 &#x2B9E;
+                              </span>
+                              <input type="text" id="person" name="person" class="form-control" placeholder="...wpisz nazwisko pacjenta" />
+                            </div>
+                        </p>
+                    </div>
+                    <div>
+                        <input type="radio" onchange="swapConfig(this)" name="sf" id="development" value="1" />
+                        <label for="development">Nowy pacjent stacjonarny</label>
+                    </div>
+
+                    <div id="developmentSettings" style="display:none">
+                        <p>
+                             {% for field in form %}
+                                {{ field.errors }}
+                            {% endfor %}
+
+                              <fieldset class="form-group">
+                                   <div class="row align-items-start">
+                                      <div class="col">
+                                          {{ cform.first_name | as_crispy_field }}
+                                          {{ cform.first_name.errors }}
+                                          {{ cform.last_name | as_crispy_field }}
+                                          {{ cp_form.street | as_crispy_field }}
+                                      </div>
+                                      <div class="col">
+                                            {{ cp_form.city | as_crispy_field }}
+                                           {{ cp_form.post_code | as_crispy_field }}
+                                           {{ cp_form.phone | as_crispy_field }}
+                                      </div>
+                                   </div>
+                              </fieldset>
+                              <div>
+                                      <input type="hidden" name="select_form" value="1" />
+                                      <input type="hidden" name="username" value="{{user_x}}" />
+                                      <input type="hidden" name="password1" value="haselko1" />
+                                      <input type="hidden" name="password2" value="haselko1" />
+                                      <input type="hidden" name="email" value="stacjonarny@megavita.pl" />
+
+                              </div>
+                        </p>
+                    </div>
                 </div>
+              <div style="background-color: #E6EEF5;width:100%;padding:5px;font-weight:bold;">&nbsp;&nbsp;Szczegóły wizyty</div>
+                <p>
+                  <div class="card-body">
+                     <fieldset class="form-group">
+                                   <div class="row align-items-start">
+                                       <div class="col">
+                                            <label for="development">Data wizyty: </label>
+                                           <input class="form-control" type="date" name="date" />
+                                       </div>
+                                       <div class="col">
+                                            <label for="development">Godziny wizyty: </label>
+
+                                           <select name=-"time_reserve" class="form-select">
+                                               <option value="8-13">8-13</option>
+                                               <option value="8-13">15-20</option>
+                                           </select>
+                                       </div>
+                                        <div class="col">
+                                            <label for="development">Gabinet: </label>
+                                             <select name="office"  class="form-select">
+                                               <option value="lekarski">lekarski</option>
+                                               <option value="fizjoterapii">fizjoterapii</option>
+                                             </select>
+                                       </div>
+                                   </div>
+                                   <div class="row align-items-start p-4">
+                                       <input type="submit" class="btn btn-success form-control"  value="Dodaj nowy wpis" />
+                                   </div>
+                         </form>
+                     </fieldset>
+                  </div>
+                </p>
+
             </div>
         </section>
     </div>

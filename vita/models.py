@@ -122,8 +122,8 @@ class PruposeVisit(models.Model):
         return self.cel
 
 @receiver(post_migrate)
-def dodaj_domyślne_rekordy(sender, **kwargs):
-    if sender.name == "vita":  # Zastąp "twoja_aplikacja" nazwą Twojej aplikacji
+def add_default_records_prupose(sender, **kwargs):
+    if sender.name == "vita":
         if not PruposeVisit.objects.exists():
             PruposeVisit.objects.create(purpose_name='badanie', description='badanie')
             PruposeVisit.objects.create(purpose_name='masaż', description='masaż')
@@ -137,6 +137,17 @@ class StatusVisist(models.Model):
     description = models.CharField()
     def __str__(self):
         return self.status_name
+
+@receiver(post_migrate)
+def add_default_records_status(sender, **kwargs):
+    if sender.name == "vita":
+        if not StatusVisist.objects.exists():
+            StatusVisist.objects.create(status_name='umówiona', description='umówiona')
+            StatusVisist.objects.create(status_name='odwołana', description='odwołana')
+            StatusVisist.objects.create(status_name='nie odbyła się', description='nie odbyła się')
+            StatusVisist.objects.create(status_name='www', description='www')
+            StatusVisist.objects.create(status_name='odwołana www', description='odwołana www')
+
 
 class Visits(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -172,7 +183,7 @@ class ReversList(models.Model):
     time = models.CharField(null=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     phone = models.CharField()
-    visist = models.CharField()
+    visit = models.CharField()
     status_name = models.CharField()
     description = models.CharField()
     call = models.IntegerField()

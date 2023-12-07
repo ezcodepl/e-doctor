@@ -13,7 +13,7 @@
             <div class="card">
                 <div class="card-body">
                      {% include 'vita/messages.html' %}
-                     <div class="p-2"><a href="/panel/create_templates" role="button" class="btn btn-success btn-sm">Dodaj nowy</a></div>
+                     <div class="p-2"><a href="/panel/create_reserve_list" role="button" class="btn btn-success btn-sm">Dodaj nowy</a></div>
                      <div class="table-responsive">
                        <table class="table table-striped">
                          <thead class="text-light text-center" style="background: #26396F;">
@@ -33,40 +33,43 @@
                          </thead>
                          <tbody>
 
+                          {% for l in full_list %}
                             <tr>
-                                 <td class="p-1 x-2">
+
+                                 <td class="p-1 x-2 text-center">
                                    <input type="checkbox" />
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                    {{ forloop.counter }}
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                    {{ l.date|date:'Y-m-d' }}
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                     {{ l.time }}
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                     {{ l.patient.user.first_name }} {{ l.patient.user.last_name }}
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                    {{ l.patient.phone }}
                                 </td>
-                                 <td class="p-1 x-2">
-
+                                 <td class="p-1 x-2 text-center">
+                                    {{ l.visit }}
                                 </td>
-                                 <td class="p-1 x-2">
-                                       <span class="text-success font-bold">Pilne</span>
+                                 <td class="p-1 x-2 text-center">
 
-                                       <span class="text-danger font-bold">Zwykłe</span>
-
+                                     {% if l.status_name == 'Pilne' %}
+                                       <span class="text-danger font-bold">Pilne</span>
+                                     {% else %}
+                                       <span class="text-success font-bold">Zwykłe</span>
+                                     {% endif %}
                                 </td>
                                  <td class="p-1">
-
+                                    {{ l.description }}
                                 </td>
                                  <td class="text-center p-1">
-
-
+                                    {{ l.call }}
                                 </td>
                                  <td class="text-center p-1">
                                     <a role="button" class="btn btn-success btn-sm" href="/panel/edit_templates/{{template.id}}">Edytuj</a>
@@ -75,7 +78,7 @@
                                 </td>
 
                             </tr>
-
+                          {% endfor %}
 
                          </tbody>
                        </table>

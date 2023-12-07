@@ -23,7 +23,7 @@ from django.views.decorators.http import require_GET
 
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
-    VisitForm, VisitForm_f, DoctorVisitsForm
+    VisitForm, VisitForm_f, DoctorVisitsForm, ReserveForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, \
     Visits_f, ReversList
 from django.contrib.auth.models import User
@@ -1665,32 +1665,96 @@ def doctor_visits(request, offset=0, num_days=14):
     return render(request, 'vita/patient/doctor_visits.html', context)
 
 def reserve_list(request):
+    is_empty = not ReversList.objects.exists()
 
-    get_all = ReversList.objects.all().values()
-
-    if get_all:
-        print('')
-    else:
+    if is_empty:
         messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
+        full_list = []
+    else:
+        full_list = ReversList.objects.select_related('patient__user').all()
 
     context = {
+        'full_list': full_list
     }
     return render(request, 'vita/panel/reserve_list.html', context)
 
 def create_reserve_list(request):
 
-    get_all = ReversList.objects.filter(patient_id=2).all()
-    print(get_all[10]['patient_id'])
-    # get_patient = Patient.objects.filter(id_patient=get_all[2]['patient_id']).values()
-    # get_visit = Visits.objects.filter(patient_id=get_all['patient_id']).values()
-    #
-    # check_visist_reserve = ReversList.objects.filter(date=request.POST['date']).values()
+    get_all = ReversList.objects.filter(patient_id=2).values()
+    patient_ids = get_all[0]['patient_id']
+    get_patient = Patient.objects.filter(id_patient=patient_ids).values()
+    get_user = User.objects.filter(id=patient_ids).values()
+    get_visit = Visits.objects.filter(patient_id=patient_ids).values().count()
+    persons = User.objects.select_related('patient__user').values('patient__id', 'patient__user__first_name',
+                                                                  'patient__user__last_name', 'patient__city',
+                                                                  'patient__street', )  # filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)
+
+    #check_visist_reserve = ReversList.objects.filter(date=request.POST['date']).values()
 
     if get_all:
         print('')
+        # print(get_user[0]['first_name'], get_user[0]['last_name'], get_visit)
     else:
         messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
 
+    cform = RegisterUserForm(request.POST)
+    cp_form = PatientRegisterForm(request.POST)
+
+    if request.method == 'POST':
+        print('ok')
+        cform = RegisterUserForm(request.POST)
+        cp_form = PatientRegisterForm(request.POST)
+        v_form = ReserveForm(request.POST)
+
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
+        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+        select_form = request.POST.get('select_form')
+
+        if request.POST['sf'] == '0': # add visit with patient from autocomplete
+              print('sf')
+              person = request.POST['person'].split(' ') #split data from autocomplete field
+              pid = person[0] #patient_id
+              print(pid)
+              pln = person[1]  # patient last_name
+              print(pln)
+              pfn = person[2] #patient first_name
+              pst = person[3] #patient street
+              pc = person[4] #patient city
+              check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
+
+
+        else:
+                # patient data entered manually to fields
+                if request.POST['sf'] == '1':
+
+                    last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+
+                    c_form = cform.save(commit=False)
+                    first_name = str(request.POST.get('first_name')).capitalize()
+                    last_name = str(request.POST.get('last_name')).capitalize()
+                    c_form.first_name = first_name
+                    c_form.last_name = last_name
+                    c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
+                    c_form.password = make_password(BaseUserManager().make_random_password())
+                    c_form.emial = 'stacjonarny@megavita.pl'
+                    c_form.save()
+
+                    if len(last_id_patient) < 1:
+                        next_id_patient = 1
+                    else:
+                        next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+                    p_form_obj = cp_form.save(commit=False)
+                    p_form_obj.user_id = last_user_id
+                    p_form_obj.id_patient = next_id_patient
+                    p_form_obj.save()
+
+    else:
+        print('nie post')
+
     context = {
+        'cform': cform,
+        'cp_form': cp_form,
+        'persons': persons
     }
-    return render(request, 'vita/panel/reserve_list.html', context)
+    return render(request, 'vita/panel/create_reserve_list.html', context)
