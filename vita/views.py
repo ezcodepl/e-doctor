@@ -1697,8 +1697,8 @@ def create_reserve_list(request):
     else:
         messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
 
-    cform = RegisterUserForm(request.POST)
-    cp_form = PatientRegisterForm(request.POST)
+    # cform = RegisterUserForm(request.POST)
+    # cp_form = PatientRegisterForm(request.POST)
 
     if request.method == 'POST':
         print('ok')
@@ -1711,6 +1711,7 @@ def create_reserve_list(request):
         select_form = request.POST.get('select_form')
 
         if request.POST['sf'] == '0': # add visit with patient from autocomplete
+
               print('sf')
               person = request.POST['person'].split(' ') #split data from autocomplete field
               pid = person[0] #patient_id
@@ -1722,11 +1723,35 @@ def create_reserve_list(request):
               pc = person[4] #patient city
               check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
 
+              if v_form.is_valid():
+                  vv_form = v_form.save(commit=False)
+                  vv_form.date = request.POST['date']
+                  vv_form.time = request.POST['time']
+                  vv_form.status = '1'
+                  check_visit_nr = ReversList.objects.filter(patient_id = pid).values().last()#check visist number
+
+                  if check_visit_nr:
+                      visits_count = Visits.objects.filter(patient_id=int(check_visit_nr['visit'])).count()
+                      total_count = visits_count
+                      print(total_count)
+                      visit_nr = total_count + 1
+                      print(visit_nr )
+                  else:
+                      visit_nr = '1'
+
+                  vv_form.visit = visit_nr
+                  vv_form.office = request.POST['office']
+                  vv_form.patient_id = pid
+                  vv_form.save()
+              else:
+                  print(cform.errors)
+                  print(cp_form.errors)
+                  print(v_form.errors)
 
         else:
                 # patient data entered manually to fields
                 if request.POST['sf'] == '1':
-
+                    print('sf1')
                     last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
 
                     c_form = cform.save(commit=False)
@@ -1749,12 +1774,45 @@ def create_reserve_list(request):
                     p_form_obj.id_patient = next_id_patient
                     p_form_obj.save()
 
+                    if len(last_id_patient) < 1:
+                        next_id_patient = 1
+                    else:
+                        next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+                    p_form_obj = cp_form.save(commit=False)
+                    p_form_obj.user_id = last_user_id
+                    p_form_obj.id_patient = next_id_patient
+                    p_form_obj.save()
+
+                    if v_form.is_valid():
+                        vv_form = v_form.save(commit=False)
+                        vv_form.date = request.POST['date']
+                        vv_form.time = request.POST['time']
+                        vv_form.status = '1'
+                        vv_form.visit = '1'
+                        vv_form.office = request.POST['office']
+                        last_user_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
+                        if last_user_id == '':
+                            vv_form.patient_id = '1'
+                        else:
+                            vv_form.patient_id = last_user_id
+                        vv_form.save()
+                    else:
+                        print(v_form.errors)
+
     else:
         print('nie post')
+        cform = RegisterUserForm(request.POST)
+        cp_form = PatientRegisterForm(request.POST)
+        v_form = ReserveForm(request.POST)
+
+    today = date.today()
+    today.strftime('%Y-%m-%d')
 
     context = {
         'cform': cform,
         'cp_form': cp_form,
-        'persons': persons
+        'persons': persons,
+        'today': today
     }
     return render(request, 'vita/panel/create_reserve_list.html', context)

@@ -83,21 +83,21 @@
                                    <div class="row align-items-start">
                                        <div class="col">
                                             <label for="development">Data wizyty: </label>
-                                           <input class="form-control" type="date" name="date" />
+                                           <input class="form-control" type="text" name="date" value="{{today|date:'Y-m-d'}}" />
                                        </div>
                                        <div class="col">
                                             <label for="development">Godziny wizyty: </label>
 
                                            <select name=-"time_reserve" class="form-select">
                                                <option value="8-13">8-13</option>
-                                               <option value="8-13">15-20</option>
+                                               <option value="15-20">15-20</option>
                                            </select>
                                        </div>
                                         <div class="col">
                                             <label for="development">Gabinet: </label>
                                              <select name="office"  class="form-select">
                                                <option value="lekarski">lekarski</option>
-                                               <option value="fizjoterapii">fizjoterapii</option>
+                                               <option value="fizykoterapii">fizykoterapii</option>
                                              </select>
                                        </div>
                                    </div>
