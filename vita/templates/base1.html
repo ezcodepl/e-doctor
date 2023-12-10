@@ -15,6 +15,11 @@
     <link href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" rel="stylesheet">
     <link href="{% static 'css/variables.css' %}" rel="stylesheet">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
+      <style>
+      .gray-row {
+          background-color: #f2f2f2; /* Szary kolor */
+      }
+    </style>
   </head>
   <body>
     <header id="header" class="header fixed-top" data-scrollto-offset="0">
@@ -60,12 +65,12 @@
               <div id="hover-content">
 
                     <ul style="list-style-type: none;margin-left:0px;padding: 4px;">
-                      <li class="py-2"><a href="new-visit"><i class="bi bi-plus-circle hover-icon"></i> Nowa wizyta</a></li>
-                      <li class="py-2"><a href="appointments"><i class="bi bi-alarm hover-icon"></i> Umówione wizyty</a></li>
-                      <li class="py-2"><a href="history"><i class="bi bi-card-list hover-icon"></i> Historia wizyt</a></li>
-                      <li class="py-2"><a href="profile"><i class="bi bi-person-circle hover-icon"></i> Moje dane</a></li>
+                      <li class="py-2"><a href="{% url 'new_visit' %}"><i class="bi bi-plus-circle hover-icon"></i> Nowa wizyta</a></li>
+                      <li class="py-2"><a href="{% url 'appointments' %}"><i class="bi bi-alarm hover-icon"></i> Umówione wizyty</a></li>
+                      <li class="py-2"><a href="{% url 'history' %}"><i class="bi bi-card-list hover-icon"></i> Historia wizyt</a></li>
+                      <li class="py-2"><a href="{% url 'profile' %}"><i class="bi bi-person-circle hover-icon"></i> Moje dane</a></li>
                         {% if user.username == 'lekarz' %}
-                           <li class="py-2"><a href="/panel/terminarz"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
+                           <li class="py-2"><a href="{% url 'docschedule' %}"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
                         {% endif %}
                       <li class="py-2"><a href="/logout" style="color: firebrick;"><i class="bi bi-power hover-icon" style="color: firebrick;"></i> Wyloguj</a></li>
                     </ul>

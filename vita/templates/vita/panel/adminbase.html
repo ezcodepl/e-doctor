@@ -217,7 +217,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <p class="text-center py-2 mb-0"><a href="#">See all notification</a></p>
+                                            <p class="text-center py-2 mb-0"><a href="#">Wszystkie wizyty odwołane</a></p>
                                         </li>
                                     </ul>
                                 </li>
@@ -253,7 +253,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <p class="text-center py-2 mb-0"><a href="#">See all notification</a></p>
+                                            <p class="text-center py-2 mb-0"><a href="#">Wszystkie wizyty tymczasowe</a></p>
                                         </li>
                                     </ul>
                                 </li>
@@ -277,7 +277,7 @@
                                     <li>
                                         <h6 class="dropdown-header">Witaj, {{ user.first_name }}!</h6>
                                     </li>
-                                    <li><a class="dropdown-item" href="#" style="color:#008BB6;"><i class="icon-mid bi bi-person me-2"></i> Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'profile' %}" style="color:#008BB6;"><i class="icon-mid bi bi-person me-2"></i> Profil</a></li>
                                     <li><a class="dropdown-item" href="#" style="color:#008BB6;"><i class="icon-mid bi bi-gear me-2"></i>Ustawienia</a></li>
                                         <hr class="dropdown-divider">
                                     <li><a class="dropdown-item" href="/logout" style="color:red;"><i

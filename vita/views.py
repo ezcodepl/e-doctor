@@ -550,7 +550,7 @@ def update_patient(request, pk):
               form_uu.first_name = request.POST['first_name']
               form_uu.last_name = request.POST['last_name']
               form_uu.email = request.POST['email']
-              form_uu.username = request.POST['uname']
+              form_uu.username = request.POST['username']
               form_uu.save()
 
               form_pp = form_p.save(commit=False)
