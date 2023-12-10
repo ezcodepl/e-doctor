@@ -1,6 +1,8 @@
 {% extends 'vita/panel/adminbase.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load tz %}
+{% load i18n %}
     <div class="page-heading">
         <div class="page-title">
             <div class="row mb-2">
@@ -56,7 +58,7 @@
                                        <tr>
                                          <td class="p-1">
                                             <a href="/panel/{{day}}">
-                                               <b>{{ day }}</b> -
+                                               <b>{{ day }} </b> -
                                                  {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
                                                     <span class="text-danger">{{ d_name }}</span>
                                                  {% else %}

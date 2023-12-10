@@ -24,8 +24,7 @@ from django.views.decorators.http import require_GET
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, VisitForm_f, DoctorVisitsForm, ReserveForm
-from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, \
-    Visits_f, ReversList
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, ReversList
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta, timezone
 import time
@@ -67,11 +66,19 @@ def docschedule(request):
             m = today.month
             btn_y = today.year
 
+        day_names_polish = [
+            "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"
+        ]
         date_list = {}
         for d in range(1, monthrange(y, m)[1] + 1):
             x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
             dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
-            date_list[x] = calendar.day_name[dayName].capitalize()
+            # date_list[x] = calendar.day_name[dayName].capitalize()
+            day_name_polish = day_names_polish[dayName].capitalize()
+
+            # Dodanie do słownika
+            date_list[x] = day_name_polish
+            print(date_list)
 
         return date_list
     ################### end days of month list create #################################
@@ -136,12 +143,6 @@ def docschedule(request):
                     form.save()
                 messages.success(request, "Terminarz Lekarza został zaktualizowany")
             else:
-                #check doctor shedule - visit today
-                # ch_v = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
-                #
-                # if ch_v:
-                #     messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
-                # else:
                  print('')
 
     else:
@@ -724,6 +725,7 @@ def panel(request, date):
     get_date = current_path.replace('/', '')
 
     day_type = DoctorSchedule.objects.filter(date=date).values()
+    print(day_type)
     day_type_f = FizSchedule.objects.filter(date=date).values()
 
     if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Pracujący'):
@@ -1172,96 +1174,93 @@ def create_visit(request):
     return render(request, 'vita/panel/create_visit.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd': vdate, 'vt': vtime, 'vo': vo, 'persons': persons })
 
 
-def create_visit_f(request):
-    full_path = request.get_full_path()
-    current_path = full_path[full_path.index('/', 1):]
-
-    get_date = current_path.replace('/', '')
-
-    vdate_f = request.POST.get('date')
-    vtime_f = request.POST.get('time')
-    vo_f = request.POST.get('office')
-
-    persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street')
-
-    if request.method == "POST":
-
-        cform = RegisterUserForm(request.POST)
-        cp_form = PatientRegisterForm(request.POST)
-        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
-        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-        select_form = request.POST.get('select_form')
-
-        if cform.is_valid() and cp_form.is_valid():
-            if int(select_form) == 1:
-                last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-                c_form = cform.save(commit=False)
-                first_name = str(request.POST.get('first_name')).capitalize()
-                last_name = str(request.POST.get('last_name')).capitalize()
-                c_form.first_name = first_name
-                c_form.last_name = last_name
-                c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
-                c_form.password = make_password(BaseUserManager().make_random_password())
-                c_form.email = 'stacjonarny@megavita.pl'
-                c_form.save()
-
-                # set next id_patient number
-                if len(last_id_patient) < 1:
-                    next_id_patient = 1
-                else:
-                    next_id_patient = last_id_patient[0]['id_patient'] + 1
-
-                p_form_obj = cp_form.save(commit=False)
-                p_form_obj.user_id = last_user_id
-                p_form_obj.id_patient = next_id_patient
-                p_form_obj.save()
-                messages.success(request, (
-                    f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-                return redirect('/panel/patients')
-            else:
-                form = RegisterUserForm(request.POST)
-                pp_form = PatientRegisterForm(request.POST)
-
-                if form.is_valid() and pp_form.is_valid():
-                    form.save()
-                    username = form.cleaned_data['username']
-                    password = form.cleaned_data['password1']
-                    user = authenticate(username=username, password=password)
-
-                    # set next id_patient number
-                if last_id_patient[0]['id_patient'] is None:
-                    next_id_patient = 1
-                else:
-                    next_id_patient = last_id_patient[0]['id_patient'] + 1
-
-                pp_form_obj = pp_form.save(commit=False)
-                pp_form_obj.user_id = last_user_id
-                pp_form_obj.id_patient = next_id_patient
-
-                pp_form_obj.save()
-                messages.success(request, (
-                    f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-                return redirect('/panel/patients')
-
-        else:
-            # print(cform.errors)
-            cform = RegisterUserForm()
-            cp_form = PatientRegisterForm()
-            form = RegisterUserForm()
-            pp_form = PatientRegisterForm()
-    else:
-        cform = RegisterUserForm()
-        cp_form = PatientRegisterForm()
-        form = RegisterUserForm()
-        pp_form = PatientRegisterForm()
-    x = f'stacjonarny{random.sample(range(999), 1)[0]}'
-    user_x = x
-
-
-    return render(request, 'vita/panel/create_visit_f.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd_f': vdate_f, 'vt_f': vtime_f, 'vo_f': vo_f, 'persons': persons })
-
-
-
+# def create_visit_f(request):
+#     full_path = request.get_full_path()
+#     current_path = full_path[full_path.index('/', 1):]
+#
+#     get_date = current_path.replace('/', '')
+#
+#     vdate_f = request.POST.get('date')
+#     vtime_f = request.POST.get('time')
+#     vo_f = request.POST.get('office')
+#
+#     persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street')
+#
+#     if request.method == "POST":
+#
+#         cform = RegisterUserForm(request.POST)
+#         cp_form = PatientRegisterForm(request.POST)
+#         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
+#         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+#         select_form = request.POST.get('select_form')
+#
+#         if cform.is_valid() and cp_form.is_valid():
+#             if int(select_form) == 1:
+#                 last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+#                 c_form = cform.save(commit=False)
+#                 first_name = str(request.POST.get('first_name')).capitalize()
+#                 last_name = str(request.POST.get('last_name')).capitalize()
+#                 c_form.first_name = first_name
+#                 c_form.last_name = last_name
+#                 c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
+#                 c_form.password = make_password(BaseUserManager().make_random_password())
+#                 c_form.email = 'stacjonarny@megavita.pl'
+#                 c_form.save()
+#
+#                 # set next id_patient number
+#                 if len(last_id_patient) < 1:
+#                     next_id_patient = 1
+#                 else:
+#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
+#
+#                 p_form_obj = cp_form.save(commit=False)
+#                 p_form_obj.user_id = last_user_id
+#                 p_form_obj.id_patient = next_id_patient
+#                 p_form_obj.save()
+#                 messages.success(request, (
+#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+#                 return redirect('/panel/patients')
+#             else:
+#                 form = RegisterUserForm(request.POST)
+#                 pp_form = PatientRegisterForm(request.POST)
+#
+#                 if form.is_valid() and pp_form.is_valid():
+#                     form.save()
+#                     username = form.cleaned_data['username']
+#                     password = form.cleaned_data['password1']
+#                     user = authenticate(username=username, password=password)
+#
+#                     # set next id_patient number
+#                 if last_id_patient[0]['id_patient'] is None:
+#                     next_id_patient = 1
+#                 else:
+#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
+#
+#                 pp_form_obj = pp_form.save(commit=False)
+#                 pp_form_obj.user_id = last_user_id
+#                 pp_form_obj.id_patient = next_id_patient
+#
+#                 pp_form_obj.save()
+#                 messages.success(request, (
+#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+#                 return redirect('/panel/patients')
+#
+#         else:
+#             # print(cform.errors)
+#             cform = RegisterUserForm()
+#             cp_form = PatientRegisterForm()
+#             form = RegisterUserForm()
+#             pp_form = PatientRegisterForm()
+#     else:
+#         cform = RegisterUserForm()
+#         cp_form = PatientRegisterForm()
+#         form = RegisterUserForm()
+#         pp_form = PatientRegisterForm()
+#     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
+#     user_x = x
+#
+#
+#     return render(request, 'vita/panel/create_visit_f.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd_f': vdate_f, 'vt_f': vtime_f, 'vo_f': vo_f, 'persons': persons })
 
 
 def create_new_visit(request):
@@ -1680,11 +1679,11 @@ def reserve_list(request):
 
 def create_reserve_list(request):
 
-    get_all = ReversList.objects.filter(patient_id=2).values()
-    patient_ids = get_all[0]['patient_id']
-    get_patient = Patient.objects.filter(id_patient=patient_ids).values()
-    get_user = User.objects.filter(id=patient_ids).values()
-    get_visit = Visits.objects.filter(patient_id=patient_ids).values().count()
+    get_all = ReversList.objects.all().exists()
+    # patient_ids = get_all[0]['patient_id']
+    # get_patient = Patient.objects.filter(id_patient=patient_ids).values()
+    # get_user = User.objects.filter(id=patient_ids).values()
+    # get_visit = Visits.objects.filter(patient_id=patient_ids).values().count()
     persons = User.objects.select_related('patient__user').values('patient__id', 'patient__user__first_name',
                                                                   'patient__user__last_name', 'patient__city',
                                                                   'patient__street', )  # filter(Q(first_name__icontains=q) | Q(last_name__icontains=q)
@@ -1697,11 +1696,8 @@ def create_reserve_list(request):
     else:
         messages.warning(request, 'Nie dodano jeszcze żadnego pacjenta do listy rezerwowej')
 
-    # cform = RegisterUserForm(request.POST)
-    # cp_form = PatientRegisterForm(request.POST)
 
     if request.method == 'POST':
-        print('ok')
         cform = RegisterUserForm(request.POST)
         cp_form = PatientRegisterForm(request.POST)
         v_form = ReserveForm(request.POST)
@@ -1727,7 +1723,10 @@ def create_reserve_list(request):
                   vv_form = v_form.save(commit=False)
                   vv_form.date = request.POST['date']
                   vv_form.time = request.POST['time']
-                  vv_form.status = '1'
+                  vv_form.status_name = request.POST['priority']
+                  vv_form.call = '0'
+                  vv_form.phone = '0'
+                  vv_form.description = 'brak'
                   check_visit_nr = ReversList.objects.filter(patient_id = pid).values().last()#check visist number
 
                   if check_visit_nr:
@@ -1743,9 +1742,9 @@ def create_reserve_list(request):
                   vv_form.office = request.POST['office']
                   vv_form.patient_id = pid
                   vv_form.save()
+                  messages.success(request, 'Dodano  pacjenta do listy rezerwowej')
+                  return redirect('/panel/reserve_list')
               else:
-                  print(cform.errors)
-                  print(cp_form.errors)
                   print(v_form.errors)
 
         else:
@@ -1788,7 +1787,10 @@ def create_reserve_list(request):
                         vv_form = v_form.save(commit=False)
                         vv_form.date = request.POST['date']
                         vv_form.time = request.POST['time']
-                        vv_form.status = '1'
+                        vv_form.status_name = request.POST['priority']
+                        vv_form.call = '0'
+                        vv_form.phone = '0'
+                        vv_form.description = 'brak'
                         vv_form.visit = '1'
                         vv_form.office = request.POST['office']
                         last_user_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
@@ -1797,22 +1799,26 @@ def create_reserve_list(request):
                         else:
                             vv_form.patient_id = last_user_id
                         vv_form.save()
+                        messages.success(request, 'Dodano  pacjenta do listy rezerwowej')
+                        return redirect('/panel/reserve_list')
                     else:
                         print(v_form.errors)
 
     else:
-        print('nie post')
-        cform = RegisterUserForm(request.POST)
-        cp_form = PatientRegisterForm(request.POST)
-        v_form = ReserveForm(request.POST)
+        cform = RegisterUserForm()
+        cp_form = PatientRegisterForm()
+        v_form = ReserveForm()
 
     today = date.today()
     today.strftime('%Y-%m-%d')
+    x = f'stacjonarny{random.sample(range(999), 1)[0]}'
+    user_x = x
 
     context = {
         'cform': cform,
         'cp_form': cp_form,
         'persons': persons,
-        'today': today
+        'today': today,
+        'user_x': user_x
     }
     return render(request, 'vita/panel/create_reserve_list.html', context)
