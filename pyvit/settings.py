@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'vita.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'pyvit.urls'
@@ -70,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'vita.context_processors.counts',
             ],
         },
     },
@@ -87,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME'    : 'test',
         'USER'    : 'postgres',
-        'PASSWORD': 'postgresql',
+        'PASSWORD': 'postgres',
         'HOST'    : 'localhost',
         'PORT'    : '5432',
     }
@@ -157,3 +159,5 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 RECAPTCHA_PUBLIC_KEY = '6LddA3kgAAAAAPf1mAJmEc7Ku0cssbD5QMha09NT'
 RECAPTCHA_PRIVATE_KEY = '6LddA3kgAAAAAJY-2-Q0J3QX83DFJwFR1hXqmN8q'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+SESSION_COOKIE_AGE = 300

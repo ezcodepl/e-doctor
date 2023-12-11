@@ -34,7 +34,7 @@ class Patient(models.Model):
     street = models.CharField(max_length=255, blank=True, null=True)
     phone = models.IntegerField(blank=True, null=True)
     pesel = models.CharField(max_length=11, blank=True, null=True)
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.CharField(null=True, blank=True)
     insurance_number = models.CharField(max_length=255, blank=True, null=True)
     notes = tinymce_models.HTMLField(blank=True, null=True)
     id_healt = models.IntegerField(blank=True, null=True) #id kasa chorych

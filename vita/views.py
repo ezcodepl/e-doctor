@@ -38,11 +38,6 @@ from django.views.generic.edit import FormView
 from django.db import connection
 register = template.Library()
 
-
-# Create your views here.
-
-# Home links
-################################################################################################
 def home(request):
     return render(request, "vita/home.html")
 
@@ -78,7 +73,7 @@ def docschedule(request):
 
             # Dodanie do słownika
             date_list[x] = day_name_polish
-            print(date_list)
+            #print(date_list)
 
         return date_list
     ################### end days of month list create #################################
@@ -112,7 +107,6 @@ def docschedule(request):
         dsdy = request.GET.get('year')
         dsdd = '01'
         dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
-        print(type(dsd))
         formatted_date = dsd.strftime('%Y-%m-%d')
 
 
@@ -121,7 +115,7 @@ def docschedule(request):
     if check_schedule:
         messages.error(request, "Na ten miesiąc już utworzono kalendarz")
         x = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d'))
-        print(x.query)
+        #print(x.query)
         form = DoctorsScheduleForm(request.POST)
 
         if request.method == 'POST':
@@ -150,7 +144,7 @@ def docschedule(request):
         # if schedule not save in datebase - create it
 
         form = DoctorsScheduleForm(request.POST)
-        print(form.errors)
+        #print(form.errors)
         if request.method == "POST":
 
             if form.is_valid():
@@ -235,7 +229,7 @@ def fizschedule(request):
         dsdy = request.GET.get('year')
         dsdd = '01'
         dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
-        print(type(dsd))
+        #print(type(dsd))
         formatted_date = dsd.strftime('%Y-%m-%d')
 
     check_schedule = FizSchedule.objects.filter(date=formatted_date).first()
@@ -865,10 +859,6 @@ def panel(request, date):
     date_check_f = datetime.today()
     td_f = date_check_f.strftime('%Y-%m-%d')
 
-    # information about visits www and cancel
-    count_v_www = Visits.objects.filter(status=5).count()
-    count_cancel = Visits.objects.filter(status=2).count()
-
     context = {
         'td': td,
         'td_f': td_f,
@@ -880,9 +870,7 @@ def panel(request, date):
         'patient_name': get_patient,
         'freeday': freeday,
         'freeday_f': freeday_f,
-        'today': today,
-        'count_www': count_v_www,
-        'count_cancel': count_cancel
+        'today': today
     }
 
     return render(request, "vita/panel/panel.html", context)
@@ -1822,3 +1810,5 @@ def create_reserve_list(request):
         'user_x': user_x
     }
     return render(request, 'vita/panel/create_reserve_list.html', context)
+
+
