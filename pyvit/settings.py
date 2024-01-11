@@ -90,7 +90,7 @@ DATABASES = {
         'NAME'    : 'test',
         'USER'    : 'postgres',
         'PASSWORD': 'postgres',
-        'HOST'    : 'localhost',
+        'HOST'    : 'localhost', # if run docker compose set HOST : db
         'PORT'    : '5432',
     }
 }
