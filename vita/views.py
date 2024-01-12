@@ -76,7 +76,7 @@ def docschedule(request):
             #print(date_list)
 
         return date_list
-    ################### end days of month list create #################################
+    ################### end days of month list create ###############################
     def get_days_of_month_list():
         get_days_list = DoctorSchedule.objects.all().values()
 
