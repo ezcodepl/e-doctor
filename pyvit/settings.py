@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-4yv$3gjc3-g167(an95or4#dw$t8p=rr*l)s-a_%)#agos7#58
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'vita.middleware.SessionTimeoutMiddleware',
+   # 'vita.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'pyvit.urls'
@@ -90,7 +90,7 @@ DATABASES = {
         'NAME'    : 'test',
         'USER'    : 'postgres',
         'PASSWORD': 'postgres',
-        'HOST'    : 'localhost', # if run docker compose set HOST : db
+        'HOST'    : 'db', # if run docker compose set HOST : db
         'PORT'    : '5432',
     }
 }

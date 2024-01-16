@@ -1290,7 +1290,7 @@ def create_new_visit(request):
                   if check_visit_nr:
                       #visit_nr = int(check_visit_nr['visit']) + 1
                       visits_count = Visits.objects.filter(patient_id=pid).count()
-                      visit_f_count = Visits_f.objects.filter(patient_id=pid).count()
+                      visit_f_count = Visits.objects.filter(patient_id=pid).count()
                       total_count = visits_count + visit_f_count
                       print(total_count)
                       visit_nr = total_count + 1

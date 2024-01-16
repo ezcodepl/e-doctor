@@ -144,6 +144,7 @@ def add_default_records_status(sender, **kwargs):
         if not StatusVisist.objects.exists():
             StatusVisist.objects.create(status_name='umówiona', description='umówiona')
             StatusVisist.objects.create(status_name='odwołana', description='odwołana')
+            StatusVisist.objects.create(status_name='odbyła się', description='odbyła się')
             StatusVisist.objects.create(status_name='nie odbyła się', description='nie odbyła się')
             StatusVisist.objects.create(status_name='www', description='www')
             StatusVisist.objects.create(status_name='odwołana www', description='odwołana www')
