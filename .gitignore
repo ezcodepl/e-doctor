@@ -1,7 +1,7 @@
- .idea/workspace.xml
-        vita/__pycache__/context_processors.cpython-311.pyc
-        vita/__pycache__/middleware.cpython-311.pyc
-        vita/media/
-        vita/migrations/0001_initial.py
-        vita/templatetags/__pycache__/
+.idea/workspace.xml
+vita/__pycache__/context_processors.cpython-311.pyc
+vita/__pycache__/middleware.cpython-311.pyc
+vita/media/
+vita/migrations/0001_initial.py
+vita/templatetags/__pycache__/
 
