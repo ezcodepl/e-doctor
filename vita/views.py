@@ -10,7 +10,7 @@ from django.core.files.storage import FileSystemStorage
 from itertools import groupby, zip_longest
 from django import template
 from django.urls import resolve, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, response
 from django.shortcuts import render
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1360,7 +1360,7 @@ def create_new_visit(request):
                     else:
                         print(v_form.errors)
     else:
-        print('')
+        print(response.status_code)
         # cform = RegisterUserForm()
         # cp_form = PatientRegisterForm()
         # form = RegisterUserForm()
