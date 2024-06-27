@@ -1812,3 +1812,11 @@ def create_reserve_list(request):
     return render(request, 'vita/panel/create_reserve_list.html', context)
 
 
+def show_all_temporary_visits(request):
+    temporary_visits = Visits.objects.all()
+    print(temporary_visits)
+
+    context = {
+
+    }
+    return render(request, 'vita/panel/temporaray_visits.html', context)
