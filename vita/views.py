@@ -41,25 +41,151 @@ register = template.Library()
 def home(request):
     return render(request, "vita/home.html")
 
+# def docschedule(request):
+#
+#     today = datetime.now()
+#     def months():
+#         months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
+#                   '7': 'Lipiec',
+#                   '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'}
+#         return months
+#
+#     ##################### days of month list create ######################################
+#     def days_of_month_list():
+#         if request.GET.get('year') and request.GET.get('month'):
+#             y = int(request.GET.get('year'))
+#             m = int(request.GET.get('month'))
+#             btn_y = int(request.GET.get('year'))
+#         else:
+#             y = today.year
+#             m = today.month
+#             btn_y = today.year
+#
+#         day_names_polish = [
+#             "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"
+#         ]
+#         date_list = {}
+#         for d in range(1, monthrange(y, m)[1] + 1):
+#             x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
+#             dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
+#             # date_list[x] = calendar.day_name[dayName].capitalize()
+#             day_name_polish = day_names_polish[dayName].capitalize()
+#
+#             # Dodanie do słownika
+#             date_list[x] = day_name_polish
+#             #print(date_list)
+#
+#         return date_list
+#     ################### end days of month list create ##############################
+#     def get_days_of_month_list():
+#         get_days_list = DoctorSchedule.objects.all().values()
+#
+#         return get_days_list
+#
+#     get_days_list = get_days_of_month_list() # get days list from function get_days_of_month_list()
+#
+#     months = months()
+#     date_list = days_of_month_list()
+#
+#     btn_today = today.year
+#     btn_today_1 = today.year + 1
+#     btn_today_2 = today.year + 2
+#
+#     if request.GET.get('year') and request.GET.get('month'):
+#         btn_y = int(request.GET.get('year'))
+#     else:
+#         btn_y = today.year
+#
+#     #check if date exist in docschedule
+#
+#     if request.GET.get('month') == None and request.GET.get('year') == None:
+#
+#         dsd = today.date()
+#         formatted_date = dsd.strftime('%Y-%m-%d')
+#     else:
+#         dsdm = request.GET.get('month')
+#         dsdy = request.GET.get('year')
+#         dsdd = '01'
+#         dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
+#         formatted_date = dsd.strftime('%Y-%m-%d')
+#
+#
+#     check_schedule = DoctorSchedule.objects.filter(date=formatted_date).first() #today.strftime('%Y-%m-%d')
+#
+#     if check_schedule:
+#         messages.error(request, "Na ten miesiąc już utworzono kalendarz")
+#         x = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d'))
+#         #print(x.query)
+#         form = DoctorsScheduleForm(request.POST)
+#
+#         if request.method == 'POST':
+#
+#             if not check_schedule:
+#                 x1 = request.POST  # get data from request and getlist from QueryDict
+#                 data_l = x1.getlist('data')
+#                 day_type_l = x1.getlist('day_type')
+#                 work_hours_l = x1.getlist('work_hours_start')
+#                 scheme_l = x1.getlist('scheme')
+#                 official_hours_l = x1.getlist('official_hours_start')
+#
+#                 for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+#                                                                               official_hours_l, scheme_l):
+#                     post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
+#                                  'official_hours': official_hours, 'scheme': scheme}
+#                     # print(post_dict)
+#                     form = DoctorsScheduleForm(post_dict)
+#                     form.save()
+#                 messages.success(request, "Terminarz Lekarza został zaktualizowany")
+#             else:
+#                  print('')
+#
+#     else:
+#         messages.warning(request, "Nie utworzono jeszcze terminarza")
+#         # if schedule not save in datebase - create it
+#
+#         form = DoctorsScheduleForm(request.POST)
+#         #print(form.errors)
+#         if request.method == "POST":
+#
+#             if form.is_valid():
+#                   x1 = request.POST #get data from request and getlist from QueryDict
+#                   data_l = x1.getlist('data')
+#                   day_type_l = x1.getlist('day_type')
+#                   work_hours_l = x1.getlist('work_hours_start')
+#                   scheme_l = x1.getlist('scheme')
+#                   official_hours_l = x1.getlist('official_hours_start')
+#
+#                   for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
+#
+#                       post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
+#                       #print(post_dict)
+#                       form = DoctorsScheduleForm(post_dict)
+#                       form.save()
+#
+#             else:
+#                 form = DoctorsScheduleForm()
+#
+#     return render(request, "vita/panel/docschedule.html", {'form': form, 'date_list': date_list,'months': months,
+#                                                          'today': today, 'get_days_list':get_days_list,
+#                                                          'btn_today':btn_today, 'btn_today_1': btn_today_1,
+#                                                          'btn_today_2': btn_today_2, 'btn_y': btn_y} )
+
 def docschedule(request):
-
     today = datetime.now()
-    def months():
-        months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
-                  '7': 'Lipiec',
-                  '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'}
-        return months
 
-    ##################### days of month list create ######################################
+    def months():
+        return {
+            '1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
+            '7': 'Lipiec', '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'
+        }
+
     def days_of_month_list():
         if request.GET.get('year') and request.GET.get('month'):
             y = int(request.GET.get('year'))
             m = int(request.GET.get('month'))
-            btn_y = int(request.GET.get('year'))
         else:
             y = today.year
             m = today.month
-            btn_y = today.year
 
         day_names_polish = [
             "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"
@@ -68,22 +194,15 @@ def docschedule(request):
         for d in range(1, monthrange(y, m)[1] + 1):
             x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
             dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
-            # date_list[x] = calendar.day_name[dayName].capitalize()
             day_name_polish = day_names_polish[dayName].capitalize()
-
-            # Dodanie do słownika
             date_list[x] = day_name_polish
-            #print(date_list)
 
         return date_list
-    ################### end days of month list create ##############################
+
     def get_days_of_month_list():
-        get_days_list = DoctorSchedule.objects.all().values()
+        return DoctorSchedule.objects.all().values()
 
-        return get_days_list
-
-    get_days_list = get_days_of_month_list() # get days list from function get_days_of_month_list()
-
+    get_days_list = get_days_of_month_list()
     months = months()
     date_list = days_of_month_list()
 
@@ -96,79 +215,49 @@ def docschedule(request):
     else:
         btn_y = today.year
 
-    #check if date exist in docschedule
-
-    if request.GET.get('month') == None and request.GET.get('year') == None:
-
+    # Sprawdzanie daty na podstawie GET parametrów lub domyślnej wartości
+    if request.GET.get('month') is None and request.GET.get('year') is None:
         dsd = today.date()
-        formatted_date = dsd.strftime('%Y-%m-%d')
     else:
         dsdm = request.GET.get('month')
         dsdy = request.GET.get('year')
         dsdd = '01'
         dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
-        formatted_date = dsd.strftime('%Y-%m-%d')
 
+    formatted_date = dsd.strftime('%Y-%m-%d')
 
-    check_schedule = DoctorSchedule.objects.filter(date=formatted_date).first() #today.strftime('%Y-%m-%d')
+    check_schedule = DoctorSchedule.objects.filter(date__year=dsd.year, date__month=dsd.month).exists()
 
     if check_schedule:
         messages.error(request, "Na ten miesiąc już utworzono kalendarz")
-        x = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d'))
-        #print(x.query)
-        form = DoctorsScheduleForm(request.POST)
-
-        if request.method == 'POST':
-
-            if not check_schedule:
-                x1 = request.POST  # get data from request and getlist from QueryDict
-                data_l = x1.getlist('data')
-                day_type_l = x1.getlist('day_type')
-                work_hours_l = x1.getlist('work_hours_start')
-                scheme_l = x1.getlist('scheme')
-                official_hours_l = x1.getlist('official_hours_start')
-
-                for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
-                                                                              official_hours_l, scheme_l):
-                    post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
-                                 'official_hours': official_hours, 'scheme': scheme}
-                    # print(post_dict)
-                    form = DoctorsScheduleForm(post_dict)
-                    form.save()
-                messages.success(request, "Terminarz Lekarza został zaktualizowany")
-            else:
-                 print('')
-
     else:
         messages.warning(request, "Nie utworzono jeszcze terminarza")
-        # if schedule not save in datebase - create it
 
+    if request.method == 'POST':
         form = DoctorsScheduleForm(request.POST)
-        #print(form.errors)
-        if request.method == "POST":
+        if form.is_valid():
+            data_l = request.POST.getlist('data')
+            day_type_l = request.POST.getlist('day_type')
+            work_hours_l = request.POST.getlist('work_hours_start')
+            scheme_l = request.POST.getlist('scheme')
+            official_hours_l = request.POST.getlist('official_hours_start')
 
-            if form.is_valid():
-                  x1 = request.POST #get data from request and getlist from QueryDict
-                  data_l = x1.getlist('data')
-                  day_type_l = x1.getlist('day_type')
-                  work_hours_l = x1.getlist('work_hours_start')
-                  scheme_l = x1.getlist('scheme')
-                  official_hours_l = x1.getlist('official_hours_start')
+            for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+                                                                          official_hours_l, scheme_l):
+                schedule, created = DoctorSchedule.objects.update_or_create(
+                    date=date,
+                    defaults={'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours,
+                              'scheme': scheme}
+                )
+            messages.success(request, "Terminarz Lekarza został zaktualizowany")
 
-                  for date, day_type, work_hours, official_hours, scheme in zip(data_l,day_type_l,work_hours_l,official_hours_l,scheme_l):
+    else:
+        form = DoctorsScheduleForm()
 
-                      post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours, 'scheme': scheme}
-                      #print(post_dict)
-                      form = DoctorsScheduleForm(post_dict)
-                      form.save()
-
-            else:
-                form = DoctorsScheduleForm()
-
-    return render(request, "vita/panel/docschedule.html", {'form': form, 'date_list': date_list,'months': months,
-                                                         'today': today, 'get_days_list':get_days_list,
-                                                         'btn_today':btn_today, 'btn_today_1': btn_today_1,
-                                                         'btn_today_2': btn_today_2, 'btn_y': btn_y} )
+    return render(request, "vita/panel/docschedule.html", {
+        'form': form, 'date_list': date_list, 'months': months, 'today': today, 'get_days_list': get_days_list,
+        'btn_today': btn_today, 'btn_today_1': btn_today_1, 'btn_today_2': btn_today_2, 'btn_y': btn_y
+    })
 
 def fizschedule(request):
     today = datetime.now()
