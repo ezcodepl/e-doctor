@@ -68,14 +68,22 @@
                                             <input type="hidden" name="data" value="{{day}}" />
                                          </td>
                                            <td class="p-1">
+
                                             <select name="day_type">
-                                               {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                                    <option value="Wolny" selected>Wolny</option>
-                                                    <option value="Pracujący">Pracujący</option>
+                                                  {% for day_type in get_days_list %}
+                                                {% if day_type.date|date:"Y-m-d" == day %}
+                                                     {% if day_type.day_type == 'Pracujący' %}
+                                                        <option value="Pracujący" selected>Pracujący</option>
+                                                         <option value="Wolny">Wolny</option>
+                                                        {% else %}
+                                                        <option value="Wolny" selected>Wolny</option>
+                                                        <option value="Pracujący" >Pracujący</option>
+                                                         {% endif %}
                                                 {% else %}
-                                                    <option value="Pracujący" selected>Pracujący</option>
-                                                    <option value="Wolny" >Wolny</option>
-                                                {% endif %}
+                                                    brak
+                                               {% endif %}
+
+                                              {% endfor %}
                                             </select>
                                         </td>
                                             {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
