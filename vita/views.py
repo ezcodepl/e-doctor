@@ -181,8 +181,8 @@ def docschedule(request):
 
     def days_of_month_list():
         if request.GET.get('year') and request.GET.get('month'):
-            y = int(request.GET.get('year'))
-            m = int(request.GET.get('month'))
+            y = int(request.GET.get('year'))  # Rzutujemy na int
+            m = int(request.GET.get('month'))  # Rzutujemy na int
         else:
             y = today.year
             m = today.month
@@ -199,39 +199,23 @@ def docschedule(request):
 
         return date_list
 
-    def get_days_of_month_list():
-        return DoctorSchedule.objects.all().values()
-
-    get_days_list = get_days_of_month_list()
-    months = months()
-    date_list = days_of_month_list()
+    def get_days_of_month_list(year, month):
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month, monthrange(year, month)[1])
+        return list(DoctorSchedule.objects.filter(date__range=[start_date, end_date]).values())
 
     btn_today = today.year
     btn_today_1 = today.year + 1
     btn_today_2 = today.year + 2
 
     if request.GET.get('year') and request.GET.get('month'):
-        btn_y = int(request.GET.get('year'))
+        btn_y = int(request.GET.get('year'))  # Rzutujemy na int
     else:
         btn_y = today.year
 
-    # Sprawdzanie daty na podstawie GET parametrów lub domyślnej wartości
-    if request.GET.get('month') is None and request.GET.get('year') is None:
-        dsd = today.date()
-    else:
-        dsdm = request.GET.get('month')
-        dsdy = request.GET.get('year')
-        dsdd = '01'
-        dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
+    date_list = days_of_month_list()
 
-    formatted_date = dsd.strftime('%Y-%m-%d')
-
-    check_schedule = DoctorSchedule.objects.filter(date__year=dsd.year, date__month=dsd.month).exists()
-
-    if check_schedule:
-        messages.error(request, "Na ten miesiąc już utworzono kalendarz")
-    else:
-        messages.warning(request, "Nie utworzono jeszcze terminarza")
+    get_days_list = get_days_of_month_list(btn_y, int(request.GET.get('month', today.month)))  # Rzutujemy na int
 
     if request.method == 'POST':
         form = DoctorsScheduleForm(request.POST)
@@ -250,7 +234,6 @@ def docschedule(request):
                               'scheme': scheme}
                 )
             messages.success(request, "Terminarz Lekarza został zaktualizowany")
-
     else:
         form = DoctorsScheduleForm()
 
@@ -258,6 +241,7 @@ def docschedule(request):
         'form': form, 'date_list': date_list, 'months': months, 'today': today, 'get_days_list': get_days_list,
         'btn_today': btn_today, 'btn_today_1': btn_today_1, 'btn_today_2': btn_today_2, 'btn_y': btn_y
     })
+
 
 def fizschedule(request):
     today = datetime.now()
@@ -378,6 +362,8 @@ def fizschedule(request):
 
             else:
                 form = FizScheduleForm()
+
+
 
     return render(request, "vita/panel/fizschedule.html", {'form': form, 'date_list': date_list, 'months': months,
                                                          'today': today, 'get_days_list': get_days_list,

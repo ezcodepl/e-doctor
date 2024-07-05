@@ -1,8 +1,8 @@
 {% extends 'vita/panel/adminbase.html' %}
 {% load crispy_forms_tags %}
-{% block content %}
 {% load tz %}
 {% load i18n %}
+{% block content %}
     <div class="page-heading">
         <div class="page-title">
             <div class="row mb-2">
@@ -13,13 +13,8 @@
         </div>
         <section class="section">
             <div class="card">
-<!--                                <div class="card-header">-->
-<!--                                    <h4 class="card-title">Example Content</h4>-->
-<!--                                </div>-->
-
                 <div class="card-body">
-
-                  <form  method="POST" enctype="multipart/form-data">
+                  <form method="POST" enctype="multipart/form-data">
                       {% csrf_token %}
 
                     <div class="row p-3 text-center">
@@ -27,7 +22,7 @@
                         <div class="text-center p-2">
                             <a role="button" class="btn btn-info" href='docschedule?month={{today.month}}&year={{btn_today}}'>{{ btn_today }}</a>
                             <a role="button" class="btn btn-info" href='docschedule?month={{today.month}}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
-                            <a role="button" class="btn btn-info" href='docchedule?month={{today.month}}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
+                            <a role="button" class="btn btn-info" href='docschedule?month={{today.month}}&year={{btn_today_2}}'>{{ btn_today_2 }}</a>
                         </div>
                         {% for nr, month in months.items %}
                               <div class="col text-center">
@@ -67,69 +62,48 @@
                                             </a>
                                             <input type="hidden" name="data" value="{{day}}" />
                                          </td>
-                                           <td class="p-1">
+                                         <td class="p-1">
 
-                                            <select name="day_type">
-                                                  {% for day_type in get_days_list %}
-                                                {% if day_type.date|date:"Y-m-d" == day %}
-                                                     {% if day_type.day_type == 'Pracujący' %}
-                                                        <option value="Pracujący" selected>Pracujący</option>
-                                                         <option value="Wolny">Wolny</option>
+                                             <select name="day_type">
+
+                                                {% for schedule in get_days_list %}
+                                                    {% if schedule.date|date:"Y-m-d" == day %}
+                                                        {% if schedule.day_type == "Pracujący" %}
+                                                            <option value="Pracujący" selected>Pracujący</option>
+                                                            <option value="Wolny">Wolny</option>
                                                         {% else %}
-                                                        <option value="Wolny" selected>Wolny</option>
-                                                        <option value="Pracujący" >Pracujący</option>
-                                                         {% endif %}
-                                                {% else %}
-                                                    brak
-                                               {% endif %}
-
-                                              {% endfor %}
+                                                            <option value="Pracujący">Pracujący</option>
+                                                            <option value="Wolny" selected>Wolny</option>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
                                             </select>
-                                        </td>
-                                            {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                            <td class="p-1 text-center" ><input name="official_hours_start" type="hidden" value="08:00-19:00" /></td>
-                                            <td class="p-1 text-center" ><input name="work_hours_start" type="hidden" value="08:00-21:00" /></td>
-                                            <td class="p-1 text-center" >
-                                                <select name="scheme" hidden>
-                                                    <option value="10">10 min</option>
-                                                    <option value="15">15 min</option>
-                                                    <option value="20">20 min</option>
-                                                    <option value="25">25 min</option>
-                                                    <option value="30" selected>30 min</option>
-                                                </select>
-                                            </td>
-
-                                           {% else %}
-                                           <td class="p-1 text-center"><input name="official_hours_start" type="text" value="08:00-19:00" /></td>
-                                            <td class="p-1 text-center"><input name="work_hours_start" type="text" value="08:00-21:00" /></td>
-                                           <td class="p-1 text-center">
-                                                <select name="scheme">
-                                                    <option value="10">10 min</option>
-                                                    <option value="15">15 min</option>
-                                                    <option value="20">20 min</option>
-                                                    <option value="25">25 min</option>
-                                                    <option value="30" selected>30 min</option>
-                                                </select>
-                                           </td>
-                                           {% endif %}
-                                            <td class="p-1 text-center">0</td>
-
+                                         </td>
+                                         <td class="p-1 text-center">
+                                             <input name="official_hours_start" type="text" value="08:00-19:00" />
+                                         </td>
+                                         <td class="p-1 text-center">
+                                             <input name="work_hours_start" type="text" value="08:00-21:00" />
+                                         </td>
+                                         <td class="p-1 text-center">
+                                             <select name="scheme">
+                                                 <option value="10">10 min</option>
+                                                 <option value="15">15 min</option>
+                                                 <option value="20">20 min</option>
+                                                 <option value="25">25 min</option>
+                                                 <option value="30">30 min</option>
+                                             </select>
+                                         </td>
+                                         <td class="p-1 text-center">0</td>
                                        </tr>
-
                                 {% endfor %}
-
-
                             </tbody>
                         </table>
                       </div>
                     <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
                   </form>
                 </div>
-
             </div>
         </section>
-
     </div>
-
-
 {% endblock %}
