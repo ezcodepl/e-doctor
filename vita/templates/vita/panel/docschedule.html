@@ -66,23 +66,45 @@
                                                 <input type="hidden" name="data" value="{{ day }}" />
                                             </td>
                                          <td class="p-1">
-                                            <select name="day_type">
-                                                {% for d_key, d_value in day_schedule.items %}
-                                                    {% if d_key == day %}
+                                              <select name="day_type">
+                                              {% for d_value in get_days_list %}
+                                                   {% if d_value.date|date:"Y-m-d" == day %}
                                                         <option value="Pracujący" {% if d_value.day_type == "Pracujący" %}selected{% endif %}>Pracujący</option>
                                                         <option value="Wolny" {% if d_value.day_type == "Wolny" %}selected{% endif %}>Wolny</option>
                                                     {% endif %}
                                                 {% empty %}
                                                     {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
                                                         <option value="Pracujący" selected>Pracujący</option>
+                                                        <option value="Wolny" >Wolny</option>
                                                     {% elif d_name == 'Sobota' and d_value.day_type == "Pracujący" or d_name == 'Niedziela' and d_value.day_type == 'Pracujący' %}
                                                          <option value="Pracujący" selected>Pracujący</option>
-                                                         <option value="Wolny" selected>Wolny</option>
+                                                         <option value="Wolny" >Wolny</option>
                                                     {% else %}
                                                          <option value="Wolny" selected>Wolny</option>
+                                                         <option value="Pracujący" >Pracujący</option>
                                                     {% endif %}
                                                 {% endfor %}
-                                            </select>
+                                                  </select>
+<!--                                            <select name="day_type">-->
+<!--                                                {% for d_value in get_days_list %}-->
+<!--                                                  {{d_value.day_type}}-->
+<!--                                                    {% if d_value.day_type == day %}-->
+<!--                                                        <option value="{{d_value.day_type}}" {% if d_value.day_type == "Pracujący" %}selected{% endif %}>{{d_value.day_type}}</option>-->
+<!--                                                        <option value="{{d_value.day_type}}" {% if d_value.day_type == "Wolny" %}selected{% endif %}>{{d_value.day_type}}</option>-->
+<!--                                                    {% endif %}-->
+<!--                                                {% empty %}-->
+<!--                                                    {% if d_name != 'Sobota' and d_name != 'Niedziela' %}-->
+<!--                                                        <option value="Pracujący" selected>Pracujący</option>-->
+<!--                                                        <option value="Wolny" >Wolny</option>-->
+<!--                                                    {% elif d_name == 'Sobota' and d_value.day_type == "Pracujący" or d_name == 'Niedziela' and d_value.day_type == 'Pracujący' %}-->
+<!--                                                         <option value="Pracujący" selected>Pracujący</option>-->
+<!--                                                         <option value="Wolny" >Wolny</option>-->
+<!--                                                    {% else %}-->
+<!--                                                         <option value="Wolny" selected>Wolny</option>-->
+<!--                                                         <option value="Pracujący" >Pracujący</option>-->
+<!--                                                    {% endif %}-->
+<!--                                                {% endfor %}-->
+<!--                                            </select>-->
                                         </td>
 
                                            <td class="p-1 text-center">
