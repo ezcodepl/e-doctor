@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-4yv$3gjc3-g167(an95or4#dw$t8p=rr*l)s-a_%)#agos7#58
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','192.168.100.5']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -160,4 +160,4 @@ RECAPTCHA_PUBLIC_KEY = '6LddA3kgAAAAAPf1mAJmEc7Ku0cssbD5QMha09NT'
 RECAPTCHA_PRIVATE_KEY = '6LddA3kgAAAAAJY-2-Q0J3QX83DFJwFR1hXqmN8q'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
-SESSION_COOKIE_AGE = 900
+SESSION_COOKIE_AGE = 300
