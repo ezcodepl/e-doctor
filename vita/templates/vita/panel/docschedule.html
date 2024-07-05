@@ -87,31 +87,47 @@
                                                   </select>
                                         </td>
                                         <td class="p-1 text-center">
-                                             <input name="official_hours_start" type="text" value="{% if schedule %}{{ schedule.official_hours }}{% else %}08:00-19:00{% endif %}" />
+                                            {% for of_h in get_days_list %}
+                                                {% if of_h.date|date:"Y-m-d" == day %}
+                                                    <input name="official_hours_start" type="text" value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}" />
+                                                {% endif %}
+                                            {% empty %}
+                                                <input name="official_hours_start" type="text" value="08:00-19:00" />
+                                            {% endfor %}
                                          </td>
                                          <td class="p-1 text-center">
-                                             <input name="work_hours_start" type="text" value="{% if schedule %}{{ schedule.work_hours }}{% else %}08:00-21:00{% endif %}" />
+
+                                              {% for wk_h in get_days_list %}
+                                                {% if wk_h.date|date:"Y-m-d" == day %}
+                                                     <input name="work_hours_start" type="text" value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
+                                                {% endif %}
+                                             {% empty %}
+                                                 <input name="work_hours_start" type="text" value="08:00-21:00" />
+
+                                            {% endfor %}
                                          </td>
                                            <td class="p-1 text-center">
-                                                <select name="scheme">
-                                                    {% if day_schedule %}
-                                                        {% for d, schedule in day_schedule.items %}
-                                                            {% if d == day %}
-                                                                <option value="10" {% if schedule.scheme == 10 %}selected{% endif %}>10 min</option>
-                                                                <option value="15" {% if schedule.scheme == 15 %}selected{% endif %}>15 min</option>
-                                                                <option value="20" {% if schedule.scheme == 20 %}selected{% endif %}>20 min</option>
-                                                                <option value="25" {% if schedule.scheme == 25 %}selected{% endif %}>25 min</option>
-                                                                <option value="30" {% if schedule.scheme == 30 %}selected{% endif %}>30 min</option>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% else %}
+
+                                                 {% for sh_h in get_days_list %}
+                                                     {% if sh_h.date|date:"Y-m-d" == day %}
+                                                        <select name="scheme">
+                                                            <option value="10" {% if sh_h.scheme == "10" %}selected{% endif %}>10 min</option>
+                                                            <option value="15" {% if sh_h.scheme == "15" %}selected{% endif %}>15 min</option>
+                                                            <option value="20" {% if sh_h.scheme == "20" %}selected{% endif %}>20 min</option>
+                                                            <option value="25" {% if sh_h.scheme == "25" %}selected{% endif %}>25 min</option>
+                                                            <option value="30" {% if sh_h.scheme == "30" %}selected{% endif %}>30 min</option>
+                                                        </select>
+                                                      {% endif %}
+                                                 {% empty %}
+                                                      <select name="scheme">
                                                         <option value="10">10 min</option>
                                                         <option value="15">15 min</option>
                                                         <option value="20">20 min</option>
                                                         <option value="25">25 min</option>
                                                         <option value="30">30 min</option>
-                                                    {% endif %}
-                                                </select>
+                                                       </select>
+                                                 {% endfor %}
+
                                             </td>
                                             <td class="p-1 text-center">0</td>
                                         </tr>
