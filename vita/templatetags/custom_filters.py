@@ -13,3 +13,10 @@ def get_by_time(schedule, time):
         if item['time'] == time:
             return item
     return None
+
+@register.filter
+def dictkey(value, key):
+    try:
+        return value[key]
+    except KeyError:
+        return None
