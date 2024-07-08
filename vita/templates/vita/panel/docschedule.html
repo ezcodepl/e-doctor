@@ -29,13 +29,26 @@
                             </div>
                             {% for nr, month in months.items %}
                                 <div class="col text-center">
-                                    {% if btn_y == btn_today_1 %}
-                                        <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_1 }}">{{ month|upper }}</a>
-                                    {% elif btn_y == btn_today_2 %}
-                                        <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_2 }}">{{ month|upper }}</a>
+
+                                    {% if nr == today|date:"n" %}
+                                        {% if btn_y == btn_today_1 %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today_1 }}">{{ month|upper }}</a>
+                                        {% elif btn_y == btn_today_2 %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today_2 }}">{{ month|upper }}</a>
+                                        {% else %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today }}">{{ month|upper }}</a>
+                                        {% endif %}
                                     {% else %}
-                                        <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today }}">{{ month|upper }}</a>
+                                        {% if btn_y == btn_today_1 %}
+                                        <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_1 }}">{{ month|upper }}</a>
+                                        {% elif btn_y == btn_today_2 %}
+                                            <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_2 }}">{{ month|upper }}</a>
+                                        {% else %}
+                                            <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today }}">{{ month|upper }}</a>
+                                        {% endif %}
+
                                     {% endif %}
+
                                 </div>
                             {% endfor %}
                         </div>

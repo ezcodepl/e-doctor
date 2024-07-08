@@ -237,6 +237,7 @@ def docschedule(request):
     else:
         form = DoctorsScheduleForm()
 
+
     return render(request, "vita/panel/docschedule.html", {
         'form': form, 'date_list': date_list, 'months': months, 'today': today, 'get_days_list': get_days_list,
         'btn_today': btn_today, 'btn_today_1': btn_today_1, 'btn_today_2': btn_today_2, 'btn_y': btn_y
