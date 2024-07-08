@@ -56,6 +56,7 @@ urlpatterns = [
     path('patient/doctor_visits/', doctor_visits, name='doctor_visits'),
     path('patient/doctor_visits/<int:offset>/', doctor_visits, name='doctor_visits'),
 
+
     # path('create_visit/date=<str:get_date>&time=<int:hour>', create_visit, name='create_visit'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -25,6 +25,7 @@ urlpatterns = [
     path('panel/pause_visit', views.pause_visit, name='pause_visit'),
     path('panel/reserve_list', views.reserve_list, name='reserve_list'),
     path('panel/create_reserve_list', views.create_reserve_list, name='create_reserve_list'),
+    path('panel/doctors_weekly_plan/', views.doctors_weekly_plan, name='doctors_weekly_plan'),
 
 
 
