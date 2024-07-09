@@ -1,8 +1,11 @@
 {% extends 'vita/panel/adminbase.html' %}
+
 {% load crispy_forms_tags %}
-{% block content %}
 {% load tz %}
 {% load i18n %}
+{% load custom_filters %}
+
+{% block content %}
     <div class="page-heading">
         <div class="page-title">
             <div class="row mb-2">
@@ -13,115 +16,157 @@
         </div>
         <section class="section">
             <div class="card">
-<!--                                <div class="card-header">-->
-<!--                                    <h4 class="card-title">Example Content</h4>-->
-<!--                                </div>-->
-
                 <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-                  <form  method="POST" enctype="multipart/form-data">
-                      {% csrf_token %}
+                        <div class="row p-3 text-center">
+                            {% include 'vita/messages.html' %}
+                            <div class="text-center p-2">
+                                <a role="button" class="btn btn-info" href='docschedule?month={{ today.month }}&year={{ btn_today }}'>{{ btn_today }}</a>
+                                <a role="button" class="btn btn-info" href='docschedule?month={{ today.month }}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
+                                <a role="button" class="btn btn-info" href='docschedule?month={{ today.month }}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
+                            </div>
+                            {% for nr, month in months.items %}
+                                <div class="col text-center">
 
-                    <div class="row p-3 text-center">
-                        {% include 'vita/messages.html' %}
-                        <div class="text-center p-2">
-                            <a role="button" class="btn btn-info" href='docschedule?month={{today.month}}&year={{btn_today}}'>{{ btn_today }}</a>
-                            <a role="button" class="btn btn-info" href='docschedule?month={{today.month}}&year={{ btn_today_1 }}'>{{ btn_today_1 }}</a>
-                            <a role="button" class="btn btn-info" href='docchedule?month={{today.month}}&year={{ btn_today_2 }}'>{{ btn_today_2 }}</a>
+                                    {% if nr == today|date:"n" %}
+                                        {% if btn_y == btn_today_1 %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today_1 }}">{{ month|upper }}</a>
+                                        {% elif btn_y == btn_today_2 %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today_2 }}">{{ month|upper }}</a>
+                                        {% else %}
+                                            <a role="button" class="btn btn-success p-2" href="docschedule?month={{ nr }}&year={{ btn_today }}">{{ month|upper }}</a>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if btn_y == btn_today_1 %}
+                                        <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_1 }}">{{ month|upper }}</a>
+                                        {% elif btn_y == btn_today_2 %}
+                                            <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today_2 }}">{{ month|upper }}</a>
+                                        {% else %}
+                                            <a role="button" class="btn btn-primary p-2" href="docschedule?month={{ nr }}&year={{ btn_today }}">{{ month|upper }}</a>
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% for nr, month in months.items %}
-                              <div class="col text-center">
-                                  {% if btn_y == btn_today_1 %}
-                                     <a role="button" class="btn btn-primary p-2" href="docschedule?month={{nr}}&year={{btn_today_1}}">{{month|upper}}</a>
-                                  {% elif btn_y == btn_today_2 %}
-                                     <a role="button" class="btn btn-primary p-2" href="docschedule?month={{nr}}&year={{btn_today_2}}">{{month|upper}}</a>
-                                  {% else %}
-                                     <a role="button" class="btn btn-primary p-2" href="docschedule?month={{nr}}&year={{btn_today}}">{{month|upper}}</a>
-                                  {% endif %}
-                              </div>
-                        {% endfor %}
-                    </div>
-                      <div class="table-responsive">
-                           <table class="table table-striped table-sm">
-                            <thead class="text-light" style="background: #26396F;">
-                              <tr>
-                                <th>Data</th>
-                                <th class="text-center">Dzień pracy</th>
-                                <th class="text-center">Godziny oficjalne</th>
-                                <th class="text-center">Godziny pracy</th>
-                                <th class="text-center">Przedział</th>
-                                <th class="text-center">Ilość wizyt</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                                {% for day, d_name in date_list.items %}
-                                       <tr>
-                                         <td class="p-1">
-                                            <a href="/panel/{{day}}">
-                                               <b>{{ day }} </b> -
-                                                 {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                                    <span class="text-danger">{{ d_name }}</span>
-                                                 {% else %}
-                                                    <span class="text-success">{{ d_name }}</span>
-                                                 {% endif %}
-                                            </a>
-                                            <input type="hidden" name="data" value="{{day}}" />
-                                         </td>
-                                           <td class="p-1">
-                                            <select name="day_type">
-                                               {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                                    <option value="Wolny" selected>Wolny</option>
-                                                    <option value="Pracujący">Pracujący</option>
-                                                {% else %}
-                                                    <option value="Pracujący" selected>Pracujący</option>
-                                                    <option value="Wolny" >Wolny</option>
-                                                {% endif %}
-                                            </select>
-                                        </td>
-                                            {% if d_name == 'Sobota' or d_name == 'Niedziela'  %}
-                                            <td class="p-1 text-center" ><input name="official_hours_start" type="hidden" value="08:00-19:00" /></td>
-                                            <td class="p-1 text-center" ><input name="work_hours_start" type="hidden" value="08:00-21:00" /></td>
-                                            <td class="p-1 text-center" >
-                                                <select name="scheme" hidden>
-                                                    <option value="10">10 min</option>
-                                                    <option value="15">15 min</option>
-                                                    <option value="20">20 min</option>
-                                                    <option value="25">25 min</option>
-                                                    <option value="30" selected>30 min</option>
-                                                </select>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm">
+                                <thead class="text-light" style="background: #26396F;">
+                                    <tr>
+                                        <th>Data</th>
+                                        <th class="text-center">Dzień pracy</th>
+                                        <th class="text-center">Godziny oficjalne</th>
+                                        <th class="text-center">Godziny pracy</th>
+                                        <th class="text-center">Przedział</th>
+                                        <th class="text-center">Ilość wizyt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for day, d_name in date_list.items %}
+                                        <tr>
+                                            <td class="p-1">
+                                                <a href="/panel/{{ day }}">
+                                                    <b>{{ day }} </b> -
+                                                    {% if d_name == 'Sobota' or d_name == 'Niedziela' %}
+                                                        <span class="text-danger">{{ d_name }}</span>
+                                                    {% else %}
+                                                        <span class="text-success">{{ d_name }}</span>
+                                                    {% endif %}
+                                                </a>
+                                                <input type="hidden" name="data" value="{{ day }}" />
                                             </td>
+                                         <td class="p-1">
+                                              <select name="day_type">
+                                              {% for d_value in get_days_list %}
+                                                   {% if d_value.date|date:"Y-m-d" == day %}
+                                                        <option value="Pracujący" {% if d_value.day_type == "Pracujący" %}selected{% endif %}>Pracujący</option>
+                                                        <option value="Wolny" {% if d_value.day_type == "Wolny" %}selected{% endif %}>Wolny</option>
+                                                    {% endif %}
+                                                {% empty %}
+                                                    {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+                                                        <option value="Pracujący" selected>Pracujący</option>
+                                                        <option value="Wolny" >Wolny</option>
+                                                    {% elif d_name == 'Sobota' and d_value.day_type == "Pracujący" or d_name == 'Niedziela' and d_value.day_type == 'Pracujący' %}
+                                                         <option value="Pracujący" selected>Pracujący</option>
+                                                         <option value="Wolny" >Wolny</option>
+                                                    {% else %}
+                                                         <option value="Wolny" selected>Wolny</option>
+                                                         <option value="Pracujący" >Pracujący</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                  </select>
+                                        </td>
+                                        <td class="p-1 text-center">
+                                            {% for of_h in get_days_list %}
+                                                {% if of_h.date|date:"Y-m-d" == day %}
 
-                                           {% else %}
-                                           <td class="p-1 text-center"><input name="official_hours_start" type="text" value="08:00-19:00" /></td>
-                                            <td class="p-1 text-center"><input name="work_hours_start" type="text" value="08:00-21:00" /></td>
+                                                       <input name="official_hours_start" type="text" value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}" />
+
+                                                {% endif %}
+                                            {% empty %}
+
+                                                     <input name="official_hours_start" type="text" value="08:00-19:00" />
+
+                                            {% endfor %}
+                                         </td>
+                                         <td class="p-1 text-center">
+
+                                              {% for wk_h in get_days_list %}
+                                                {% if wk_h.date|date:"Y-m-d" == day %}
+
+                                                     <input name="work_hours_start" type="text" value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
+
+                                                {% endif %}
+                                             {% empty %}
+
+                                                  <input name="work_hours_start" type="text" value="08:00-21:00" />
+
+                                            {% endfor %}
+                                         </td>
                                            <td class="p-1 text-center">
-                                                <select name="scheme">
-                                                    <option value="10">10 min</option>
-                                                    <option value="15">15 min</option>
-                                                    <option value="20">20 min</option>
-                                                    <option value="25">25 min</option>
-                                                    <option value="30" selected>30 min</option>
-                                                </select>
-                                           </td>
-                                           {% endif %}
-                                            <td class="p-1 text-center">0</td>
 
-                                       </tr>
+                                                 {% for sh_h in get_days_list %}
+                                                     {% if sh_h.date|date:"Y-m-d" == day %}
 
-                                {% endfor %}
+                                                            <select name="scheme">
+                                                                <option value="10" {% if sh_h.scheme == "10" %}selected{% endif %}>10 min</option>
+                                                                <option value="15" {% if sh_h.scheme == "15" %}selected{% endif %}>15 min</option>
+                                                                <option value="20" {% if sh_h.scheme == "20" %}selected{% endif %}>20 min</option>
+                                                                <option value="25" {% if sh_h.scheme == "25" %}selected{% endif %}>25 min</option>
+                                                                <option value="30" {% if sh_h.scheme == "30" %}selected{% endif %}>30 min</option>
+                                                            </select>
 
+                                                      {% endif %}
+                                                 {% empty %}
 
-                            </tbody>
-                        </table>
-                      </div>
-                    <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
-                  </form>
+                                                      <select name="scheme">
+                                                        <option value="10">10 min</option>
+                                                        <option value="15">15 min</option>
+                                                        <option value="20">20 min</option>
+                                                        <option value="25">25 min</option>
+                                                        <option value="30" selected>30 min</option>
+                                                       </select>
+
+                                                 {% endfor %}
+                                            </td>
+                                            <td class="p-1 text-center">
+                                               {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+                                                0
+                                                {% else %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center"><input class="btn btn-success" type="submit" name="update_schedule" value="Uaktualnij terminarz" /></div>
+                    </form>
                 </div>
-
             </div>
         </section>
-
     </div>
-
-
 {% endblock %}

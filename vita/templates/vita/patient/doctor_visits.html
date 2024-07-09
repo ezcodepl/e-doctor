@@ -1,8 +1,10 @@
-{% extends 'base1.html' %}
-{% load custom_filters %}
-{% load crispy_forms_tags %}
-{% block content %}
+{% extends 'vita/panel/adminbase.html' %}
 
+{% load crispy_forms_tags %}
+{% load tz %}
+{% load i18n %}
+{% load custom_filters %}
+{% block content %}
 <div class="container py-5">
     {% include 'vita/messages.html' %}
     <h5 style="color:#32AFC7">wybierz wizytę lub wizyty</h5>

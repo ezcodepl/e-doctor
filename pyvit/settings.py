@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+   # 'django.middleware.AutoLogoutSessionMiddleware',
    # 'vita.middleware.SessionTimeoutMiddleware',
 ]
 
@@ -160,4 +161,4 @@ RECAPTCHA_PUBLIC_KEY = '6LddA3kgAAAAAPf1mAJmEc7Ku0cssbD5QMha09NT'
 RECAPTCHA_PRIVATE_KEY = '6LddA3kgAAAAAJY-2-Q0J3QX83DFJwFR1hXqmN8q'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
-SESSION_COOKIE_AGE = 300
+SESSION_COOKIE_AGE = 900
