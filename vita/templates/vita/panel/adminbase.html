@@ -218,28 +218,22 @@
                                         <li class="dropdown-header">
                                             <h6 style="color:#00B9EF;">Wizyty tymczasowe</h6>
                                         </li>
-                                        <li class="dropdown-item notification-item">
-                                            <a class="d-flex align-items-center" href="#">
-                                                <div class="notification-icon bg-primary">
-                                                    <i class="bi bi-cart-check"></i>
-                                                </div>
-                                                <div class="notification-text ms-4">
-                                                    <p class="notification-title font-bold">Successfully check out</p>
-                                                    <p class="notification-subtitle font-thin text-sm">Order ID #256</p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="dropdown-item notification-item">
-                                            <a class="d-flex align-items-center" href="#">
-                                                <div class="notification-icon bg-success">
-                                                    <i class="bi bi-file-earmark-check"></i>
-                                                </div>
-                                                <div class="notification-text ms-4">
-                                                    <p class="notification-title font-bold">Homework submitted</p>
-                                                    <p class="notification-subtitle font-thin text-sm">Algebra math homework</p>
-                                                </div>
-                                            </a>
-                                        </li>
+                                        {% for visit in all_visits_www %}
+                                            <li class="dropdown-item notification-item">
+
+                                                <a class="d-flex align-items-center" href="/panel/patients/{{visit.patient_id}}">
+
+                                                    <div class="notification-text ms-4">
+                                                        <p class="notification-title font-bold">{{visit.date}}</p>
+                                                        <p class="notification-subtitle font-thin text-sm">{{visit.time}} {{ visit.patient_first_name }} {{ visit.patient_last_name }}</p>
+                                                    </div><br>
+
+                                                </a>
+
+                                            </li>
+                                         {% endfor %}
+
+
                                         <li>
                                             <p class="text-center py-2 mb-0"><a href="#">Wszystkie wizyty tymczasowe</a></p>
                                         </li>

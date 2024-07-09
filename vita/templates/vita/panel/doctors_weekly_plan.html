@@ -63,8 +63,10 @@
 
                                         <td>
                                             {% if visit.status == '2' %}
-                                                ODBYŁA SIĘ
+                                                ODWOŁANA
                                             {% elif visit.status == '3' %}
+                                                ODBYŁA SIĘ
+                                             {% elif visit.status == '4' %}
                                                 NIE ODBYŁA SIĘ
                                             {% elif visit.status == '5' %}
                                                 <select name="status" style="font-size:10px;">

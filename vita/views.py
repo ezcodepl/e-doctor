@@ -808,6 +808,26 @@ def panel(request, date):
     date_check_f = datetime.today()
     td_f = date_check_f.strftime('%Y-%m-%d')
 
+    def get_visits_with_patient_data():
+        all_visits_www = Visits.objects.filter(status=5).select_related('patient__user').order_by('-date')[:5]
+
+        visits_data = []
+        for visit in all_visits_www:
+            visits_data.append({
+                'visit_id': visit.id,
+                'status': visit.status,
+                'date': visit.date,
+                'time': visit.time,
+                'patient_id': visit.patient_id,
+                'patient_first_name': visit.patient.user.first_name,
+                'patient_last_name': visit.patient.user.last_name,
+                # dodaj inne potrzebne pola
+            })
+
+        return visits_data
+
+    all_visits_www = get_visits_with_patient_data()
+
     context = {
         'td': td,
         'td_f': td_f,
@@ -819,7 +839,8 @@ def panel(request, date):
         'patient_name': get_patient,
         'freeday': freeday,
         'freeday_f': freeday_f,
-        'today': today
+        'today': today,
+        'all_visits_www': all_visits_www,
     }
 
     return render(request, "vita/panel/panel.html", context)
