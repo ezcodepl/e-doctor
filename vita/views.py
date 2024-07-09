@@ -1771,6 +1771,7 @@ def show_all_temporary_visits(request):
     return render(request, 'vita/panel/temporaray_visits.html', context)
 
 
+
 # def doctors_weekly_plan(request, offset=0, num_days=7):
 #     today = date.today()
 #     start_date = today + timedelta(days=offset)
@@ -1806,14 +1807,14 @@ def show_all_temporary_visits(request):
 #         work_hours = day_type.work_hours.split('-')
 #         start_time = datetime.strptime(work_hours[0], '%H:%M')
 #         end_time = datetime.strptime(work_hours[1], '%H:%M')
-#         scheme = int(day_type.scheme[:-1])  # Usuwamy ostatni znak "m" i konwertujemy na int
+#         #scheme = int(day_type.scheme[:-1])  # Usuwamy ostatni znak "m" i konwertujemy na int
+#         scheme = int(day_type.scheme)
 #
 #         h = []  # Lista godzin pracy
 #         current_time = start_time
-#         while current_time <= end_time:
+#         while current_time < end_time:
 #             h.append(current_time.strftime('%H:%M'))
 #             current_time += timedelta(minutes=scheme)
-#
 #
 #         # Pobieramy wizyty na dany dzień
 #         visits_dict = {}
