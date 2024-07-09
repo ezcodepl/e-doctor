@@ -1784,6 +1784,7 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
         'end_date': end_date,
         'week_days': [],
         'current_week_offset': offset,  # Add this to context
+        'today': today,
     }
 
     for i in range(num_days):
@@ -1823,6 +1824,7 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
                     'patient_last_name': matching_visit.patient.user.last_name,
                     'prupose_visit': matching_visit.prupose_visit.purpose_name,
                     'status': matching_visit.status,
+                    'id_patient': matching_visit.patient_id,
                 }
             else:
                 visits_dict[hour] = None
@@ -1832,6 +1834,7 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
             'day_name': day_name,
             'h': h,
             'visits': visits_dict,
+
         })
 
     return render(request, 'vita/panel/doctors_weekly_plan.html', context)

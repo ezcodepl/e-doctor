@@ -3,9 +3,15 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container py-5">
+<div class="page-heading"">
     {% include 'vita/messages.html' %}
-    <h5 style="color:#32AFC7">Wybierz wizytę lub wizyty</h5>
+      <div class="page-title">
+            <div class="row mb-2">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>Plan tygodniowy gabinetu lekarskiego</h3>
+                </div>
+            </div>
+        </div>
     <div class="row" id="basic-table">
 
         <div class="row mb-2" style="margin:0 auto;text-align:center;">
@@ -24,6 +30,7 @@
     </div>
 
     <div>
+
     <table class="table table-sm">
     <thead>
         <tr>
@@ -51,7 +58,8 @@
 
                                 {% if day.visits|get_item:hour %}
                                     {% with visit=day.visits|get_item:hour %}
-                                        <td class="text-bold-500 text-sm" >{{ visit.patient_first_name }} {{ visit.patient_last_name }}</td>
+                                         <td class="text-bold-500 text-sm" ><a href="/panel/patients/{{visit.id_patient}}" >  {{ visit.patient_first_name }} {{ visit.patient_last_name }}</a></td>
+
 
                                         <td>
                                             {% if visit.status == '2' %}
@@ -78,7 +86,8 @@
                                                 </select>
                                             {% endif %}
                                         </td>
-                                        <td class="text-bold-500 text-sm">{{ visit.prupose_visit }}</td>
+                                         <td class="text-bold-500 text-sm">{{ visit.prupose_visit }}</td>
+                                         <td><button type="button" class="btn btn-sm btn-danger">X</button></td>
                                     {% endwith %}
                                 {% else %}
 
@@ -90,7 +99,7 @@
                                             <div class="row" style="padding-right: 3px;">
                                                 <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{day.date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date|date:'Y-m-d'}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-success" value="+" />
@@ -99,7 +108,7 @@
                                             <div class="row">
                                                 <form novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{day.date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date|date:'Y-m-d'}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-warning" style="color:#000;font-weight:bold;" value='||' />
@@ -126,9 +135,9 @@
                     <table class="table table-sm valign-top bg-light">
                         <thead>
                                 <th>Godz.</th>
-                                <th>Pacjent</th>
-                                <th>Wizyta</th>
-                                <th>Cel</th>
+                                <th class="text-center">Pacjent</th>
+                                <th class="text-center">Wizyta</th>
+                                <th class="text-center">Cel</th>
                                 <th>Akcja</th>
                         </thead>
                         {% for hour in day.h %}
@@ -137,8 +146,9 @@
 
                                 {% if day.visits|get_item:hour %}
                                     {% with visit=day.visits|get_item:hour %}
-                                        <td>{{ visit.patient_first_name }} {{ visit.patient_last_name }}</td>
-                                        <td>{{ visit.prupose_visit }}</td>
+
+                                <td class="text-bold-500 text-sm" ><a href="/panel/patients/{{visit.id_patient}}" >  {{ visit.patient_first_name }} {{ visit.patient_last_name }}</a></td>
+
                                         <td>
                                             {% if visit.status == '2' %}
                                                 ODBYŁA SIĘ
@@ -164,18 +174,19 @@
                                                 </select>
                                             {% endif %}
                                         </td>
+                                         <td>{{ visit.prupose_visit }}</td>
                                     {% endwith %}
                                 {% else %}
 
                                     <td></td>
                                     <td></td>
-                                    <td>-</td>
+                                    <td></td>
                                     <td>
                                          <div class="d-flex flex-row">
                                             <div class="row" style="padding-right: 3px;">
                                                 <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{day.date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date|date:'Y-m-d'}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-success" value="+" />
@@ -184,7 +195,7 @@
                                             <div class="row">
                                                 <form novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{day.date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date|date:'Y-m-d'}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-warning" style="color:#000;font-weight:bold;" value='||' />
