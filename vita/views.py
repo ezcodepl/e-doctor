@@ -1771,6 +1771,75 @@ def show_all_temporary_visits(request):
     return render(request, 'vita/panel/temporaray_visits.html', context)
 
 
+# def doctors_weekly_plan(request, offset=0, num_days=7):
+#     today = date.today()
+#     start_date = today + timedelta(days=offset)
+#     end_date = start_date + timedelta(days=num_days - 1)
+#     td = datetime.today().strftime('%Y-%m-%d')
+#
+#     context = {
+#         'td': td,
+#         'start_date': start_date,
+#         'end_date': end_date,
+#         'week_days': []
+#     }
+#
+#     for i in range(num_days):
+#         current_date = start_date + timedelta(days=i)
+#         day_name = current_date.strftime('%A')
+#
+#         if day_name in ['Saturday', 'Sunday']:  # Pomijamy soboty i niedziele
+#             continue
+#
+#         # Pobieramy rodzaj dnia dla lekarza (Pracujący lub Wolny)
+#         day_type = DoctorSchedule.objects.filter(date=current_date).first()
+#
+#         if day_type is None:
+#             messages.error(request, f'Na {current_date} nie został jeszcze utworzony terminarz lekarza',
+#                            extra_tags='ds')
+#             continue
+#
+#         if day_type.day_type == 'Wolny':
+#             continue
+#
+#         # Pobieramy godziny pracy lekarza
+#         work_hours = day_type.work_hours.split('-')
+#         start_time = datetime.strptime(work_hours[0], '%H:%M')
+#         end_time = datetime.strptime(work_hours[1], '%H:%M')
+#         scheme = int(day_type.scheme[:-1])  # Usuwamy ostatni znak "m" i konwertujemy na int
+#
+#         h = []  # Lista godzin pracy
+#         current_time = start_time
+#         while current_time <= end_time:
+#             h.append(current_time.strftime('%H:%M'))
+#             current_time += timedelta(minutes=scheme)
+#
+#
+#         # Pobieramy wizyty na dany dzień
+#         visits_dict = {}
+#         visits = Visits.objects.filter(date=current_date, office=1).select_related('patient__user').order_by('time')
+#         for hour in h:
+#             matching_visit = visits.filter(time=hour).first()
+#             if matching_visit:
+#                 visits_dict[hour] = {
+#                     'patient_first_name': matching_visit.patient.user.first_name,
+#                     'patient_last_name': matching_visit.patient.user.last_name,
+#                     'prupose_visit': matching_visit.prupose_visit.purpose_name,
+#                     'status': matching_visit.status,
+#                 }
+#             else:
+#                 visits_dict[hour] = None
+#
+#         # Dodajemy dzień do listy tygodnia
+#         context['week_days'].append({
+#             'date': current_date,
+#             'day_name': day_name,
+#             'h': h,
+#             'visits': visits_dict,
+#         })
+#
+#     return render(request, 'vita/panel/doctors_weekly_plan.html', context)
+
 def doctors_weekly_plan(request, offset=0, num_days=7):
     today = date.today()
     start_date = today + timedelta(days=offset)
@@ -1806,11 +1875,12 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
         work_hours = day_type.work_hours.split('-')
         start_time = datetime.strptime(work_hours[0], '%H:%M')
         end_time = datetime.strptime(work_hours[1], '%H:%M')
-        scheme = int(day_type.scheme[:-1])  # Usuwamy ostatni znak "m" i konwertujemy na int
+        #scheme = int(day_type.scheme[:-1])  # Usuwamy ostatni znak "m" i konwertujemy na int
+        scheme = int(day_type.scheme)
 
         h = []  # Lista godzin pracy
         current_time = start_time
-        while current_time <= end_time:
+        while current_time < end_time:
             h.append(current_time.strftime('%H:%M'))
             current_time += timedelta(minutes=scheme)
 
