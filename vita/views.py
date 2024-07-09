@@ -119,43 +119,37 @@ def docschedule(request):
 
 def fizschedule(request):
     today = datetime.now()
+
     def months():
+        return {
+            '1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
+            '7': 'Lipiec', '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'
+        }
 
-        months = {'1': 'Styczeń', '2': 'Luty', '3': 'Marzec', '4': 'Kwiecień', '5': 'Maj', '6': 'Czerwiec',
-                  '7': 'Lipiec',
-                  '8': 'Sierpień', '9': 'Wrzesień', '10': 'Październik', '11': 'Listopad', '12': 'Grudzień'}
-        return months
-
-    ##################### days of month list create ######################################
     def days_of_month_list():
         if request.GET.get('year') and request.GET.get('month'):
-            y = int(request.GET.get('year'))
-            m = int(request.GET.get('month'))
-            btn_y = int(request.GET.get('year'))
+            y = int(request.GET.get('year'))  # Rzutujemy na int
+            m = int(request.GET.get('month'))  # Rzutujemy na int
         else:
             y = today.year
             m = today.month
-            btn_y = today.year
 
+        day_names_polish = [
+            "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"
+        ]
         date_list = {}
         for d in range(1, monthrange(y, m)[1] + 1):
             x = '{:04d}-{:02d}-{:02d}'.format(y, m, d)
             dayName = datetime.strptime(x, '%Y-%m-%d').weekday()
-            date_list[x] = calendar.day_name[dayName].capitalize()
+            day_name_polish = day_names_polish[dayName].capitalize()
+            date_list[x] = day_name_polish
 
         return date_list
 
-    ################### end days of month list create #################################
-
-    def get_days_of_month_list():
-        get_days_list = FizSchedule.objects.all().values()
-
-        return get_days_list
-
-    get_days_list = get_days_of_month_list()  # get days list from function get_days_of_month_list()
-
-    months = months()
-    date_list = days_of_month_list()
+    def get_days_of_month_list(year, month):
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month, monthrange(year, month)[1])
+        return list(FizSchedule.objects.filter(date__range=[start_date, end_date]).values())
 
     btn_today = today.year
     btn_today_1 = today.year + 1
@@ -166,83 +160,35 @@ def fizschedule(request):
     else:
         btn_y = today.year
 
-    # check_schedule = DoctorSchedule.objects.all().values('date')
-    if request.GET.get('month') == None and request.GET.get('year') == None:
+    date_list = days_of_month_list()
 
-        dsd = today.date()
-        formatted_date = dsd.strftime('%Y-%m-%d')
-    else:
-        dsdm = request.GET.get('month')
-        dsdy = request.GET.get('year')
-        dsdd = '01'
-        dsd = datetime(int(dsdy), int(dsdm), int(dsdd)).date()
-        #print(type(dsd))
-        formatted_date = dsd.strftime('%Y-%m-%d')
+    get_days_list = get_days_of_month_list(btn_y, int(request.GET.get('month', today.month)))
 
-    check_schedule = FizSchedule.objects.filter(date=formatted_date).first()
-
-    if check_schedule:
-        messages.error(request, "Na ten miesiąc już utworzono kalendarz")
+    if request.method == 'POST':
         form = FizScheduleForm(request.POST)
+        if form.is_valid():
+            data_l = request.POST.getlist('data')
+            day_type_l = request.POST.getlist('day_type')
+            work_hours_l = request.POST.getlist('work_hours_start')
+            scheme_l = request.POST.getlist('scheme')
+            official_hours_l = request.POST.getlist('official_hours_start')
 
-        if request.method == 'POST':
-
-            if not check_schedule:
-                x1 = request.POST  # get data from request and getlist from QueryDict
-                data_l = x1.getlist('data')
-                day_type_l = x1.getlist('day_type')
-                work_hours_l = x1.getlist('work_hours_start')
-                scheme_l = x1.getlist('scheme')
-                official_hours_l = x1.getlist('official_hours_start')
-
-                for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
-                                                                              official_hours_l, scheme_l):
-                    post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
-                                 'official_hours': official_hours, 'scheme': scheme}
-                    # print(post_dict)
-                    form = FizScheduleForm(post_dict)
-                    form.save()
-                messages.success(request, "Terminarz Lekarza został zaktualizowany")
-            else:
-                # check doctor shedule - visit today
-                # ch_v = DoctorSchedule.objects.filter(date=today.strftime('%Y-%m-%d')).exists()
-                #
-                # if ch_v:
-                #     messages.error(request, "Terminarz Lekarza został już na ten miesiąc ustalony")
-                # else:
-                print('')
-
+            for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
+                                                                          official_hours_l, scheme_l):
+                schedule, created = FizSchedule.objects.update_or_create(
+                    date=date,
+                    defaults={'day_type': day_type, 'work_hours': work_hours, 'official_hours': official_hours,
+                              'scheme': scheme}
+                )
+            messages.success(request, "Terminarz Fizykoterapii został zaktualizowany")
     else:
-        messages.warning(request, "Nie utworzono jeszcze terminarza")
-        # if schedule not save in datebase - create it
-        form = FizScheduleForm(request.POST)
-        if request.method == "POST":
-
-            if form.is_valid():
-                x1 = request.POST  # get data from request and getlist from QueryDict
-                data_l = x1.getlist('data')
-                day_type_l = x1.getlist('day_type')
-                work_hours_l = x1.getlist('work_hours_start')
-                scheme_l = x1.getlist('scheme')
-                official_hours_l = x1.getlist('official_hours_start')
-
-                for date, day_type, work_hours, official_hours, scheme in zip(data_l, day_type_l, work_hours_l,
-                                                                              official_hours_l, scheme_l):
-                    post_dict = {'date': date, 'day_type': day_type, 'work_hours': work_hours,
-                                 'official_hours': official_hours, 'scheme': scheme}
-                    # print(post_dict)
-                    form = FizScheduleForm(post_dict)
-                    form.save()
-
-            else:
-                form = FizScheduleForm()
+        form = FizScheduleForm()
 
 
-
-    return render(request, "vita/panel/fizschedule.html", {'form': form, 'date_list': date_list, 'months': months,
-                                                         'today': today, 'get_days_list': get_days_list,
-                                                         'btn_today': btn_today, 'btn_today_1': btn_today_1,
-                                                         'btn_today_2': btn_today_2, 'btn_y': btn_y})
+    return render(request, "vita/panel/fizschedule.html", {
+        'form': form, 'date_list': date_list, 'months': months, 'today': today, 'get_days_list': get_days_list,
+        'btn_today': btn_today, 'btn_today_1': btn_today_1, 'btn_today_2': btn_today_2, 'btn_y': btn_y
+    })
 
 
 def patients_list(request):
@@ -1824,14 +1770,20 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
         if day_type.day_type == 'Wolny':
             continue
 
-        work_hours = day_type.work_hours.split('-')
-        start_time = datetime.strptime(work_hours[0], '%H:%M')
-        end_time = datetime.strptime(work_hours[1], '%H:%M')
+        try:
+            work_hours = day_type.work_hours.split('-')
+            start_time = datetime.strptime(work_hours[0], '%H:%M')
+            end_time = datetime.strptime(work_hours[1], '%H:%M')
+            end_time += timedelta(minutes=1)  # Add one minute to include 21:00
+        except (ValueError, IndexError) as e:
+            messages.error(request, f'Nieprawidłowy format godzin pracy dla {current_date}: {day_type.work_hours}', extra_tags='ds')
+            continue
+
         scheme = int(day_type.scheme)
 
         h = []
         current_time = start_time
-        while current_time < end_time:
+        while current_time <= end_time:
             h.append(current_time.strftime('%H:%M'))
             current_time += timedelta(minutes=scheme)
 
@@ -1855,7 +1807,189 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
             'day_name': day_name,
             'h': h,
             'visits': visits_dict,
-
         })
 
     return render(request, 'vita/panel/doctors_weekly_plan.html', context)
+
+def fiz_weekly_plan(request, offset=0, num_days=7):
+    offset = int(offset)  # Ensure offset is an integer
+    today = date.today()
+    start_date = today + timedelta(days=offset * num_days)
+    end_date = start_date + timedelta(days=num_days - 1)
+    td = datetime.today().strftime('%Y-%m-%d')
+
+    context = {
+        'td': td,
+        'start_date': start_date,
+        'end_date': end_date,
+        'week_days': [],
+        'current_week_offset': offset,  # Add this to context
+        'today': today,
+    }
+
+    for i in range(num_days):
+        current_date = start_date + timedelta(days=i)
+        day_name = current_date.strftime('%A')
+
+        if day_name in ['Saturday', 'Sunday']:
+            continue
+
+        day_type = DoctorSchedule.objects.filter(date=current_date).first()
+
+        if day_type is None:
+            messages.error(request, f'Na {current_date} nie został jeszcze utworzony terminarz lekarza',
+                           extra_tags='ds')
+            continue
+
+        if day_type.day_type == 'Wolny':
+            continue
+
+        try:
+            work_hours = day_type.work_hours.split('-')
+            start_time = datetime.strptime(work_hours[0], '%H:%M')
+            end_time = datetime.strptime(work_hours[1], '%H:%M')
+            end_time += timedelta(minutes=1)  # Add one minute to include 21:00
+        except (ValueError, IndexError) as e:
+            messages.error(request, f'Nieprawidłowy format godzin pracy dla {current_date}: {day_type.work_hours}',
+                           extra_tags='ds')
+            continue
+
+        scheme = int(day_type.scheme)
+
+        h = []
+        current_time = start_time
+        while current_time <= end_time:
+            h.append(current_time.strftime('%H:%M'))
+            current_time += timedelta(minutes=scheme)
+
+        visits_dict = {}
+        visits = Visits.objects.filter(date=current_date, office=2).select_related('patient__user').order_by('time')
+        for hour in h:
+            matching_visit = visits.filter(time=hour).first()
+            if matching_visit:
+                visits_dict[hour] = {
+                    'patient_first_name': matching_visit.patient.user.first_name,
+                    'patient_last_name': matching_visit.patient.user.last_name,
+                    'prupose_visit': matching_visit.prupose_visit.purpose_name,
+                    'status': matching_visit.status,
+                    'id_patient': matching_visit.patient_id,
+                }
+            else:
+                visits_dict[hour] = None
+
+        context['week_days'].append({
+            'date': current_date,
+            'day_name': day_name,
+            'h': h,
+            'visits': visits_dict,
+        })
+    return render(request, 'vita/panel/fiz_weekly_plan.html', context)
+
+
+
+def get_available_doc(start_date, end_date):
+    available_slots = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        day_name = current_date.strftime('%A')
+
+        if day_name in ['Saturday', 'Sunday']:
+            current_date += timedelta(days=1)
+            continue
+
+        day_type = DoctorSchedule.objects.filter(date=current_date).first()
+
+        if day_type is None or day_type.day_type == 'Wolny':
+            current_date += timedelta(days=1)
+            continue
+
+        try:
+            work_hours = day_type.work_hours.split('-')
+            start_time = datetime.strptime(work_hours[0], '%H:%M')
+            end_time = datetime.strptime(work_hours[1], '%H:%M')
+            end_time += timedelta(minutes=1)  # Include the end hour
+        except (ValueError, IndexError):
+            current_date += timedelta(days=1)
+            continue
+
+        scheme = int(day_type.scheme)
+
+        current_time = start_time
+        while current_time <= end_time:
+            visit_time = current_time.strftime('%H:%M')
+            if not Visits.objects.filter(date=current_date, time=visit_time, office=1).exists():
+                available_slots.append({
+                    'date': current_date,
+                    'time': visit_time,
+                })
+                if len(available_slots) == 10:
+                    return available_slots
+            current_time += timedelta(minutes=scheme)
+
+        current_date += timedelta(days=1)
+
+    return available_slots
+
+def get_available_fiz(start_date, end_date):
+    available_slots_f = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        day_name = current_date.strftime('%A')
+
+        if day_name in ['Saturday', 'Sunday']:
+            current_date += timedelta(days=1)
+            continue
+
+        day_type = FizSchedule.objects.filter(date=current_date).first()
+
+        if day_type is None or day_type.day_type == 'Wolny':
+            current_date += timedelta(days=1)
+            continue
+
+        try:
+            work_hours = day_type.work_hours.split('-')
+            start_time = datetime.strptime(work_hours[0], '%H:%M')
+            end_time = datetime.strptime(work_hours[1], '%H:%M')
+            end_time += timedelta(minutes=1)  # Include the end hour
+        except (ValueError, IndexError):
+            current_date += timedelta(days=1)
+            continue
+
+        scheme = int(day_type.scheme)
+
+        current_time = start_time
+        while current_time <= end_time:
+            visit_time = current_time.strftime('%H:%M')
+            if not Visits.objects.filter(date=current_date, time=visit_time, office=2).exists():
+                available_slots_f.append({
+                    'date': current_date,
+                    'time': visit_time,
+                })
+                if len(available_slots_f) == 10:
+                    return available_slots_f
+            current_time += timedelta(minutes=scheme)
+
+        current_date += timedelta(days=1)
+
+    return available_slots_f
+
+def upcoming_appointments(request):
+    today = datetime.today().date()
+    end_date = today + timedelta(days=30)  # Arbitrary end date for searching available slots
+
+    available_slots = get_available_doc(today, end_date)
+    available_slots_f = get_available_fiz(today, end_date)
+
+    # Debugging: Print available slots to console
+    print("Available Slots:", available_slots)
+    # Debugging: Print available slots to console
+    print("Available Slots_F:", available_slots_f)
+
+    context = {
+        'available_slots': available_slots,
+        'available_slots_f': available_slots_f,
+    }
+
+    return render(request, 'vita/upcoming_appointments.html', context)

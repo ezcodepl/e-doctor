@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
-    patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits, reserve_list, doctors_weekly_plan
+    patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits, reserve_list, doctors_weekly_plan, fiz_weekly_plan
 
 
 
@@ -56,6 +56,7 @@ urlpatterns = [
     path('patient/doctor_visits/', doctor_visits, name='doctor_visits'),
     path('patient/doctor_visits/<int:offset>/', doctor_visits, name='doctor_visits'),
     path('panel/doctors_weekly_plan/<int:offset>/', doctors_weekly_plan, name='doctors_weekly_plan'),
+    path('panel/fiz_weekly_plan/<int:offset>/', fiz_weekly_plan, name='fiz_weekly_plan'),
 
 
     # path('create_visit/date=<str:get_date>&time=<int:hour>', create_visit, name='create_visit'),

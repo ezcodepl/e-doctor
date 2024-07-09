@@ -8,7 +8,7 @@
       <div class="page-title">
             <div class="row mb-2">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Plan tygodniowy gabinetu lekarskiego</h3>
+                    <h3>Plan tygodniowy gabinetu fizykoterapii</h3>
                 </div>
             </div>
         </div>
@@ -17,14 +17,14 @@
         <div class="row mb-2" style="margin:0 auto;text-align:center;">
             <div class="col">
                 {% if current_week_offset > 0 %}
-                    <a href="{% url 'doctors_weekly_plan' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
+                    <a href="{% url 'fiz_weekly_plan' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
                 {% else %}
-                    <a href="{% url 'doctors_weekly_plan' offset=0 %}" class="btn btn-primary text-light disabled">Poprzedni tydzień</a>
+                    <a href="{% url 'fiz_weekly_plan' offset=0 %}" class="btn btn-primary text-light disabled">Poprzedni tydzień</a>
                 {% endif %}
             </div>
             <div class="col"></div>
             <div class="col">
-                <a href="{% url 'doctors_weekly_plan' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
+                <a href="{% url 'fiz_weekly_plan' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
             </div>
         </div>
     </div>

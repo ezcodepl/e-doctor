@@ -26,6 +26,7 @@ urlpatterns = [
     path('panel/reserve_list', views.reserve_list, name='reserve_list'),
     path('panel/create_reserve_list', views.create_reserve_list, name='create_reserve_list'),
     path('panel/doctors_weekly_plan/', views.doctors_weekly_plan, name='doctors_weekly_plan'),
+    path('panel/fiz_weekly_plan/', views.fiz_weekly_plan, name='fiz_weekly_plan'),
 
 
 
@@ -44,4 +45,7 @@ urlpatterns = [
     path('patient/new-visit', views.new_visit, name='new_visit'),
     path('patient/appointments', views.appointments, name='appointments'),
     path('patient/history', views.history, name='history'),
+    path('upcoming_appointments', views.upcoming_appointments, name='upcoming_appointments'),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
