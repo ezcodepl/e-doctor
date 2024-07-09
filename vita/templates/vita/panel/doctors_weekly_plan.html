@@ -1,5 +1,4 @@
 {% extends 'vita/panel/adminbase.html' %}
-
 {% load custom_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
@@ -12,14 +11,14 @@
         <div class="row mb-2" style="margin:0 auto;text-align:center;">
             <div class="col">
                 {% if current_week_offset > 0 %}
-                    <a href="{% url 'doctor_visits' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
+                    <a href="{% url 'doctors_weekly_plan' offset=current_week_offset|add:'-1' %}" class="btn btn-primary text-light">Poprzedni tydzień</a>
                 {% else %}
-                    <a href="{% url 'doctor_visits' offset=0 %}" class="btn btn-primary text-light disabled">Poprzedni tydzień</a>
+                    <a href="{% url 'doctors_weekly_plan' offset=0 %}" class="btn btn-primary text-light disabled">Poprzedni tydzień</a>
                 {% endif %}
             </div>
             <div class="col"></div>
             <div class="col">
-                <a href="{% url 'doctor_visits' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
+                <a href="{% url 'doctors_weekly_plan' offset=current_week_offset|add:'1' %}" class="btn btn-primary text-light">Następny tydzień</a>
             </div>
         </div>
     </div>
@@ -91,7 +90,7 @@
                                             <div class="row" style="padding-right: 3px;">
                                                 <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{get_date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-success" value="+" />
@@ -100,7 +99,7 @@
                                             <div class="row">
                                                 <form novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{get_date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-warning" style="color:#000;font-weight:bold;" value='||' />
@@ -176,7 +175,7 @@
                                             <div class="row" style="padding-right: 3px;">
                                                 <form novalidate="" method="POST" action="{% url 'create_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{get_date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-success" value="+" />
@@ -185,7 +184,7 @@
                                             <div class="row">
                                                 <form novalidate="" name="pause" method="POST" action="{% url 'pause_visit' %}" enctype="multipart/form-data">
                                                     {% csrf_token %}
-                                                    <input type="hidden" name="date" value="{{get_date}}" />
+                                                    <input type="hidden" name="date" value="{{day.date}}" />
                                                     <input type="hidden" name="time" value="{{hour}}" />
                                                     <input type="hidden" name="office" value="1" />
                                                     <input type="submit" class="btn btn-sm btn-warning" style="color:#000;font-weight:bold;" value='||' />
