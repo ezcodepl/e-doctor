@@ -4,13 +4,14 @@ import random
 import os
 import datetime
 
-
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from itertools import groupby, zip_longest
 from django import template
-from django.urls import resolve, reverse
+from django.urls import resolve, reverse, reverse_lazy
 from django.http import HttpResponseRedirect, response
 from django.shortcuts import render
 from django.db.models import Q
@@ -39,6 +40,15 @@ from django.views.generic.edit import FormView
 from django.db import connection
 register = template.Library()
 
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'vita/patient/password_reset.html'
+    email_template_name = 'vita/patient/password_reset_email.html'
+    subject_template_name = 'vita/patient/password_reset_subject'
+    success_message = "Wysłaliśmy Ci instrukcje dotyczące ustawienia hasła, " \
+                      "jeśli istnieje konto z podanym przez Ciebie adresem e-mail, powinieneś je otrzymać wkrótce. " \
+                      " Jeśli nie otrzymasz e-maila, " \
+                      "upewnij się, że wpisałeś adres, którym został podany przyt rejestracji konta, i sprawdź folder spam."
+    success_url = '/login/'
 def home(request):
     return render(request, "vita/home.html")
 

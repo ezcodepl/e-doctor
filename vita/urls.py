@@ -4,6 +4,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from datetime import date, datetime
 
+from .views import ResetPasswordView
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
 
@@ -39,7 +42,16 @@ urlpatterns = [
 
     path('login', views.login_request, name='login_request'),
     path('logout', views.logout_request, name='logout_request'),
+    path('login/', auth_views.LoginView.as_view(template_name='vita/login.html'), name='login'),
+
     path("register", views.register_user, name="register_user"),
+    path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+                      template_name='vita/patient/password_reset_confirm.html'),
+                       name='password_reset_confirm'),
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),
+         name='password_reset_complete'),
 
     path("patient/profile", views.profile, name="profile"),
     path('patient/new-visit', views.new_visit, name='new_visit'),

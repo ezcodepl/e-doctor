@@ -24,8 +24,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% if available_slots_doc %}
-                                            {% for slot in available_slots_doc %}
+                                        {% if available_slots %}
+                                            {% for slot in available_slots %}
                                                 <tr>
                                                     <td>{{ forloop.counter }}.</td>
                                                     <td>{{ slot.date }}</td>
