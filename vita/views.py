@@ -25,7 +25,7 @@ from django.views.decorators.http import require_GET
 
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
-    VisitForm, VisitForm_f, DoctorVisitsForm, ReserveForm
+    VisitForm, VisitForm_f, DoctorVisitsForm, ReserveForm, FizVisitsForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, ReversList
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta, timezone
@@ -1576,6 +1576,113 @@ def doctor_visits(request, offset=0, num_days=14):
     }
 
     return render(request, 'vita/patient/doctor_visits.html', context)
+
+
+def fiz_visits(request, offset=0, num_days=14):
+
+    today = datetime.today()
+    week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
+    days_of_week = []
+
+    # Dodaj warunek sprawdzający, czy data istnieje w tabeli doctorschedule
+    for i in range(num_days):
+        current_day = week_start + timedelta(days=i)
+        if current_day.weekday() < 5 and current_day >= today and FizSchedule.objects.filter(
+                date=current_day).exists():
+            days_of_week.append(current_day)
+
+    schedule_table = []
+    time_slots = []
+
+    start_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=8)
+    end_time = datetime.combine(datetime.today(), datetime.min.time()) + timedelta(hours=21)
+
+    while start_time <= end_time:
+        time_str = start_time.strftime("%H:%M")
+        time_slots.append({
+            'time': time_str,
+            'header': start_time.strftime("%H:%M")
+        })
+        start_time += timedelta(minutes=30)
+
+    for i in range(0, num_days, 7):
+        week_schedule = []
+        for j in range(7):
+            # Sprawdź, czy indeks nie wykracza poza długość listy
+            if i + j < len(days_of_week):
+                day = days_of_week[i + j]
+                day_schedule = {
+                    'date': day,
+                    'schedule': []
+                }
+
+                for time_slot in time_slots:
+                    has_visit = Visits.objects.filter(date=day, time=time_slot['time']).exists()
+                    day_schedule['schedule'].append({
+                        'time': time_slot['time'],
+                        'header': time_slot['header'],
+                        'has_visit': has_visit
+                    })
+
+                week_schedule.append(day_schedule)
+
+        schedule_table.append(week_schedule)
+
+    available_slots = [
+        (f"{day_schedule['date']} {time_slot['time']}", f"{day_schedule['date']} {time_slot['time']}")
+        for week_schedule in schedule_table
+        for day_schedule in week_schedule
+        for time_slot in day_schedule['schedule']
+        if not time_slot['has_visit']
+    ]
+    if request.method == 'POST':
+        form = FizVisitsForm(request.POST)
+
+        if form.is_valid():
+            for sel in request.POST.getlist('sel_visit'):
+                sel_visit = sel.split(' ')
+
+               #check visit if exists
+                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id).first()
+                existing_schedule = FizSchedule.objects.filter(date=sel_visit[0]).first()
+                print(connection.queries[-1]['sql'])
+
+                if existing_schedule is None:
+                    messages.warning(request, (
+                        f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz "))
+                else:
+
+                    if existing_visit is None:
+                        # Wizyta nie istnieje, więc możemy ją dodać
+
+                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='2',
+                                        pay='0', cancel='0', prupose_visit_id='2', patient_id=request.user.id)
+                        s_form.save()
+                        messages.success(request, (
+                            f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} "))
+                    else:
+                        messages.warning(request, (
+                            f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana "))
+
+            return redirect('/patient/appointments')
+        else:
+            print("Formularz nie jest poprawny:", form.errors)
+    else:
+        form = FizVisitsForm()
+
+    day_type = FizSchedule.objects.all().values()
+
+    context = {
+        'schedule_table': schedule_table,
+        'time_slots': time_slots,
+        'visits': Visits.objects.all(),
+        'current_week_offset': offset,
+        'form': form,
+        'today': today,
+        'day_type': day_type
+    }
+
+    return render(request, 'vita/patient/fiz_visits.html', context)
 
 def reserve_list(request):
     is_empty = not ReversList.objects.exists()

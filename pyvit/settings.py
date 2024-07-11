@@ -164,8 +164,8 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 SESSION_COOKIE_AGE = 900
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '' # mail service smtp
-EMAIL_HOST_USER = '' # email id
-EMAIL_HOST_PASSWORD = '' #password
+EMAIL_HOST = 'gmail.com' # mail service smtp
+EMAIL_HOST_USER = 'powtrash2024@gmail.com' # email id
+EMAIL_HOST_PASSWORD = 'Powiatowysmietnik2024#' #password
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

@@ -171,6 +171,11 @@ class DoctorVisitsForm(forms.Form):
         model = Visits
         fields = ['date', 'time', 'status', 'visit', 'office', 'prupose_visit_id']
 
+class FizVisitsForm(forms.Form):
+    class Meta:
+        model = Visits
+        fields = ['date', 'time', 'status', 'visit', 'office', 'prupose_visit_id']
+
 class ReserveForm(forms.ModelForm):
     class Meta:
         model = ReversList
