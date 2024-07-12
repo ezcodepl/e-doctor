@@ -889,7 +889,6 @@ def panel(request, date):
             get_patient_f = User.objects.filter(id=check_visit_f[0]['patient_id']).values()
         else:
             get_patient_f = ''
-
         freeday_f = ''
     else:
         freeday_f = '' if day_type_f.exists() else 'Na ten dzień nie został jeszcze utworzony terminarz fizykoterapii'
