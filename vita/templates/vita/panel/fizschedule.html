@@ -80,61 +80,54 @@
                                             </td>
                                          <td class="p-1">
                                               <select name="day_type">
-                                              {% for d_value in get_days_list %}
-                                                   {% if d_value.date|date:"Y-m-d" == day %}
+                                                {% for d_value in get_days_list %}
+                                                    {% if d_value.date|date:"Y-m-d" == day %}
                                                         <option value="Pracujący" {% if d_value.day_type == "Pracujący" %}selected{% endif %}>Pracujący</option>
                                                         <option value="Wolny" {% if d_value.day_type == "Wolny" %}selected{% endif %}>Wolny</option>
                                                     {% endif %}
                                                 {% empty %}
                                                     {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
                                                         <option value="Pracujący" selected>Pracujący</option>
-                                                        <option value="Wolny" >Wolny</option>
-                                                    {% elif d_name == 'Sobota' and d_value.day_type == "Pracujący" or d_name == 'Niedziela' and d_value.day_type == 'Pracujący' %}
-                                                         <option value="Pracujący" selected>Pracujący</option>
-                                                         <option value="Wolny" >Wolny</option>
+                                                        <option value="Wolny">Wolny</option>
                                                     {% else %}
-                                                         <option value="Wolny" selected>Wolny</option>
-                                                         <option value="Pracujący" >Pracujący</option>
+                                                        <option value="Wolny" selected>Wolny</option>
+                                                        <option value="Pracujący">Pracujący</option>
                                                     {% endif %}
                                                 {% endfor %}
-                                                  </select>
+                                            </select>
                                         </td>
                                         <td class="p-1 text-center">
                                             {% for of_h in get_days_list %}
                                                 {% if of_h.date|date:"Y-m-d" == day %}
-                                                     {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                        <input name="official_hours_start" type="text" value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}" />
-                                                     {% endif %}
-                                                       <input name="official_hours_start" type="hidden" value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}" />
+
                                                 {% endif %}
                                             {% empty %}
-                                                     {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                        <input name="official_hours_start" type="text" value="08:00-19:00" />
-                                                     {% endif %}
-                                                     <input name="official_hours_start" type="hidden" value="08:00-19:00" />
+
                                             {% endfor %}
                                          </td>
                                          <td class="p-1 text-center">
 
                                               {% for wk_h in get_days_list %}
                                                 {% if wk_h.date|date:"Y-m-d" == day %}
-                                                   {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                      <input name="work_hours_start" type="text" value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
-                                                    {% endif %}
-                                                     <input name="work_hours_start" type="hidden" value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
+
                                                 {% endif %}
                                              {% empty %}
-                                                 {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                   <input name="work_hours_start" type="text" value="08:00-21:00" />
-                                                 {% endif %}
-                                                  <input name="work_hours_start" type="hidden" value="08:00-21:00" />
+
                                             {% endfor %}
                                          </td>
                                            <td class="p-1 text-center">
 
                                                  {% for sh_h in get_days_list %}
                                                      {% if sh_h.date|date:"Y-m-d" == day %}
-                                                        {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                             <select name="scheme">
                                                                 <option value="10" {% if sh_h.scheme == "10" %}selected{% endif %}>10 min</option>
                                                                 <option value="15" {% if sh_h.scheme == "15" %}selected{% endif %}>15 min</option>
@@ -142,10 +135,10 @@
                                                                 <option value="25" {% if sh_h.scheme == "25" %}selected{% endif %}>25 min</option>
                                                                 <option value="30" {% if sh_h.scheme == "30" %}selected{% endif %}>30 min</option>
                                                             </select>
-                                                            {% endif %}
+
                                                       {% endif %}
                                                  {% empty %}
-                                                    {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                       <select name="scheme">
                                                         <option value="10">10 min</option>
                                                         <option value="15">15 min</option>
@@ -153,14 +146,13 @@
                                                         <option value="25">25 min</option>
                                                         <option value="30" selected>30 min</option>
                                                        </select>
-                                                     {% endif %}
+
                                                  {% endfor %}
                                             </td>
                                             <td class="p-1 text-center">
-                                               {% if d_name != 'Sobota' and d_name != 'Niedziela' %}
+
                                                 0
-                                                {% else %}
-                                                {% endif %}
+
                                             </td>
                                         </tr>
                                     {% endfor %}
