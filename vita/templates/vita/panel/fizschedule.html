@@ -66,6 +66,7 @@
                                 </thead>
                                 <tbody>
                                     {% for day, d_name in date_list.items %}
+
                                         <tr>
                                             <td class="p-1">
                                                 <a href="/panel/{{ day }}">
@@ -100,12 +101,13 @@
                                             {% for of_h in get_days_list %}
                                                 {% if of_h.date|date:"Y-m-d" == day %}
 
-                                                       <input name="official_hours_start" type="text" value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}" />
+                                                       <input name="official_hours_start" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} type="hidden" {% else %} type="text" {% endif %} value="{% if of_h.official_hours %}{{ of_h.official_hours }}{% else %}08:00-19:00{% endif %}"
+                                                               />
 
                                                 {% endif %}
                                             {% empty %}
 
-                                                       <input name="official_hours_start" type="text" value="08:00-19:00" />
+                                                       <input name="official_hours_start" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} type="hidden" {% else %} type="text" {% endif %} value="08:00-19:00" />
 
                                             {% endfor %}
                                          </td>
@@ -114,12 +116,12 @@
                                               {% for wk_h in get_days_list %}
                                                 {% if wk_h.date|date:"Y-m-d" == day %}
 
-                                                     <input name="work_hours_start" type="text" value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
+                                                     <input name="work_hours_start" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} type="hidden" {% else %} type="text" {% endif %} value="{% if wk_h.work_hours %}{{ wk_h.work_hours }}{% else %}08:00-21:00{% endif %}" />
 
                                                 {% endif %}
                                              {% empty %}
 
-                                                  <input name="work_hours_start" type="text" value="08:00-21:00" />
+                                                  <input name="work_hours_start" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} type="hidden" {% else %} type="text" {% endif %} value="08:00-21:00" />
 
                                             {% endfor %}
                                          </td>
@@ -128,7 +130,7 @@
                                                  {% for sh_h in get_days_list %}
                                                      {% if sh_h.date|date:"Y-m-d" == day %}
 
-                                                            <select name="scheme">
+                                                            <select name="scheme" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} hidden {% else %}  {% endif %}>
                                                                 <option value="10" {% if sh_h.scheme == "10" %}selected{% endif %}>10 min</option>
                                                                 <option value="15" {% if sh_h.scheme == "15" %}selected{% endif %}>15 min</option>
                                                                 <option value="20" {% if sh_h.scheme == "20" %}selected{% endif %}>20 min</option>
@@ -139,7 +141,7 @@
                                                       {% endif %}
                                                  {% empty %}
 
-                                                      <select name="scheme">
+                                                      <select name="scheme" {% if d_name == 'Sobota' or d_name == 'Niedziela' %} hidden {% else %}  {% endif %}>
                                                         <option value="10">10 min</option>
                                                         <option value="15">15 min</option>
                                                         <option value="20">20 min</option>
