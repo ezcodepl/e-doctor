@@ -179,6 +179,7 @@ def fizschedule(request):
     if request.method == 'POST':
         form = FizScheduleForm(request.POST)
         if form.is_valid():
+            print(request)
             data_l = request.POST.getlist('data')
             day_type_l = request.POST.getlist('day_type')
             work_hours_l = request.POST.getlist('work_hours_start')
@@ -618,170 +619,298 @@ def delete_templates(request, pk):
     return render(request, "vita/panel/templates_list.html", context)
 
 
+# def panel(request, date):
+#
+#     today = date.today()
+#     full_path = request.get_full_path()
+#     current_path = full_path[full_path.index('/', 1):]
+#     get_date = current_path.replace('/', '')
+#
+#     day_type = DoctorSchedule.objects.filter(date=date).values()
+#     print(day_type)
+#     day_type_f = FizSchedule.objects.filter(date=date).values()
+#
+#     if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Pracujący'):
+#
+#         for work_hours in day_type:  # work_hours result 08:00-21:00
+#
+#             work_hours = work_hours['work_hours'].split('-')
+#             sh = work_hours[0].split(':')
+#             eh = work_hours[1].split(':')
+#
+#         start_hour = int(sh[0])
+#         end_hour = int(eh[0])
+#         scheme = int(day_type[0]['scheme'])
+#
+#         start_time = datetime(1,1,1, start_hour)
+#         end_time = datetime(1, 1, 1, end_hour)
+#         h =[] #empty hour list
+#
+#         check_visit = Visits.objects.filter(date=get_date,office=1).select_related(
+#         'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
+#
+#
+#         while start_time <= end_time:
+#             h.append(start_time.strftime("%H:%M"))
+#             start_time = start_time + timedelta(minutes=scheme)   # tu jest problem z minutami scheme
+#
+#
+#         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
+#         visits_dict = {}
+#
+#         # Iterujemy po liście h, która zawiera godziny pracy lekarza
+#         for hour in h:
+#             # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
+#             if isinstance(hour, str):
+#                 # Iterujemy po liście check_visit, która zawiera dane wizyt
+#                 for visit in check_visit:
+#                     # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
+#                     if visit['time'] == hour:
+#                         # Dodajemy parę godzina: wizyta do słownika
+#                         visits_dict[hour] = visit
+#                         # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
+#                         break
+#                 # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
+#                 else:
+#                     visits_dict[hour] = None
+#
+#         # Wyświetlamy słownik z godzinami i wizytami
+#         if len(check_visit) > 0:
+#           get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
+#         else:
+#           get_patient = ''
+#
+#         freeday = ''
+#
+#     else:
+#         if day_type.count() == 0:
+#              freeday = ''
+#              messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza', extra_tags='ds')
+#         else:
+#             if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
+#                 freeday = 'Dzień wolny od pracy'
+#             else:
+#                 freeday = ''
+#
+#         h = ''
+#         visits_dict = ''
+#         get_patient = ''
+#
+#     date_check = datetime.today()
+#     td = date_check.strftime('%Y-%m-%d')
+#
+#
+#     #########################################################################################################
+#     #########################################################################################################
+#     #####################################   Fizschedule  ####################################################
+#
+#     if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Pracujący'):
+#
+#         for work_hours_f in day_type_f:  # work_hours result 08:00-21:00
+#
+#             work_hours_f = work_hours_f['work_hours'].split('-')
+#             sh = work_hours_f[0].split(':')
+#             eh = work_hours_f[1].split(':')
+#
+#         start_hour_f = int(sh[0])
+#         end_hour_f = int(eh[0])
+#         scheme_f = int(day_type[0]['scheme'])
+#         start_time_f = datetime(1,1,1, start_hour_f)
+#         end_time_f = datetime(1, 1, 1, end_hour_f)
+#         hf =[] #empty hour list
+#         #time__gte=sh[0], time__lte=eh[0],
+#         check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
+#         'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
+#
+#
+#         while start_time_f <= end_time_f:
+#             hf.append(start_time_f.strftime("%H:%M"))
+#             start_time_f = start_time_f + timedelta(minutes=scheme_f)
+#
+#         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
+#         visits_dict_f = {}
+#
+#         # Iterujemy po liście h, która zawiera godziny pracy lekarza
+#         for hour_f in hf:
+#             # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
+#             if isinstance(hour_f, str):
+#                 # Iterujemy po liście check_visit, która zawiera dane wizyt
+#                 for visit_f in check_visit_f:
+#                     # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
+#                     if visit_f['time'] == hour_f:
+#                         # Dodajemy parę godzina: wizyta do słownika
+#                         visits_dict_f[hour_f] = visit_f
+#                         # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
+#                         break
+#                 # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
+#                 else:
+#                     visits_dict_f[hour_f] = None
+#
+#         # Wyświetlamy słownik z godzinami i wizytami
+#         if len(check_visit_f) > 0:
+#           get_patient_f = User.objects.filter(id=check_visit_f[0]['patient_id']).values()
+#         else:
+#           get_patient_f = ''
+#
+#         freeday_f = ''
+#     else:
+#         if day_type_f.count() == 0:
+#              freeday_f = ''
+#              messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii', extra_tags='df')
+#         else:
+#             if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Wolny'):
+#                 freeday_f = 'Dzień wolny od pracy'
+#             else:
+#                 freeday_f = ''
+#
+#         hf = ''
+#         visits_dict_f = ''
+#         get_patient_f = ''
+#
+#     date_check_f = datetime.today()
+#     td_f = date_check_f.strftime('%Y-%m-%d')
+#
+#     def get_visits_with_patient_data():
+#         all_visits_www = Visits.objects.filter(status=5).select_related('patient__user').order_by('-date')[:5]
+#
+#         visits_data = []
+#         for visit in all_visits_www:
+#             visits_data.append({
+#                 'visit_id': visit.id,
+#                 'status': visit.status,
+#                 'date': visit.date,
+#                 'time': visit.time,
+#                 'patient_id': visit.patient_id,
+#                 'patient_first_name': visit.patient.user.first_name,
+#                 'patient_last_name': visit.patient.user.last_name,
+#             })
+#
+#         return visits_data
+#
+#     all_visits_www = get_visits_with_patient_data()
+#
+#     context = {
+#         'td': td,
+#         'td_f': td_f,
+#         'get_date': get_date,
+#         'h': h,
+#         'hf': hf,
+#         'visits': visits_dict,
+#         'visits_f': visits_dict_f,
+#         'patient_name': get_patient,
+#         'freeday': freeday,
+#         'freeday_f': freeday_f,
+#         'today': today,
+#         'all_visits_www': all_visits_www,
+#     }
+#
+#     return render(request, "vita/panel/panel.html", context)
 def panel(request, date):
-
-    today = date.today()
+    today = datetime.today()
     full_path = request.get_full_path()
     current_path = full_path[full_path.index('/', 1):]
     get_date = current_path.replace('/', '')
 
     day_type = DoctorSchedule.objects.filter(date=date).values()
-    print(day_type)
     day_type_f = FizSchedule.objects.filter(date=date).values()
 
-    if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Pracujący'):
+    if day_type.exists() and day_type[0]['day_type'] == 'Pracujący':
+        work_hours = day_type[0]['work_hours'].split('-')
+        sh = work_hours[0].split(':')
+        eh = work_hours[1].split(':')
+        start_hour = int(sh[0])
+        end_hour = int(eh[0])
+        scheme = int(day_type[0]['scheme'])
 
-        for work_hours in day_type:  # work_hours result 08:00-21:00
-
-            work_hours = work_hours['work_hours'].split('-')
-            sh = work_hours[0].split(':')
-            eh = work_hours[1].split(':')
-
-        start_hour = int(sh[0])  # 8
-        end_hour = int(eh[0])  # 21
-        scheme = int(day_type[0]['scheme']) #30m
-        start_time = datetime(1,1,1, start_hour)
+        start_time = datetime(1, 1, 1, start_hour)
         end_time = datetime(1, 1, 1, end_hour)
-        h =[] #empty hour list
-        # time__gte=sh[0], time__lte=eh[0],
-        check_visit = Visits.objects.filter(date=get_date,office=1).select_related(
-        'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
+        h = []  # empty hour list
 
+        check_visit = Visits.objects.filter(date=get_date, office=1).select_related(
+            'patient__user__pruposevisit__statusvisist'
+        ).values(
+            'patient__user__first_name', 'patient__user__last_name', 'date', 'time', 'patient_id', 'patient__id_patient',
+            'prupose_visit__purpose_name', 'prupose_visit_id', 'visit', 'status'
+        )
 
         while start_time <= end_time:
             h.append(start_time.strftime("%H:%M"))
-            start_time = start_time + timedelta(minutes=scheme)
+            start_time += timedelta(minutes=scheme)  # Poprawne wykorzystanie wartości scheme
 
-        # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
-        visits_dict = {}
+        # Tworzenie słownika wizyt
+        visits_dict = {hour: next((visit for visit in check_visit if visit['time'] == hour), None) for hour in h}
 
-        # Iterujemy po liście h, która zawiera godziny pracy lekarza
-        for hour in h:
-            # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
-            if isinstance(hour, str):
-                # Iterujemy po liście check_visit, która zawiera dane wizyt
-                for visit in check_visit:
-                    # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
-                    if visit['time'] == hour:
-                        # Dodajemy parę godzina: wizyta do słownika
-                        visits_dict[hour] = visit
-                        # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
-                        break
-                # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
-                else:
-                    visits_dict[hour] = None
-
-        # Wyświetlamy słownik z godzinami i wizytami
-        if len(check_visit) > 0:
-          get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
+        if check_visit.exists():
+            get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
         else:
-          get_patient = ''
+            get_patient = ''
 
         freeday = ''
     else:
-        if day_type.count() == 0:
-             freeday = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza', extra_tags='ds')
-        else:
-            if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
-                freeday = 'Dzień wolny od pracy'
-            else:
-                freeday = ''
-
-        h = ''
-        visits_dict = ''
-        get_patient = ''
+        freeday = '' if day_type.exists() else 'Na ten dzień nie został jeszcze utworzony terminarz lekarza'
+        if day_type.exists() and day_type[0]['day_type'] == 'Wolny':
+            freeday = 'Dzień wolny od pracy'
+        h, visits_dict, get_patient = '', '', ''
 
     date_check = datetime.today()
     td = date_check.strftime('%Y-%m-%d')
-
 
     #########################################################################################################
     #########################################################################################################
     #####################################   Fizschedule  ####################################################
 
-    if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Pracujący'):
+    if day_type_f.exists() and day_type_f[0]['day_type'] == 'Pracujący':
+        work_hours_f = day_type_f[0]['work_hours'].split('-')
+        sh = work_hours_f[0].split(':')
+        eh = work_hours_f[1].split(':')
+        start_hour_f = int(sh[0])
+        end_hour_f = int(eh[0])
+        scheme_f = int(day_type_f[0]['scheme'])
 
-        for work_hours_f in day_type_f:  # work_hours result 08:00-21:00
-
-            work_hours_f = work_hours_f['work_hours'].split('-')
-            sh = work_hours_f[0].split(':')
-            eh = work_hours_f[1].split(':')
-
-        start_hour_f = int(sh[0])  # 8
-        end_hour_f = int(eh[0])  # 21
-        scheme_f = int(day_type[0]['scheme']) #30m
-        start_time_f = datetime(1,1,1, start_hour_f)
+        start_time_f = datetime(1, 1, 1, start_hour_f)
         end_time_f = datetime(1, 1, 1, end_hour_f)
-        hf =[] #empty hour list
-        #time__gte=sh[0], time__lte=eh[0],
-        check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
-        'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
+        hf = []  # empty hour list
 
+        check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
+            'patient__user__pruposevisit'
+        ).values(
+            'patient__user__first_name', 'patient__user__last_name', 'date', 'time', 'patient_id', 'patient__id_patient',
+            'prupose_visit__purpose_name', 'prupose_visit_id', 'visit', 'status'
+        )
 
         while start_time_f <= end_time_f:
             hf.append(start_time_f.strftime("%H:%M"))
-            start_time_f = start_time_f + timedelta(minutes=scheme_f)
+            start_time_f += timedelta(minutes=scheme_f)  # Poprawne wykorzystanie wartości scheme_f
 
-        # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
-        visits_dict_f = {}
+        # Tworzenie słownika wizyt dla fizykoterapii
+        visits_dict_f = {hour_f: next((visit_f for visit_f in check_visit_f if visit_f['time'] == hour_f), None) for hour_f in hf}
 
-        # Iterujemy po liście h, która zawiera godziny pracy lekarza
-        for hour_f in hf:
-            # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
-            if isinstance(hour_f, str):
-                # Iterujemy po liście check_visit, która zawiera dane wizyt
-                for visit_f in check_visit_f:
-                    # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
-                    if visit_f['time'] == hour_f:
-                        # Dodajemy parę godzina: wizyta do słownika
-                        visits_dict_f[hour_f] = visit_f
-                        # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
-                        break
-                # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
-                else:
-                    visits_dict_f[hour_f] = None
-
-        # Wyświetlamy słownik z godzinami i wizytami
-        if len(check_visit_f) > 0:
-          get_patient_f = User.objects.filter(id=check_visit_f[0]['patient_id']).values()
+        if check_visit_f.exists():
+            get_patient_f = User.objects.filter(id=check_visit_f[0]['patient_id']).values()
         else:
-          get_patient_f = ''
+            get_patient_f = ''
 
         freeday_f = ''
     else:
-        if day_type_f.count() == 0:
-             freeday_f = ''
-             messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii', extra_tags='df')
-        else:
-            if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Wolny'):
-                freeday_f = 'Dzień wolny od pracy'
-            else:
-                freeday_f = ''
-
-        hf = ''
-        visits_dict_f = ''
-        get_patient_f = ''
+        freeday_f = '' if day_type_f.exists() else 'Na ten dzień nie został jeszcze utworzony terminarz fizykoterapii'
+        if day_type_f.exists() and day_type_f[0]['day_type'] == 'Wolny':
+            freeday_f = 'Dzień wolny od pracy'
+        hf, visits_dict_f, get_patient_f = '', '', ''
 
     date_check_f = datetime.today()
     td_f = date_check_f.strftime('%Y-%m-%d')
 
     def get_visits_with_patient_data():
         all_visits_www = Visits.objects.filter(status=5).select_related('patient__user').order_by('-date')[:5]
-
-        visits_data = []
-        for visit in all_visits_www:
-            visits_data.append({
-                'visit_id': visit.id,
-                'status': visit.status,
-                'date': visit.date,
-                'time': visit.time,
-                'patient_id': visit.patient_id,
-                'patient_first_name': visit.patient.user.first_name,
-                'patient_last_name': visit.patient.user.last_name,
-                # dodaj inne potrzebne pola
-            })
-
+        visits_data = [{
+            'visit_id': visit.id,
+            'status': visit.status,
+            'date': visit.date,
+            'time': visit.time,
+            'patient_id': visit.patient_id,
+            'patient_first_name': visit.patient.user.first_name,
+            'patient_last_name': visit.patient.user.last_name,
+        } for visit in all_visits_www]
         return visits_data
 
     all_visits_www = get_visits_with_patient_data()
@@ -802,7 +931,6 @@ def panel(request, date):
     }
 
     return render(request, "vita/panel/panel.html", context)
-
 def test(request):
 
     return render(request, "vita/test.html")
@@ -1992,7 +2120,7 @@ def fiz_weekly_plan(request, offset=0, num_days=7):
                 }
             else:
                 visits_dict[hour] = None
-
+        print(scheme)
         context['week_days'].append({
             'date': current_date,
             'day_name': day_name,
