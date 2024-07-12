@@ -138,7 +138,7 @@ STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_URL = '/vita/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'vita/media')
 
-
+LOGIN_URL= '/login/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -169,3 +169,26 @@ EMAIL_HOST_USER = 'powtrash2024@gmail.com' # email id
 EMAIL_HOST_PASSWORD = 'Powiatowysmietnik2024#' #password
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'your_app_name': {  # Zastąp 'your_app_name' nazwą swojej aplikacji
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

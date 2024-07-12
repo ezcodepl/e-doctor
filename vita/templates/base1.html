@@ -62,28 +62,28 @@
           </nav> 
           {% if request.user.is_authenticated %}
          
-          <div id="parent">
-            <a class="btn btn-getstarted" href="#"><span>Witaj! {{user.first_name}}</span>
-              <i class="bi bi-chevron-down dropdown-indicator"></i></a>
-              <div id="hover-content">
+              <div id="parent">
+                <a class="btn btn-getstarted" href="#"><span>Witaj! {{user.first_name}}</span>
+                  <i class="bi bi-chevron-down dropdown-indicator"></i></a>
+                  <div id="hover-content">
 
-                    <ul style="list-style-type: none;margin-left:0px;padding: 4px;">
-                      <li class="py-2"><a href="{% url 'new_visit' %}"><i class="bi bi-plus-circle hover-icon"></i> Nowa wizyta</a></li>
-                      <li class="py-2"><a href="{% url 'appointments' %}"><i class="bi bi-alarm hover-icon"></i> Umówione wizyty</a></li>
-                      <li class="py-2"><a href="{% url 'history' %}"><i class="bi bi-card-list hover-icon"></i> Historia wizyt</a></li>
-                      <li class="py-2"><a href="{% url 'profile' %}"><i class="bi bi-person-circle hover-icon"></i> Moje dane</a></li>
-                        {% if user.username == 'lekarz' %}
-                           <li class="py-2"><a href="{% url 'docschedule' %}"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
-                        {% endif %}
-                      <li class="py-2"><a href="/logout" style="color: firebrick;"><i class="bi bi-power hover-icon" style="color: firebrick;"></i> Wyloguj</a></li>
-                    </ul>
-              </div>
-          </div>
+                        <ul style="list-style-type: none;margin-left:0px;padding: 4px;">
+                          <li class="py-2"><a href="{% url 'new_visit' %}"><i class="bi bi-plus-circle hover-icon"></i> Nowa wizyta</a></li>
+                          <li class="py-2"><a href="{% url 'appointments' %}"><i class="bi bi-alarm hover-icon"></i> Umówione wizyty</a></li>
+                          <li class="py-2"><a href="{% url 'history' %}"><i class="bi bi-card-list hover-icon"></i> Historia wizyt</a></li>
+                          <li class="py-2"><a href="{% url 'profile' %}"><i class="bi bi-person-circle hover-icon"></i> Moje dane</a></li>
+                            {% if user.username == 'lekarz' %}
+                               <li class="py-2"><a href="{% url 'docschedule' %}"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
+                            {% endif %}
+                          <li class="py-2"><a href="/logout" style="color: firebrick;"><i class="bi bi-power hover-icon" style="color: firebrick;"></i> Wyloguj</a></li>
+                        </ul>
+                  </div>
+               </div>
           
   
-    {% else %}
-      <a class="btn-getstarted scrollto" href="/login">Twoje konto</a>
-    {% endif %}
+          {% else %}
+              <a class="btn-getstarted scrollto" href="/login">Twoje konto</a>
+          {% endif %}
         </div>
       </header>
       <div style="margin-top: 150px;min-height: 400px;">
