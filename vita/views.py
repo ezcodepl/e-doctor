@@ -2077,7 +2077,7 @@ def fiz_weekly_plan(request, offset=0, num_days=7):
         if day_name in ['Saturday', 'Sunday']:
             continue
 
-        day_type = DoctorSchedule.objects.filter(date=current_date).first()
+        day_type = FizSchedule.objects.filter(date=current_date).first()
 
         if day_type is None:
             messages.error(request, f'Na {current_date} nie został jeszcze utworzony terminarz lekarza',
