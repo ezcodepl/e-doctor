@@ -4,7 +4,7 @@ django-crispy-forms==2.1
 mysqlclient==2.2.4
 pip==24.0
 pillow==10.3.0
-setuptools==69.5.1
+setuptools==70.0.0
 sqlparse==0.5.0
 tzdata==2024.1
 wheel==0.43.0
