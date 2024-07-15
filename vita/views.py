@@ -618,193 +618,6 @@ def delete_templates(request, pk):
 
     return render(request, "vita/panel/templates_list.html", context)
 
-
-# def panel(request, date):
-#
-#     today = date.today()
-#     full_path = request.get_full_path()
-#     current_path = full_path[full_path.index('/', 1):]
-#     get_date = current_path.replace('/', '')
-#
-#     day_type = DoctorSchedule.objects.filter(date=date).values()
-#     print(day_type)
-#     day_type_f = FizSchedule.objects.filter(date=date).values()
-#
-#     if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Pracujący'):
-#
-#         for work_hours in day_type:  # work_hours result 08:00-21:00
-#
-#             work_hours = work_hours['work_hours'].split('-')
-#             sh = work_hours[0].split(':')
-#             eh = work_hours[1].split(':')
-#
-#         start_hour = int(sh[0])
-#         end_hour = int(eh[0])
-#         scheme = int(day_type[0]['scheme'])
-#
-#         start_time = datetime(1,1,1, start_hour)
-#         end_time = datetime(1, 1, 1, end_hour)
-#         h =[] #empty hour list
-#
-#         check_visit = Visits.objects.filter(date=get_date,office=1).select_related(
-#         'patient__user__pruposevisit__statusvisist').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
-#
-#
-#         while start_time <= end_time:
-#             h.append(start_time.strftime("%H:%M"))
-#             start_time = start_time + timedelta(minutes=scheme)   # tu jest problem z minutami scheme
-#
-#
-#         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
-#         visits_dict = {}
-#
-#         # Iterujemy po liście h, która zawiera godziny pracy lekarza
-#         for hour in h:
-#             # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
-#             if isinstance(hour, str):
-#                 # Iterujemy po liście check_visit, która zawiera dane wizyt
-#                 for visit in check_visit:
-#                     # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
-#                     if visit['time'] == hour:
-#                         # Dodajemy parę godzina: wizyta do słownika
-#                         visits_dict[hour] = visit
-#                         # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
-#                         break
-#                 # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
-#                 else:
-#                     visits_dict[hour] = None
-#
-#         # Wyświetlamy słownik z godzinami i wizytami
-#         if len(check_visit) > 0:
-#           get_patient = User.objects.filter(id=check_visit[0]['patient_id']).values()
-#         else:
-#           get_patient = ''
-#
-#         freeday = ''
-#
-#     else:
-#         if day_type.count() == 0:
-#              freeday = ''
-#              messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz lekarza', extra_tags='ds')
-#         else:
-#             if ( day_type.count() > 0 and day_type[0]['day_type'] == 'Wolny'):
-#                 freeday = 'Dzień wolny od pracy'
-#             else:
-#                 freeday = ''
-#
-#         h = ''
-#         visits_dict = ''
-#         get_patient = ''
-#
-#     date_check = datetime.today()
-#     td = date_check.strftime('%Y-%m-%d')
-#
-#
-#     #########################################################################################################
-#     #########################################################################################################
-#     #####################################   Fizschedule  ####################################################
-#
-#     if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Pracujący'):
-#
-#         for work_hours_f in day_type_f:  # work_hours result 08:00-21:00
-#
-#             work_hours_f = work_hours_f['work_hours'].split('-')
-#             sh = work_hours_f[0].split(':')
-#             eh = work_hours_f[1].split(':')
-#
-#         start_hour_f = int(sh[0])
-#         end_hour_f = int(eh[0])
-#         scheme_f = int(day_type[0]['scheme'])
-#         start_time_f = datetime(1,1,1, start_hour_f)
-#         end_time_f = datetime(1, 1, 1, end_hour_f)
-#         hf =[] #empty hour list
-#         #time__gte=sh[0], time__lte=eh[0],
-#         check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
-#         'patient__user__pruposevisit').values('patient__user__first_name', 'patient__user__last_name','date', 'time','patient_id','patient__id_patient', 'prupose_visit__purpose_name', 'prupose_visit_id','visit','status')
-#
-#
-#         while start_time_f <= end_time_f:
-#             hf.append(start_time_f.strftime("%H:%M"))
-#             start_time_f = start_time_f + timedelta(minutes=scheme_f)
-#
-#         # Tworzymy pusty słownik, który będzie przechowywał pary godzina: wizyta
-#         visits_dict_f = {}
-#
-#         # Iterujemy po liście h, która zawiera godziny pracy lekarza
-#         for hour_f in hf:
-#             # Sprawdzamy, czy godzina jest typu string, a nie słownik z danymi wizyty
-#             if isinstance(hour_f, str):
-#                 # Iterujemy po liście check_visit, która zawiera dane wizyt
-#                 for visit_f in check_visit_f:
-#                     # Sprawdzamy, czy godzina wizyty jest równa godzinie pracy
-#                     if visit_f['time'] == hour_f:
-#                         # Dodajemy parę godzina: wizyta do słownika
-#                         visits_dict_f[hour_f] = visit_f
-#                         # Przerywamy wewnętrzną pętlę, ponieważ znaleźliśmy pasującą wizytę
-#                         break
-#                 # Jeśli nie znaleźliśmy pasującej wizyty, dodajemy parę godzina: None do słownika
-#                 else:
-#                     visits_dict_f[hour_f] = None
-#
-#         # Wyświetlamy słownik z godzinami i wizytami
-#         if len(check_visit_f) > 0:
-#           get_patient_f = User.objects.filter(id=check_visit_f[0]['patient_id']).values()
-#         else:
-#           get_patient_f = ''
-#
-#         freeday_f = ''
-#     else:
-#         if day_type_f.count() == 0:
-#              freeday_f = ''
-#              messages.error(request, f'Na ten dzień nie został jeszcze utworzony terminarz fizkoterapii', extra_tags='df')
-#         else:
-#             if ( day_type_f.count() > 0 and day_type_f[0]['day_type'] == 'Wolny'):
-#                 freeday_f = 'Dzień wolny od pracy'
-#             else:
-#                 freeday_f = ''
-#
-#         hf = ''
-#         visits_dict_f = ''
-#         get_patient_f = ''
-#
-#     date_check_f = datetime.today()
-#     td_f = date_check_f.strftime('%Y-%m-%d')
-#
-#     def get_visits_with_patient_data():
-#         all_visits_www = Visits.objects.filter(status=5).select_related('patient__user').order_by('-date')[:5]
-#
-#         visits_data = []
-#         for visit in all_visits_www:
-#             visits_data.append({
-#                 'visit_id': visit.id,
-#                 'status': visit.status,
-#                 'date': visit.date,
-#                 'time': visit.time,
-#                 'patient_id': visit.patient_id,
-#                 'patient_first_name': visit.patient.user.first_name,
-#                 'patient_last_name': visit.patient.user.last_name,
-#             })
-#
-#         return visits_data
-#
-#     all_visits_www = get_visits_with_patient_data()
-#
-#     context = {
-#         'td': td,
-#         'td_f': td_f,
-#         'get_date': get_date,
-#         'h': h,
-#         'hf': hf,
-#         'visits': visits_dict,
-#         'visits_f': visits_dict_f,
-#         'patient_name': get_patient,
-#         'freeday': freeday,
-#         'freeday_f': freeday_f,
-#         'today': today,
-#         'all_visits_www': all_visits_www,
-#     }
-#
-#     return render(request, "vita/panel/panel.html", context)
 def panel(request, date):
     today = datetime.today()
     full_path = request.get_full_path()
@@ -1221,227 +1034,19 @@ def create_visit(request):
     return render(request, 'vita/panel/create_visit.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd': vdate, 'vt': vtime, 'vo': vo, 'persons': persons })
 
 
-# def create_visit_f(request):
-#     full_path = request.get_full_path()
-#     current_path = full_path[full_path.index('/', 1):]
-#
-#     get_date = current_path.replace('/', '')
-#
-#     vdate_f = request.POST.get('date')
-#     vtime_f = request.POST.get('time')
-#     vo_f = request.POST.get('office')
-#
-#     persons = User.objects.select_related('patient__user').values('patient__id','patient__user__first_name','patient__user__last_name','patient__city','patient__street')
-#
-#     if request.method == "POST":
-#
-#         cform = RegisterUserForm(request.POST)
-#         cp_form = PatientRegisterForm(request.POST)
-#         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
-#         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-#         select_form = request.POST.get('select_form')
-#
-#         if cform.is_valid() and cp_form.is_valid():
-#             if int(select_form) == 1:
-#                 last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-#                 c_form = cform.save(commit=False)
-#                 first_name = str(request.POST.get('first_name')).capitalize()
-#                 last_name = str(request.POST.get('last_name')).capitalize()
-#                 c_form.first_name = first_name
-#                 c_form.last_name = last_name
-#                 c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
-#                 c_form.password = make_password(BaseUserManager().make_random_password())
-#                 c_form.email = 'stacjonarny@megavita.pl'
-#                 c_form.save()
-#
-#                 # set next id_patient number
-#                 if len(last_id_patient) < 1:
-#                     next_id_patient = 1
-#                 else:
-#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
-#
-#                 p_form_obj = cp_form.save(commit=False)
-#                 p_form_obj.user_id = last_user_id
-#                 p_form_obj.id_patient = next_id_patient
-#                 p_form_obj.save()
-#                 messages.success(request, (
-#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-#                 return redirect('/panel/patients')
-#             else:
-#                 form = RegisterUserForm(request.POST)
-#                 pp_form = PatientRegisterForm(request.POST)
-#
-#                 if form.is_valid() and pp_form.is_valid():
-#                     form.save()
-#                     username = form.cleaned_data['username']
-#                     password = form.cleaned_data['password1']
-#                     user = authenticate(username=username, password=password)
-#
-#                     # set next id_patient number
-#                 if last_id_patient[0]['id_patient'] is None:
-#                     next_id_patient = 1
-#                 else:
-#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
-#
-#                 pp_form_obj = pp_form.save(commit=False)
-#                 pp_form_obj.user_id = last_user_id
-#                 pp_form_obj.id_patient = next_id_patient
-#
-#                 pp_form_obj.save()
-#                 messages.success(request, (
-#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-#                 return redirect('/panel/patients')
-#
-#         else:
-#             # print(cform.errors)
-#             cform = RegisterUserForm()
-#             cp_form = PatientRegisterForm()
-#             form = RegisterUserForm()
-#             pp_form = PatientRegisterForm()
-#     else:
-#         cform = RegisterUserForm()
-#         cp_form = PatientRegisterForm()
-#         form = RegisterUserForm()
-#         pp_form = PatientRegisterForm()
-#     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
-#     user_x = x
-#
-#
-#     return render(request, 'vita/panel/create_visit_f.html', {'cform': cform, 'cp_form': cp_form, 'form': form,'pp_form': pp_form, 'user_x': user_x,'vd_f': vdate_f, 'vt_f': vtime_f, 'vo_f': vo_f, 'persons': persons })
-
-
-def create_new_visit(request):
-    full_path = request.get_full_path()
-    current_path = full_path[full_path.index('/', 1):]
-
-    get_date = current_path.replace('/', '')
-
-    if request.method == 'POST':
-
-        # for key, value in request.POST.items():
-        #    print(f"{key}: {value}")
-        cform = RegisterUserForm(request.POST)
-        cp_form = PatientRegisterForm(request.POST)
-        v_form = VisitForm(request.POST)
-
-        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
-        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-        select_form = request.POST.get('select_form')
-
-        if request.POST['sf'] == '0': # add visit with patient from autocomplete
-
-              person = request.POST['person'].split(' ') #split data from autocomplete field
-              pid = person[0] #patient_id
-              print(pid)
-              pln = person[1]  # patient last_name
-              print(pln)
-              pfn = person[2] #patient first_name
-              pst = person[3] #patient street
-              pc = person[4] #patient city
-              check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
-
-              if v_form.is_valid():
-                  vv_form = v_form.save(commit=False)
-                  vv_form.date = request.POST['date']
-                  vv_form.time = request.POST['time']
-                  vv_form.status = '1'
-                  check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()#check visist number
-                  if check_visit_nr:
-                      #visit_nr = int(check_visit_nr['visit']) + 1
-                      visits_count = Visits.objects.filter(patient_id=pid).count()
-                      visit_f_count = Visits.objects.filter(patient_id=pid).count()
-                      total_count = visits_count + visit_f_count
-                      print(total_count)
-                      visit_nr = total_count + 1
-                      print(visit_nr)
-                  else:
-                      visit_nr = '1'
-                  vv_form.visit = visit_nr
-                  vv_form.office = request.POST['office']
-                  vv_form.prupose_visit_id = request.POST['purpose_visit']
-                  vv_form.pay = '0'
-                  vv_form.cancel = '0'
-                  vv_form.patient_id = pid
-                  vv_form.save()
-              else:
-                  print(cform.errors)
-                  print(cp_form.errors)
-                  print(v_form.errors)
-        else:
-                # patient data entered manually to fields
-                if request.POST['sf'] == '1':
-
-                    last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
-
-                    c_form = cform.save(commit=False)
-                    first_name = str(request.POST.get('first_name')).capitalize()
-                    last_name = str(request.POST.get('last_name')).capitalize()
-                    c_form.first_name = first_name
-                    c_form.last_name = last_name
-                    c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
-                    c_form.password = make_password(BaseUserManager().make_random_password())
-                    c_form.emial = 'stacjonarny@megavita.pl'
-                    c_form.save()
-
-                    #check_username = User.objects.filter(username=c_form.username).values()  # check username
-
-                    # if c_form != check_username:
-                    #     c_form.save()
-                    # else:
-                    #      messages.success(request, (
-                    #      f"Pacjent o takim imieniu i nazwisku jest już w naszej bazie: {request.POST.get('first_name')} {request.POST.get('last_name')} {c_form.username}"))
-                    #      print('Już taki jest ')
-
-                    if len(last_id_patient) < 1:
-                        next_id_patient = 1
-                    else:
-                        next_id_patient = last_id_patient[0]['id_patient'] + 1
-
-                    p_form_obj = cp_form.save(commit=False)
-                    p_form_obj.user_id = last_user_id
-                    p_form_obj.id_patient = next_id_patient
-                    p_form_obj.save()
-
-                    if v_form.is_valid():
-                         vv_form = v_form.save(commit=False)
-                         vv_form.date = request.POST['date']
-                         vv_form.time = request.POST['time']
-                         vv_form.status = '1'
-                         vv_form.visit = '1'
-                         vv_form.office = request.POST['office']
-                         vv_form.prupose_visit_id = request.POST['purpose_visit']
-                         last_user_id = Patient.objects.order_by('-id').values('id')[:1]  # check user_id
-                         if last_user_id == '':
-                             vv_form.patient_id = '1'
-                         else:
-                             vv_form.patient_id = last_user_id
-                         vv_form.save()
-                    else:
-                        print(v_form.errors)
-    else:
-        print(response.status_code)
-        # cform = RegisterUserForm()
-        # cp_form = PatientRegisterForm()
-        # form = RegisterUserForm()
-        # pp_form = PatientRegisterForm()
-
-
-    return redirect(f'/panel/{request.POST["date"]}')
-
-
-# def create_new_visit_f(request):
+# def create_new_visit(request):
 #     full_path = request.get_full_path()
 #     current_path = full_path[full_path.index('/', 1):]
 #
 #     get_date = current_path.replace('/', '')
 #
 #     if request.method == 'POST':
-#         print(request.POST)
+#
 #         # for key, value in request.POST.items():
 #         #    print(f"{key}: {value}")
 #         cform = RegisterUserForm(request.POST)
 #         cp_form = PatientRegisterForm(request.POST)
-#         v_form_f = VisitForm_f(request.POST)
+#         v_form = VisitForm(request.POST)
 #
 #         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
 #         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
@@ -1452,31 +1057,30 @@ def create_new_visit(request):
 #               person = request.POST['person'].split(' ') #split data from autocomplete field
 #               pid = person[0] #patient_id
 #               print(pid)
-#               pln = person[1] #patient last_name
+#               pln = person[1]  # patient last_name
 #               print(pln)
 #               pfn = person[2] #patient first_name
 #               pst = person[3] #patient street
 #               pc = person[4] #patient city
 #               check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
 #
-#               if v_form_f.is_valid():
-#                   vv_form = v_form_f.save(commit=False)
+#               if v_form.is_valid():
+#                   vv_form = v_form.save(commit=False)
 #                   vv_form.date = request.POST['date']
 #                   vv_form.time = request.POST['time']
 #                   vv_form.status = '1'
-#                   check_visit_nr_f = Visits.objects.filter(patient_id = pid).values().last()#check visist number
-#
-#                   if check_visit_nr_f:
-#                       visits_count_f = Visits.objects.filter(patient_id=int(check_visit_nr_f['visit'])).count()
-#                       visit_f_count_f = Visits_f.objects.filter(patient_id=int(check_visit_nr_f['visit'])).count()
-#                       total_count_f = visits_count_f + visit_f_count_f
-#                       print(total_count_f)
-#                       visit_nr_f = total_count_f + 1
-#                       print(visit_nr_f)
+#                   check_visit_nr = Visits.objects.filter(patient_id = pid).values().last()#check visist number
+#                   if check_visit_nr:
+#                       #visit_nr = int(check_visit_nr['visit']) + 1
+#                       visits_count = Visits.objects.filter(patient_id=pid).count()
+#                       visit_f_count = Visits.objects.filter(patient_id=pid).count()
+#                       total_count = visits_count + visit_f_count
+#                       print(total_count)
+#                       visit_nr = total_count + 1
+#                       print(visit_nr)
 #                   else:
-#                       visit_nr_f = '1'
-#
-#                   vv_form.visit = visit_nr_f
+#                       visit_nr = '1'
+#                   vv_form.visit = visit_nr
 #                   vv_form.office = request.POST['office']
 #                   vv_form.prupose_visit_id = request.POST['purpose_visit']
 #                   vv_form.pay = '0'
@@ -1486,7 +1090,7 @@ def create_new_visit(request):
 #               else:
 #                   print(cform.errors)
 #                   print(cp_form.errors)
-#                   print(v_form_f.errors)
+#                   print(v_form.errors)
 #         else:
 #                 # patient data entered manually to fields
 #                 if request.POST['sf'] == '1':
@@ -1522,8 +1126,8 @@ def create_new_visit(request):
 #                     p_form_obj.id_patient = next_id_patient
 #                     p_form_obj.save()
 #
-#                     if v_form_f.is_valid():
-#                          vv_form = v_form_f.save(commit=False)
+#                     if v_form.is_valid():
+#                          vv_form = v_form.save(commit=False)
 #                          vv_form.date = request.POST['date']
 #                          vv_form.time = request.POST['time']
 #                          vv_form.status = '1'
@@ -1537,9 +1141,9 @@ def create_new_visit(request):
 #                              vv_form.patient_id = last_user_id
 #                          vv_form.save()
 #                     else:
-#                         print(v_form_f.errors)
+#                         print(v_form.errors)
 #     else:
-#         print('')
+#         print(response.status_code)
 #         # cform = RegisterUserForm()
 #         # cp_form = PatientRegisterForm()
 #         # form = RegisterUserForm()
@@ -1547,6 +1151,131 @@ def create_new_visit(request):
 #
 #
 #     return redirect(f'/panel/{request.POST["date"]}')
+def create_new_visit(request):
+    full_path = request.get_full_path()
+    current_path = full_path[full_path.index('/', 1):]
+    get_date = current_path.replace('/', '')
+
+    if request.method == 'POST':
+        cform = RegisterUserForm(request.POST)
+        cp_form = PatientRegisterForm(request.POST)
+        v_form = VisitForm(request.POST)
+
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
+        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+        select_form = request.POST.get('select_form')
+
+        if request.POST['sf'] == '0': # add visit with patient from autocomplete
+            person = request.POST['person'].split(' ') #split data from autocomplete field
+            pid = person[0] if person else None #patient_id
+
+            if not pid:
+                # Return an error message if patient ID is empty
+                return render(request, 'vita/panel/create_visit.html', {
+                    'cform': cform, 'cp_form': cp_form, 'v_form': v_form,
+                    'error_message': 'Proszę wybrać pacjenta z bazy danych.'
+                })
+
+            check_patient = Patient.objects.filter(id_patient=pid).values() #get patient id
+
+            if v_form.is_valid():
+                vv_form = v_form.save(commit=False)
+                vv_form.date = request.POST['date']
+                vv_form.time = request.POST['time']
+                vv_form.status = '1'
+                check_visit_nr = Visits.objects.filter(patient_id=pid).values().last()#check visist number
+                if check_visit_nr:
+                    visits_count = Visits.objects.filter(patient_id=pid).count()
+                    visit_f_count = Visits.objects.filter(patient_id=pid).count()
+                    total_count = visits_count + visit_f_count
+                    visit_nr = total_count + 1
+                else:
+                    visit_nr = '1'
+                vv_form.visit = visit_nr
+                vv_form.office = request.POST['office']
+                vv_form.prupose_visit_id = request.POST['purpose_visit']
+                vv_form.pay = '0'
+                vv_form.cancel = '0'
+                vv_form.patient_id = pid
+
+                # Check for existing visit collision
+                existing_visit = Visits.objects.filter(
+                    Q(date=request.POST['date']) & Q(time=request.POST['time']) & ~Q(office=request.POST['office']) & Q(patient_id=pid)
+                ).first()
+
+                if existing_visit:
+                    existing_visit_data = {
+                        'date': existing_visit.date,
+                        'time': existing_visit.time,
+                        'office': existing_visit.office,
+                        'patient_name': f"{existing_visit.patient.user.first_name} {existing_visit.patient.user.last_name}"
+                    }
+                    return render(request, 'vita/panel/create_visit.html', {
+                        'cform': cform, 'cp_form': cp_form, 'v_form': v_form, 'existing_visit_data': existing_visit_data
+                    })
+
+                vv_form.save()
+            else:
+                print(cform.errors)
+                print(cp_form.errors)
+                print(v_form.errors)
+        else:
+            # patient data entered manually to fields
+            if request.POST['sf'] == '1':
+                c_form = cform.save(commit=False)
+                first_name = str(request.POST.get('first_name')).capitalize()
+                last_name = str(request.POST.get('last_name')).capitalize()
+                c_form.first_name = first_name
+                c_form.last_name = last_name
+                c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
+                c_form.password = make_password(BaseUserManager().make_random_password())
+                c_form.email = 'stacjonarny@megavita.pl'
+                c_form.save()
+
+                if len(last_id_patient) < 1:
+                    next_id_patient = 1
+                else:
+                    next_id_patient = last_id_patient[0]['id_patient'] + 1
+
+                p_form_obj = cp_form.save(commit=False)
+                p_form_obj.user_id = last_user_id
+                p_form_obj.id_patient = next_id_patient
+                p_form_obj.save()
+
+                if v_form.is_valid():
+                    vv_form = v_form.save(commit=False)
+                    vv_form.date = request.POST['date']
+                    vv_form.time = request.POST['time']
+                    vv_form.status = '1'
+                    vv_form.visit = '1'
+                    vv_form.office = request.POST['office']
+                    vv_form.prupose_visit_id = request.POST['purpose_visit']
+
+                    # Check for existing visit collision
+                    existing_visit = Visits.objects.filter(
+                        Q(date=request.POST['date']) & Q(time=request.POST['time']) & ~Q(office=request.POST['office']) & Q(patient_id=next_id_patient)
+                    ).first()
+
+                    if existing_visit:
+                        existing_visit_data = {
+                            'date': existing_visit.date,
+                            'time': existing_visit.time,
+                            'office': existing_visit.office,
+                            'patient_name': f"{existing_visit.patient.user.first_name} {existing_visit.patient.user.last_name}"
+                        }
+                        return render(request, 'vita/panel/create_visit.html', {
+                            'cform': cform, 'cp_form': cp_form, 'v_form': v_form, 'existing_visit_data': existing_visit_data
+                        })
+
+                    vv_form.patient_id = next_id_patient
+                    vv_form.save()
+                else:
+                    print(v_form.errors)
+    else:
+        print("Wystąpił problem z przetwarzaniem danych formularza, bład w linii 1268 views.py")
+
+    return redirect(f'/panel/{request.POST["date"]}')
+
 
 
 def pause_visit(request):

@@ -9,6 +9,7 @@
             </div>
         </div>
         <section class="section">
+
             <div class="card">
                  <script>
                     function swapConfig(x) {
@@ -27,6 +28,88 @@
                     <div style="text-align:left;">
                         <input type="radio" onchange="swapConfig(this)" name="sf" id="production" value="0" checked="checked"/>
                         <label for="production">Pacjent figurujący w bazie danych</label>
+
+
+
+                        <!-- Modal dla kolidującej wizyty -->
+                        <div class="modal fade" id="existingVisitModal" tabindex="-1" aria-labelledby="existingVisitModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger">
+                                        <h5 class="modal-title text-light" id="existingVisitModalLabel">Kolidująca wizyta</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <!-- Lewa kolumna (dane z istniejącej wizyty) -->
+                                            <div >
+                                                <h6>Dane istniejącej wizyty:</h6>
+                                                <p><strong>Pacjent:</strong> <span id="existingPatientName"></span></p>
+                                                <p><strong>Data wizyty:</strong> <span id="existingVisitDate"></span></p>
+                                                <p><strong>Godzina wizyty:</strong> <span id="existingVisitTime"></span></p>
+                                                <p><strong>Gabinet:</strong> <span id="existingOfficeName"></span></p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer " style="margin-right: 25px;font-weight:bold;">
+                                         <a role="button" class="btn btn-primary" href="/panel/{{ existing_visit_data.date|date:'Y-m-d' }}">Pokaż plan dzienny z kolidującą wizytą {{ existing_visit_data.date }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- HTML (Modal) -->
+
+                        <script>
+                                $(document).ready(function() {
+                                    // Obsługa guzika "Dodaj wizytę"
+                                    $('#addVisitButton').click(function() {
+                                        // Ukryj modal
+                                        $('#existingVisitModal').modal('hide');
+                                    });
+
+                                    // Obsługa guzika "Nie dodawaj wizyty"
+                                    $('#closeModalButton').click(function() {
+                                        $('#existingVisitModal').modal('hide');
+                                        location.href = "/panel/create_new_visit"; // Reload the page when the modal is hidden
+                                    });
+
+                                    // Pokaż modal, jeśli istnieje kolidująca wizyta
+                                    {% if existing_visit_data %}
+                                        var existingVisitData = {
+                                            patient_name: "{{ existing_visit_data.patient_name }}",
+                                            date: "{{ existing_visit_data.date }}",
+                                            time: "{{ existing_visit_data.time }}",
+                                            office: "{{ existing_visit_data.office }}"  // Przyjmuję, że to jest identyfikator lub kod działu
+                                        };
+
+                                        // Funkcja do mapowania identyfikatora na nazwę
+                                        function mapOfficeName(officeCode) {
+                                            switch (officeCode) {
+                                                case '1':
+                                                    return 'Lekarski';
+                                                case '2':
+                                                    return 'Fizykoterapii';
+                                                default:
+                                                    return 'Inny';  // Możesz dodać obsługę innych wartości
+                                            }
+                                        }
+
+                                        // Ustaw dane w modalu
+                                        $('#existingPatientName').text(existingVisitData.patient_name);
+                                        $('#existingVisitDate').text(existingVisitData.date);
+                                        $('#existingVisitTime').text(existingVisitData.time);
+                                        $('#existingOfficeName').text(mapOfficeName(existingVisitData.office));  // Użyj funkcji do ustawienia nazwy działu
+
+                                        // Pokaż modal
+                                        $('#existingVisitModal').modal('show');
+                                    {% endif %}
+                                });
+                            </script>
+
+
                     </div>
                     <div id="productionSettings">
                         <p>
@@ -35,6 +118,7 @@
                                  &#x2B9E;
                               </span>
                               <input type="text" id="person" name="person" class="form-control" placeholder="...wpisz nazwisko pacjenta" />
+                              <input type="hidden" id="patientId" name="patient_id" value="" />
                             </div>
                         </p>
                     </div>
@@ -87,11 +171,11 @@
                                    <div class="row align-items-start">
                                        <div class="col">
                                             <label for="development">Data wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="date" value="{{vd}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" id="visit_date" name="date" value="{{vd}}" />
                                        </div>
                                        <div class="col">
                                             <label for="development">Godzina wizyty: </label>
-                                           <input class="form-control" style="background:#ccfbf1;" type="text" name="time" value="{{vt}}" />
+                                           <input class="form-control" style="background:#ccfbf1;" type="text" id="visit_time" name="time" value="{{vt}}" />
                                        </div>
                                         <div class="col">
                                             <label for="development">Cel wizyty: </label>
