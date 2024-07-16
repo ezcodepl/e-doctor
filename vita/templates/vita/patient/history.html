@@ -76,6 +76,7 @@
                             </tr>
                             </thead>
                             <tbody class="text-danger">
+
                             {% for w in visits_can %}
                             <tr>
 
@@ -83,8 +84,8 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ w.date|date:"Y-m-d" }}</td>
                                 <td>{{ w.time }}</td>
-                                <td>{% if w.status == '3' %} odwołana {% elif w.status == '4' %} nie odbyła się {% elif
-                                    w.status == '6' %} odwołana www {% else %} {{w.status}}{% endif %}
+                                <td>{% if w.status == '3' and w.cancel == '1' %} odwołana {% elif w.status == '4' and w.cancel == '1' %} nie odbyła się {% elif
+                                    w.status == '6' and w.cancel == '1' %} odwołana www {% else %} {{w.status__status_name}}{% endif %}
                                 </td>
                                 <td class="text-bold-500">{{w.prupose_visit__purpose_name}}</td>
 

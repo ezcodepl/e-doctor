@@ -12,7 +12,7 @@
                         <table class="table table-sm">
                             <thead>
                             <tr>
-                                <th></th>
+
                                 <th>Lp.</th>
                                 <th>Data</th>
                                 <th>Godz.</th>
@@ -29,7 +29,7 @@
                             {% if w.status == '1' or w.status == '5' %}
 
                             <tr>
-                                <td><input type="checkbox" name="check" /></td>
+
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ w.date|date:"Y-m-d" }}</td>
                                 <td>{{ w.time }}</td>
@@ -46,7 +46,12 @@
 
                                 <td> {% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                                 <td>{{ w.visit }}</td>
-                                <td><input type="submit" class="btn btn-sm btn-danger" value="odwołaj" /></td>
+                                <td>
+                                     <form action="{% url 'cancel_appointment' w.id %}" method="post" style="display:inline;">
+                                         {% csrf_token %}
+                                           <input type="submit" class="btn btn-sm btn-danger" value="odwołaj" />
+                                      </form>
+                                </td>
                             </tr>
 
                             {% endif %}

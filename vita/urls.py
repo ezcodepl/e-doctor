@@ -59,5 +59,8 @@ urlpatterns = [
     path('patient/history', views.history, name='history'),
     path('upcoming_appointments', views.upcoming_appointments, name='upcoming_appointments'),
 
+    # path('appointments/', views.appointments, name='appointments'),
+    path('appointments/cancel/<int:pk>/', views.cancel_appointment, name='cancel_appointment'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
