@@ -28,8 +28,8 @@ from django.views.decorators.http import require_GET
 
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
-    VisitForm, VisitForm_f, DoctorVisitsForm, ReserveForm, FizVisitsForm
-from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PruposeVisit, ReversList
+    VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PurposeVisit, ReversList
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta, timezone
 import time
@@ -332,16 +332,16 @@ def patients_files(request, pk):
     #################### end upload patient files ###################################################
 
     #get patient visites active and cancel
-    visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=pk).order_by('-id').values('patient','prupose_visit__purpose_name',
-                                                                                                         'prupose_visit_id',
+    visits_akt = Visits.objects.select_related('purposevisit').filter(patient=pk).order_by('-id').values('patient','purpose_visit__purpose_name',
+                                                                                                         'purpose_visit_id',
                                                                                                          'visit',
                                                                                                          'status',
                                                                                                          'office',
                                                                                                          'time',
                                                                                                          'date')
-    visits_can = Visits.objects.select_related('pruposevisit').filter(Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
-                                                                                                                                       'prupose_visit__purpose_name',
-                                                                                                                                       'prupose_visit_id',
+    visits_can = Visits.objects.select_related('purposevisit').filter(Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
+                                                                                                                                       'purpose_visit__purpose_name',
+                                                                                                                                       'purpose_visit_id',
                                                                                                                                        'visit',
                                                                                                                                        'status',
                                                                                                                                        'office',
@@ -349,16 +349,16 @@ def patients_files(request, pk):
                                                                                                                                        'date')
 
     # get patient visites fiz active and cancel
-    visits_akt_f = Visits.objects.select_related('pruposevisit').filter(patient=pk).order_by('-id').values('patient',
-                                                                                                         'prupose_visit__purpose_name',
-                                                                                                         'prupose_visit_id',
+    visits_akt_f = Visits.objects.select_related('purposevisit').filter(patient=pk).order_by('-id').values('patient',
+                                                                                                         'purpose_visit__purpose_name',
+                                                                                                         'purpose_visit_id',
                                                                                                          'visit',
                                                                                                          'status',
                                                                                                          'office',
                                                                                                          'time', 'date')
-    visits_can_f = Visits.objects.select_related('pruposevisit').filter(
-        Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient', 'prupose_visit__purpose_name',
-                                                                         'prupose_visit_id', 'visit', 'status','office', 'time',
+    visits_can_f = Visits.objects.select_related('purposevisit').filter(
+        Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient', 'purpose_visit__purpose_name',
+                                                                         'purpose_visit_id', 'visit', 'status','office', 'time',
                                                                          'date')
     # visits_count = Visits.objects.filter(patient_id=pk).count()
     # visit_f_count = Visits_f.objects.filter(patient_id=pk).count()
@@ -641,10 +641,10 @@ def panel(request, date):
         h = []  # empty hour list
 
         check_visit = Visits.objects.filter(date=get_date, office=1).select_related(
-            'patient__user__pruposevisit__statusvisist'
+            'patient__user__purposevisit__statusvisist'
         ).values(
             'patient__user__first_name', 'patient__user__last_name', 'date', 'time', 'patient_id', 'patient__id_patient',
-            'prupose_visit__purpose_name', 'prupose_visit_id', 'visit', 'status'
+            'purpose_visit__purpose_name', 'purpose_visit_id', 'visit', 'status'
         )
 
         while start_time <= end_time:
@@ -686,10 +686,10 @@ def panel(request, date):
         hf = []  # empty hour list
 
         check_visit_f = Visits.objects.filter(date=get_date, office=2).select_related(
-            'patient__user__pruposevisit'
+            'patient__user__purposevisit'
         ).values(
             'patient__user__first_name', 'patient__user__last_name', 'date', 'time', 'patient_id', 'patient__id_patient',
-            'prupose_visit__purpose_name', 'prupose_visit_id', 'visit', 'status'
+            'purpose_visit__purpose_name', 'purpose_visit_id', 'visit', 'status'
         )
 
         while start_time_f <= end_time_f:
@@ -768,10 +768,10 @@ def appointments(request):
         user_id = request.user.id
 
         # get patient visites active and cancel
-        visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by('-id').values(
+        visits_akt = Visits.objects.select_related('purposevisit').filter(patient=user_id).order_by('-id').values(
             'id',
-            'patient', 'prupose_visit__purpose_name',
-            'prupose_visit_id', 'visit',
+            'patient', 'purpose_visit__purpose_name',
+            'purpose_visit_id', 'visit',
             'status',
             'office',
             'time', 'date')
@@ -804,59 +804,44 @@ def cancel_appointment(request, pk):
     obj.save()
     messages.success(request, 'Wizyta została odwołana.')
     return redirect('appointments')
-# def history(request):
-#     if request.user.is_authenticated:
-#         user_id = request.user.id
-#
-#         # get patient visites active and cancel
-#         visits_akt = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by('-id').values(
-#             'patient', 'prupose_visit__purpose_name',
-#             'prupose_visit_id', 'visit',
-#             'status',
-#             'office',
-#             'time', 'date')
-#         #print(visits_akt.query)
-#         visits_can = Visits.objects.select_related('pruposevisit').filter(
-#             Q(patient=user_id) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
-#                                                                                            'prupose_visit__purpose_name',
-#                                                                                            'prupose_visit_id',
-#                                                                                            'visit',
-#                                                                                            'status',
-#                                                                                            'office',
-#                                                                                            'time',
-#                                                                                            'date')
-#
-#     else:
-#         return HttpResponseForbidden('Treść widowczna tylo dla zalogowanych użytkowników')
-#
-#     return render(request, "vita/patient/history.html", context={'visits_akt': visits_akt, 'visits_can': visits_can})
+
+@login_required
 def history(request):
     if request.user.is_authenticated:
         user_id = request.user.id
 
-        # get patient visits active and cancel
-        visits_akt_list = Visits.objects.select_related('pruposevisit').filter(patient=user_id).order_by('-id').values(
-            'patient', 'prupose_visit__purpose_name',
-            'prupose_visit_id', 'visit',
-            'status',
+        visits_akt_list = Visits.objects.select_related('purposevisit', 'status').filter(patient=user_id, status__status_name='3').order_by('-id').values(
+            'patient', 'purpose_visit__purpose_name',
+            'purpose_visit_id', 'visit',
+            'status__status_name',  # Używamy status__status_name do odwołania się do nazwy statusu
             'office',
             'time', 'date')
 
-        visits_can_list = Visits.objects.select_related('pruposevisit').filter(
-            Q(patient=user_id) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
-                                                                                           'prupose_visit__purpose_name',
-                                                                                           'prupose_visit_id',
+        visits_can_list = Visits.objects.select_related('purposevisit', 'status').filter(
+            Q(patient=user_id) & ~Q(status__in=[1, 3, 5])).order_by('-id').values('patient',
+                                                                                           'purpose_visit__purpose_name',
+                                                                                           'purpose_visit_id',
                                                                                            'visit',
-                                                                                           'status',
+                                                                                           'status__status_name',  # Używamy status__status_name do odwołania się do nazwy statusu
                                                                                            'office',
                                                                                            'time',
                                                                                            'date')
 
-        # Paginacja
+        items_per_page_akt = request.GET.get('items_per_page_akt', 10)
+        items_per_page_can = request.GET.get('items_per_page_can', 10)
+        try:
+            items_per_page_akt = int(items_per_page_akt)
+        except ValueError:
+            items_per_page_akt = 10
+        try:
+            items_per_page_can = int(items_per_page_can)
+        except ValueError:
+            items_per_page_can = 10
+
         akt_page = request.GET.get('akt_page', 1)
         can_page = request.GET.get('can_page', 1)
-        paginator_akt = Paginator(visits_akt_list, 10)  # 10 wizyt na stronę
-        paginator_can = Paginator(visits_can_list, 10)  # 10 wizyt na stronę
+        paginator_akt = Paginator(visits_akt_list, items_per_page_akt)
+        paginator_can = Paginator(visits_can_list, items_per_page_can)
 
         try:
             visits_akt = paginator_akt.page(akt_page)
@@ -878,6 +863,8 @@ def history(request):
     context = {
         'visits_akt': visits_akt,
         'visits_can': visits_can,
+        'items_per_page_akt': items_per_page_akt,
+        'items_per_page_can': items_per_page_can,
     }
     return render(request, "vita/patient/history.html", context)
 
@@ -1253,7 +1240,7 @@ def create_new_visit(request):
                     visit_nr = '1'
                 vv_form.visit = visit_nr
                 vv_form.office = request.POST['office']
-                vv_form.prupose_visit_id = request.POST['purpose_visit']
+                vv_form.purpose_visit_id = request.POST['purpose_visit']
                 vv_form.pay = '0'
                 vv_form.cancel = '0'
                 vv_form.patient_id = pid
@@ -1309,7 +1296,7 @@ def create_new_visit(request):
                     vv_form.status = '1'
                     vv_form.visit = '1'
                     vv_form.office = request.POST['office']
-                    vv_form.prupose_visit_id = request.POST['purpose_visit']
+                    vv_form.purpose_visit_id = request.POST['purpose_visit']
 
                     # Check for existing visit collision
                     existing_visit = Visits.objects.filter(
@@ -1352,7 +1339,7 @@ def pause_visit(request):
         form.status = '0'
         form.visit = '0'
         form.office = request.POST['office']
-        form.prupose_visit_id = '5'
+        form.purpose_visit_id = '5'
         if request.user.username == 'lekarz':
             form.patient_id = request.user.id
         form.save()
@@ -1468,7 +1455,7 @@ def doctor_visits(request, offset=0, num_days=14):
                 else:
                     if existing_visit is None:
                         s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='1',
-                                        pay='0', cancel='0', prupose_visit_id='2', patient_id=request.user.id)
+                                        pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
                         s_form.save()
                         messages.success(request,
                                          f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} ")
@@ -1572,7 +1559,7 @@ def fiz_visits(request, offset=0, num_days=14):
                 else:
                     if existing_visit is None:
                         s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='2',
-                                        pay='0', cancel='0', prupose_visit_id='2', patient_id=request.user.id)
+                                        pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
                         s_form.save()
                         messages.success(request,
                                          f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} ")
@@ -1827,7 +1814,7 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
                 visits_dict[hour] = {
                     'patient_first_name': matching_visit.patient.user.first_name,
                     'patient_last_name': matching_visit.patient.user.last_name,
-                    'prupose_visit': matching_visit.prupose_visit.purpose_name,
+                    'purpose_visit': matching_visit.purpose_visit.purpose_name,
                     'status': matching_visit.status,
                     'id_patient': matching_visit.patient_id,
                 }
@@ -1902,7 +1889,7 @@ def fiz_weekly_plan(request, offset=0, num_days=7):
                 visits_dict[hour] = {
                     'patient_first_name': matching_visit.patient.user.first_name,
                     'patient_last_name': matching_visit.patient.user.last_name,
-                    'prupose_visit': matching_visit.prupose_visit.purpose_name,
+                    'purpose_visit': matching_visit.purpose_visit.purpose_name,
                     'status': matching_visit.status,
                     'id_patient': matching_visit.patient_id,
                 }

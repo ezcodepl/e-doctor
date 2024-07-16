@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel, Visits, Visits_f, ReversList
+from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, FilesModel, Visits, ReversList
 
 
 # from captcha.fields import ReCaptchaField
@@ -155,10 +155,10 @@ class VisitForm(forms.ModelForm):
         model = Visits
         fields = ['date','time']
 
-class VisitForm_f(forms.ModelForm):
-    class Meta:
-        model = Visits_f
-        fields = ['date','time']
+# class VisitForm_f(forms.ModelForm):
+#     class Meta:
+#         model = Visits_f
+#         fields = ['date','time']
 class PersonForm(forms.Form):
     person = forms.ModelChoiceField(
         queryset=User.objects.all(),
@@ -169,12 +169,12 @@ class PersonForm(forms.Form):
 class DoctorVisitsForm(forms.Form):
     class Meta:
         model = Visits
-        fields = ['date', 'time', 'status', 'visit', 'office', 'prupose_visit_id']
+        fields = ['date', 'time', 'status', 'visit', 'office', 'purpose_visit_id']
 
 class FizVisitsForm(forms.Form):
     class Meta:
         model = Visits
-        fields = ['date', 'time', 'status', 'visit', 'office', 'prupose_visit_id']
+        fields = ['date', 'time', 'status', 'visit', 'office', 'purpose_visit_id']
 
 class ReserveForm(forms.ModelForm):
     class Meta:

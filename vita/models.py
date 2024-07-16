@@ -58,18 +58,35 @@ class Patient(models.Model):
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name} Pacjent'
 
-class DoctorSchedule(models.Model):
+# class DoctorSchedule(models.Model):
+#
+#     id = models.AutoField(primary_key=True, unique=True)
+#     date = models.DateField(blank=True, null=True)
+#     day_type = models.CharField(max_length=10, choices=[('Pracujący', 'Pracujący'), ('Wolny', 'Wolny')])
+#     work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
+#     scheme = models.CharField(max_length=255, blank=True, null=True, default='20')
+#     official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
+#
+#
+#     def __str__(self):
+#         return f"{self.date} - {self.day_type}"
 
-    id = models.AutoField(primary_key=True, unique=True)
+
+class DoctorSchedule(models.Model):
+    id = models.AutoField(primary_key=True)
     date = models.DateField(blank=True, null=True)
-    day_type = models.CharField(max_length=10, choices=[('Pracujący', 'Pracujący'), ('Wolny', 'Wolny')])
+    day_type = models.CharField(max_length=255, blank=True, null=True, default='Pracujący')
     work_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-21:00')
     scheme = models.CharField(max_length=255, blank=True, null=True, default='20')
     official_hours = models.CharField(max_length=50, blank=True, null=True, default='8:00-19:00')
 
-
     def __str__(self):
         return f"{self.date} - {self.day_type}"
+
+    class Meta:
+        verbose_name = "Doctor Schedule"
+        verbose_name_plural = "Doctor Schedules"
+
 
 class FizSchedule(models.Model):
 
@@ -114,7 +131,7 @@ class Groups(models.Model):
     def __str__(self):
         return self.id
 
-class PruposeVisit(models.Model):
+class PurposeVisit(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     purpose_name = models.CharField(max_length=100)
     description = models.TextField()
@@ -123,18 +140,18 @@ class PruposeVisit(models.Model):
         return self.cel
 
 @receiver(post_migrate)
-def add_default_records_prupose(sender, **kwargs):
+def add_default_records_Purpose(sender, **kwargs):
     if sender.name == "vita":
-        if not PruposeVisit.objects.exists():
-            PruposeVisit.objects.create(purpose_name='badanie', description='badanie')
-            PruposeVisit.objects.create(purpose_name='masaż', description='masaż')
-            PruposeVisit.objects.create(purpose_name='masaż karnet', description='masaż karnet')
-            PruposeVisit.objects.create(purpose_name='akupunktura', description='akupunktura')
-            PruposeVisit.objects.create(purpose_name='przerwa', description='przerwa')
+        if not PurposeVisit.objects.exists():
+            PurposeVisit.objects.create(purpose_name='badanie', description='badanie')
+            PurposeVisit.objects.create(purpose_name='masaż', description='masaż')
+            PurposeVisit.objects.create(purpose_name='masaż karnet', description='masaż karnet')
+            PurposeVisit.objects.create(purpose_name='akupunktura', description='akupunktura')
+            PurposeVisit.objects.create(purpose_name='przerwa', description='przerwa')
 
-class StatusVisist(models.Model):
+class StatusVisit(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    status_name = models.CharField()
+    status_name = models.CharField(max_length=100)
     description = models.CharField()
     def __str__(self):
         return self.status_name
@@ -142,13 +159,13 @@ class StatusVisist(models.Model):
 @receiver(post_migrate)
 def add_default_records_status(sender, **kwargs):
     if sender.name == "vita":
-        if not StatusVisist.objects.exists():
-            StatusVisist.objects.create(status_name='umówiona', description='umówiona')
-            StatusVisist.objects.create(status_name='odwołana', description='odwołana')
-            StatusVisist.objects.create(status_name='odbyła się', description='odbyła się')
-            StatusVisist.objects.create(status_name='nie odbyła się', description='nie odbyła się')
-            StatusVisist.objects.create(status_name='www', description='www')
-            StatusVisist.objects.create(status_name='odwołana www', description='odwołana www')
+        if not StatusVisit.objects.exists():
+            StatusVisit.objects.create(status_name='umówiona', description='umówiona')
+            StatusVisit.objects.create(status_name='odwołana', description='odwołana')
+            StatusVisit.objects.create(status_name='odbyła się', description='odbyła się')
+            StatusVisit.objects.create(status_name='nie odbyła się', description='nie odbyła się')
+            StatusVisit.objects.create(status_name='www', description='www')
+            StatusVisit.objects.create(status_name='odwołana www', description='odwołana www')
 
 
 class Visits(models.Model):
@@ -156,28 +173,28 @@ class Visits(models.Model):
     date = models.DateField(null=True)
     time = models.CharField(null=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
+    purpose_visit = models.ForeignKey(PurposeVisit, on_delete=models.CASCADE)
     visit = models.CharField(null=True)
-    status = models.CharField(null=True)
+    status = models.ForeignKey('StatusVisit', on_delete=models.CASCADE)#status = models.CharField(null=True)
     pay = models.IntegerField(null=True)
     cancel = models.IntegerField(null=True)
     office = models.IntegerField(null=True, default='1')
     def __str__(self):
         return self.patient
 
-class Visits_f(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    date = models.DateField(null=True)
-    time = models.CharField(null=True)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    prupose_visit = models.ForeignKey(PruposeVisit, on_delete=models.CASCADE)
-    visit = models.CharField(null=True)
-    status = models.CharField(null=True)
-    pay = models.IntegerField(null=True)
-    cancel = models.IntegerField(null=True)
-    office = models.IntegerField(null=True, default='1')
-    def __str__(self):
-        return self.patient
+# class Visits_f(models.Model):
+#     id = models.AutoField(primary_key=True, unique=True)
+#     date = models.DateField(null=True)
+#     time = models.CharField(null=True)
+#     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+#     Purpose_visit = models.ForeignKey(PurposeVisit, on_delete=models.CASCADE)
+#     visit = models.CharField(null=True)
+#     status = models.CharField(null=True)
+#     pay = models.IntegerField(null=True)
+#     cancel = models.IntegerField(null=True)
+#     office = models.IntegerField(null=True, default='1')
+#     def __str__(self):
+#         return self.patient
 
 class ReversList(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
