@@ -620,6 +620,22 @@ def delete_templates(request, pk):
 
     return render(request, "vita/panel/templates_list.html", context)
 
+def update_visit_status(request, visit_id):
+    visit = get_object_or_404(Visits, id=visit_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+
+        if new_status:
+            visit.status = new_status
+            visit.save()
+
+            # Przekierowanie na stronę z planem dziennym lub inną odpowiednią stronę
+            return redirect('panel', date=visit.date)  # Przykładowe przekierowanie na panel z datą wizyty
+
+    # Możesz tutaj dodać obsługę GET lub zwrócić pusty kontekst w przypadku braku potrzeby
+
+    return render(request, 'vita/panel/panel.html', {'visit': visit})
 def panel(request, date):
     today = datetime.today()
     full_path = request.get_full_path()

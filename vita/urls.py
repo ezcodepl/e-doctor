@@ -63,4 +63,5 @@ urlpatterns = [
     path('appointments/cancel/<int:pk>/', views.cancel_appointment, name='cancel_appointment'),
 
 
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
