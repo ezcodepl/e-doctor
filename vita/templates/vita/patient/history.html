@@ -1,77 +1,139 @@
-<!-- Tabela wizyt, które się odbyły -->
-<div class="col-12 col-md-6">
-    <div class="text-center mb-4">
-        <h5 class="card-title text-success">Wizyty, które się odbyły: {{ visits_akt.paginator.count }}</h5>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-sm">
-            <thead>
-            <tr>
-                <th>Lp.</th>
-                <th>Data</th>
-                <th>Godz.</th>
-                <th>Status</th>
-                <th>Cel wizyty</th>
-                <th>Gabinet</th>
-                <th>Nr</th>
-            </tr>
-            </thead>
-            <tbody class="text-success">
-            {% for w in visits_akt %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ w.date|date:"Y-m-d" }}</td>
-                <td>{{ w.time }}</td>
-                <td class="col">{{ w.status__status_name }}</td>
-                <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
-                <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
-                <td>{{ w.visit }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="pagination">
-        <!-- Paginacja dla tabeli visits_akt -->
-    </div>
-</div>
+{% extends 'base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container py-5">
+    {% include 'vita/messages.html' %}
+    <h2 style="color:#32AFC7">Historia wizyt</h2>
 
-<!-- Tabela wizyt odwołanych -->
-<div class="col-12 col-md-6">
-    <div class="text-center mb-4">
-        <h5 class="card-title text-danger">Wizyty odwołane i te, które się nie odbyły: {{ visits_can.paginator.count }}</h5>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-sm">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Lp.</th>
-                <th>Data</th>
-                <th>Godz.</th>
-                <th>Status</th>
-                <th>Cel wizyty</th>
-                <th>Gabinet</th>
-                <th>Nr</th>
-            </tr>
-            </thead>
-            <tbody class="text-danger">
-            {% for w in visits_can %}
-            <tr>
-                <td><input type="checkbox"/></td>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ w.date|date:"Y-m-d" }}</td>
-                <td>{{ w.time }}</td>
-                <td>{{ w.status__status_name }}</td>
-                <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
-                <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
-                <td>{{ w.visit }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="pagination">
-        <!-- Paginacja dla tabeli visits_can -->
+    <div class="row">
+        <!-- Tabela wizyt, które się odbyły -->
+        <div class="col-12 col-md-6">
+            <form method="get" id="itemsPerPageFormAkt" class="mb-3">
+                <input type="hidden" name="can_page" value="{{ visits_can.number }}">
+                <label for="items_per_page_akt">Liczba rekordów na stronę:</label>
+                <select name="items_per_page_akt" id="items_per_page_akt" class="form-select w-auto" onchange="document.getElementById('itemsPerPageFormAkt').submit();">
+                    <option value="10" {% if items_per_page_akt == 10 %}selected{% endif %}>10</option>
+                    <option value="20" {% if items_per_page_akt == 20 %}selected{% endif %}>20</option>
+                    <option value="30" {% if items_per_page_akt == 30 %}selected{% endif %}>30</option>
+                    <option value="50" {% if items_per_page_akt == 50 %}selected{% endif %}>50</option>
+                    <option value="100" {% if items_per_page_akt == 100 %}selected{% endif %}>100</option>
+                </select>
+            </form>
+            <div class="text-center mb-4">
+                <h5 class="card-title text-success">Wizyty, które się odbyły: {{ visits_akt.paginator.count }}</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>Lp.</th>
+                        <th>Data</th>
+                        <th>Godz.</th>
+                        <th>Status</th>
+                        <th>Cel wizyty</th>
+                        <th>Gabinet</th>
+                        <th>Nr</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-success">
+                    {% for w in visits_akt %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ w.date|date:"Y-m-d" }}</td>
+                        <td>{{ w.time }}</td>
+                        <td class="col">{{ w.status__status_name }}</td>
+                        <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
+                        <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
+                        <td>{{ w.visit }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if visits_akt.has_previous %}
+                        <a href="?akt_page=1&items_per_page_akt={{ items_per_page_akt }}" class="btn btn-outline-primary btn-sm">&laquo; pierwsza</a>
+                        <a href="?akt_page={{ visits_akt.previous_page_number }}&items_per_page_akt={{ items_per_page_akt }}" class="btn btn-outline-primary btn-sm">poprzednia</a>
+                    {% endif %}
+
+                    <span class="current btn btn-outline-secondary btn-sm">
+                        Strona {{ visits_akt.number }} z {{ visits_akt.paginator.num_pages }}.
+                    </span>
+
+                    {% if visits_akt.has_next %}
+                        <a href="?akt_page={{ visits_akt.next_page_number }}&items_per_page_akt={{ items_per_page_akt }}" class="btn btn-outline-primary btn-sm">następna</a>
+                        <a href="?akt_page={{ visits_akt.paginator.num_pages }}&items_per_page_akt={{ items_per_page_akt }}" class="btn btn-outline-primary btn-sm">ostatnia &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Tabela wizyt odwołanych -->
+        <div class="col-12 col-md-6">
+            <form method="get" id="itemsPerPageFormCan" class="mb-3">
+                <input type="hidden" name="akt_page" value="{{ visits_akt.number }}">
+                <label for="items_per_page_can">Liczba rekordów na stronę:</label>
+                <select name="items_per_page_can" id="items_per_page_can" class="form-select w-auto" onchange="document.getElementById('itemsPerPageFormCan').submit();">
+                    <option value="10" {% if items_per_page_can == 10 %}selected{% endif %}>10</option>
+                    <option value="20" {% if items_per_page_can == 20 %}selected{% endif %}>20</option>
+                    <option value="30" {% if items_per_page_can == 30 %}selected{% endif %}>30</option>
+                    <option value="50" {% if items_per_page_can == 50 %}selected{% endif %}>50</option>
+                    <option value="100" {% if items_per_page_can == 100 %}selected{% endif %}>100</option>
+                </select>
+            </form>
+            <div class="text-center mb-4">
+                <h5 class="card-title text-danger">Wizyty odwołane i te, które się nie odbyły: {{ visits_can.paginator.count }}</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Lp.</th>
+                        <th>Data</th>
+                        <th>Godz.</th>
+                        <th>Status</th>
+                        <th>Cel wizyty</th>
+                        <th>Gabinet</th>
+                        <th>Nr</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-danger">
+                    {% for w in visits_can %}
+                    <tr>
+                        <td><input type="checkbox"/></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ w.date|date:"Y-m-d" }}</td>
+                        <td>{{ w.time }}</td>
+                        <td>{{ w.status__status_name }}</td>
+                        <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
+                        <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
+                        <td>{{ w.visit }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if visits_can.has_previous %}
+                        <a href="?can_page=1&items_per_page_can={{ items_per_page_can }}" class="btn btn-outline-primary btn-sm">&laquo; pierwsza</a>
+                        <a href="?can_page={{ visits_can.previous_page_number }}&items_per_page_can={{ items_per_page_can }}" class="btn btn-outline-primary btn-sm">poprzednia</a>
+                    {% endif %}
+
+                    <span class="current btn btn-outline-secondary btn-sm">
+                        Strona {{ visits_can.number }} z {{ visits_can.paginator.num_pages }}.
+                    </span>
+
+                    {% if visits_can.has_next %}
+                        <a href="?can_page={{ visits_can.next_page_number }}&items_per_page_can={{ items_per_page_can }}" class="btn btn-outline-primary btn-sm">następna</a>
+                        <a href="?can_page={{ visits_can.paginator.num_pages }}&items_per_page_can={{ items_per_page_can }}" class="btn btn-outline-primary btn-sm">ostatnia &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+

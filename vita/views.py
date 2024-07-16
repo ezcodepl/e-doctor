@@ -29,7 +29,8 @@ from django.views.decorators.http import require_GET
 from .forms import UserCreationForm, RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
-from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PurposeVisit, ReversList
+from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, PurposeVisit, \
+    ReversList, StatusVisit
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta, timezone
 import time
@@ -763,43 +764,42 @@ def new_visit(request):
     return render(request, "vita/patient/new_visit.html", context={'today':today})
 
 @login_required()
-def appointments(request):
-    if request.user.is_authenticated:
-        user_id = request.user.id
-
-        # get patient visites active and cancel
-        visits_akt = Visits.objects.select_related('purposevisit').filter(patient=user_id).order_by('-id').values(
-            'id',
-            'patient', 'purpose_visit__purpose_name',
-            'purpose_visit_id', 'visit',
-            'status',
-            'office',
-            'time', 'date')
-    else:
-        return HttpResponseForbidden('Dostęp tylko dla zalogowanych użytkowników')
-    return render(request, "vita/patient/appointments.html", context={'visits_akt': visits_akt})
-
-# @login_required()
-# def appointments_cancel(request, pk):
-#     obj = get_object_or_404(Visits, id = pk)
-#     if request.method == 'POST':
-#         n_form = NewsForm(request.POST, instance=obj)
-#         if n_form.is_valid():
-#             n_form.save()
-#             messages.success(request, 'Dane zapisano')
-#             return redirect("/panel/news_list")
+# def appointments(request):
+#     if request.user.is_authenticated:
+#         user_id = request.user.id
+#
+#         # get patient visites active and cancel
+#         visits_akt = Visits.objects.select_related('purposevisit').filter(patient=user_id).order_by('-id').values(
+#             'id',
+#             'patient', 'purpose_visit__purpose_name',
+#             'purpose_visit_id', 'visit',
+#             'status',
+#             'office',
+#             'time', 'date')
 #     else:
-#         n_form = NewsForm(instance=obj)
-#
-#     context = {
-#         'n_form' : n_form
-#     }
-#
-#     return render(request, "vita/panel/create_news.html", context)
+#         return HttpResponseForbidden('Dostęp tylko dla zalogowanych użytkowników')
+#     return render(request, "vita/patient/appointments.html", context={'visits_akt': visits_akt})
+def appointments(request):
+    visits_akt = Visits.objects.filter(status__in=[1, 5]).order_by('date', 'time')  # Przykładowy queryset
+
+    # Dodajemy numerację ręcznie do każdego obiektu wizyty z odpowiednim statusem
+    counter = 0
+    for visit in visits_akt:
+        if visit.status in [1, 5]:
+            counter += 1
+            visit.lp_number = counter  # Tworzymy nowe pole lp_number w obiekcie wizyty
+
+    context = {
+        'visits_akt': visits_akt,
+    }
+
+    return render(request, 'vita/patient/appointments.html', context)
+
 @login_required
 def cancel_appointment(request, pk):
     obj = get_object_or_404(Visits, id=pk)
-    obj.status = 6
+    status_visit = StatusVisit.objects.get(status_name='odwołana www')
+    obj.status = status_visit
     obj.cancel = 1
     obj.save()
     messages.success(request, 'Wizyta została odwołana.')
@@ -1454,7 +1454,8 @@ def doctor_visits(request, offset=0, num_days=14):
                     messages.warning(request, f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz ")
                 else:
                     if existing_visit is None:
-                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='1',
+                        status_visit = StatusVisit.objects.get(status_name='www')
+                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status=status_visit, visit='1', office='1',
                                         pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
                         s_form.save()
                         messages.success(request,
@@ -1558,7 +1559,9 @@ def fiz_visits(request, offset=0, num_days=14):
                     messages.warning(request, f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz ")
                 else:
                     if existing_visit is None:
-                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status='5', visit='1', office='2',
+
+                        status_visit = StatusVisit.objects.get(status_name='www')
+                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status=status_visit, visit='1', office='2',
                                         pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
                         s_form.save()
                         messages.success(request,

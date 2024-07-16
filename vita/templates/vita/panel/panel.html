@@ -59,10 +59,11 @@
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday }}</td></tr>
 
                                 {% for hour, visit in visits.items %}
+                                {{visit.status}}
                                     {% if visit %}
                                        <tr>
                                          <td>{{ hour }}</td>
-                                            {% if visit.status == '0' %}
+                                            {% if visit.status == 0 %}
                                                <td>-</td>
                                                <td>przerwa</td>
                                                <td>-</td>
@@ -71,25 +72,25 @@
                                                  <a href="/panel/patients/{{visit.patient__id_patient}}" >{{visit.patient__user__first_name}} {{visit.patient__user__last_name}}</a>
                                                </td>
                                                <td>
-                                                   {% if visit.status == '2' %}
+                                                   {% if visit.status == 3 %}
                                                          ODBYŁA SIĘ
-                                                   {% elif visit.status == '3' %}
+                                                   {% elif visit.status == 4 %}
                                                          NIE ODBYŁA SIĘ
-                                                   {% elif visit.status == '5' %}
+                                                   {% elif visit.status == 5 %}
                                                     <select name="status" style="font-size:12px;">
                                                          <option value="1">UMÓWIONA</option>
-                                                         <option value="2">ODBYŁA SIĘ</option>
-                                                         <option value="3">NIE ODBYŁA SIĘ</option>
-                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="3">ODBYŁA SIĘ</option>
+                                                         <option value="4">NIE ODBYŁA SIĘ</option>
+                                                         <option value="2">ODWOŁANA</option>
                                                          <option value="5" selected>WWW</option>
                                                          <option value="6">ODWOŁANA WWW</option>
                                                      </select>
                                                    {% else %}
                                                      <select name="status" style="font-size:12px;">
                                                          <option value="1" selected>UMÓWIONA</option>
-                                                         <option value="2">ODBYŁA SIĘ</option>
-                                                         <option value="3">NIE ODBYŁA SIĘ</option>
-                                                         <option value="4">ODWOŁANA</option>
+                                                         <option value="3">ODBYŁA SIĘ</option>
+                                                         <option value="4">NIE ODBYŁA SIĘ</option>
+                                                         <option value="2">ODWOŁANA</option>
                                                          <option value="5">WWW</option>
                                                          <option value="6">ODWOŁANA WWW</option>
                                                      </select>
@@ -194,9 +195,9 @@
                                                  <a href="/panel/patients/{{visit_f.patient__id_patient}}" >{{visit_f.patient__user__first_name}} {{visit_f.patient__user__last_name}}</a>
                                                </td>
                                                <td>
-                                                   {% if visit_f.status == '2' %}
+                                                   {% if visit_f.status == '3' %}
                                                          ODBYŁA SIĘ
-                                                   {% elif visit_f.status == '3' %}
+                                                   {% elif visit_f.status == '4' %}
                                                          NIE ODBYŁA SIĘ
                                                    {% elif visit_f.status == '5' %}
                                                     <select name="status" style="font-size:12px;">
