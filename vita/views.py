@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import logging
 import os
 import random
 from calendar import monthrange
@@ -18,8 +19,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from .forms import RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
@@ -655,6 +657,18 @@ def update_visit_status(request, visit_id):
     return render(request, 'vita/panel/panel.html', {'visit': visit})
 
 
+def delete_visit(request, visit_id):
+    visit = get_object_or_404(Visits, id=visit_id)
+
+    if request.method == 'POST':
+        visit.delete()
+        messages.success(request, 'Wizyta została usunięta.')
+        return redirect('panel', date=visit.date)
+
+    context = {
+        'visit': visit,
+    }
+    return render(request, 'vita/panel/panel.html', context)
 
 
 def panel(request, date):

@@ -87,7 +87,15 @@
                                                <td>{{ visit.visit}}</td>
                                               {% endif %}
                                          <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
-                                         <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
+                                         <td>
+                                               <form id="delete-form-{{ visit.id }}" method="post" action="{% url 'delete_visit' visit.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-danger delete-btn">Usuń</button>
+                                                </form>
+
+
+
+                                         </td>
                                      </tr>
                                     {% else %}
                                     <tr>
@@ -203,7 +211,13 @@
                                                <td>{{ visit_f.visit}}</td>
                                             {% endif %}
                                          <td class="text-bold-500">{{visit_f.prupose_visit__purpose_name}}</td>
-                                         <td><button type="button" class="btn btn-sm btn-danger">Usuń</button></td>
+                                         <td>
+                                             <form method="post" action="{% url 'delete_visit' visit_f.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                                            </form>
+
+                                         </td>
                                      </tr>
                                     {% else %}
                                     <tr>
@@ -388,4 +402,5 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
   </script>
+
 {% endblock %}
