@@ -320,6 +320,41 @@
                       }
                     });
                 </script>
+<script>
+   $(document).ready(function() {
+    $('.delete-btn').click(function() {
+        var visitId = $(this).data('visit-id');
+
+        // Sprawdź czy visitId jest ustawione
+        if (visitId) {
+            // Wygeneruj URL do widoku delete_visit
+            var deleteUrl = '/panel/delete_visit/' + visitId + '/';
+
+            // Pobierz token CSRF
+            var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+
+            // Wyślij żądanie AJAX
+            $.ajax({
+                type: 'POST',
+                url: deleteUrl,
+                data: {
+                    csrfmiddlewaretoken: csrfToken
+                },
+                success: function(response) {
+                    // Obsługa sukcesu
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    // Obsługa błędu
+                    console.error(xhr.responseText);
+                }
+            });
+        } else {
+            console.error('Nieprawidłowy identyfikator wizyty.');
+        }
+    });
+});
+    </script>
 </body>
 
 </html>

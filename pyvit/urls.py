@@ -18,9 +18,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
+
+from vita import views
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
     patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits, reserve_list, \
-    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status
+    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status, delete_visit
 from django.contrib.auth import views as auth_views
 
 
@@ -63,6 +65,7 @@ urlpatterns = [
     path('panel/fiz_weekly_plan/<int:offset>/', fiz_weekly_plan, name='fiz_weekly_plan'),
 
     path('update_visit_status/<int:visit_id>/', update_visit_status, name='update_visit_status'),
+    path('panel/delete_visit/<int:visit_id>/', delete_visit, name='delete_visit'),
 
 
 
