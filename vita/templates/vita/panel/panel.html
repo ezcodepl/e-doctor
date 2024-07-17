@@ -69,11 +69,17 @@
                                                <td>
                                                      <form method="post" action="{% url 'update_visit_status' visit.id %}">
                                                         {% csrf_token %}
-                                                        <select name="status" style="font-size: 12px;" onchange="this.form.submit()">
-                                                            {% for stv in status_visit %}
-                                                                <option value="{{ stv.id }}" {% if stv.id == visit.status %} selected {% endif %}>{{ stv.status_name|upper }}</option>
-                                                            {% endfor %}
-                                                        </select>
+                                                         {% if visit.status == 3 %}
+                                                              <span>ODBYŁA SIĘ</span>
+                                                         {% elif visit.status == 4 %}
+                                                              <span>NIE ODBYŁA SIĘ</span>
+                                                         {% else %}
+                                                            <select name="status" style="font-size: 12px;" onchange="this.form.submit()">
+                                                                {% for stv in status_visit %}
+                                                                    <option value="{{ stv.id }}" {% if stv.id == visit.status %} selected {% endif %}>{{ stv.status_name|upper }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                         {% endif %}
                                                         <input type="hidden" name="visit_id" value="{{ visit.id }}">
                                                     </form>
 
@@ -163,6 +169,7 @@
                            </div>
                           <tbody>
                                 <tr><td scope="row" style="padding:10px;color:red;">{{ freeday_f }}</td></tr>
+
                                 {% for hour_f, visit_f in visits_f.items %}
 
                                     {% if visit_f %}
@@ -177,29 +184,21 @@
                                                  <a href="/panel/patients/{{visit_f.patient__id_patient}}" >{{visit_f.patient__user__first_name}} {{visit_f.patient__user__last_name}}</a>
                                                </td>
                                                <td>
-                                                   {% if visit_f.status == '3' %}
-                                                         ODBYŁA SIĘ
-                                                   {% elif visit_f.status == '4' %}
-                                                         NIE ODBYŁA SIĘ
-                                                   {% elif visit_f.status == '5' %}
-                                                    <select name="status" style="font-size:12px;">
-                                                         <option value="1">UMÓWIONA</option>
-                                                         <option value="2">ODBYŁA SIĘ</option>
-                                                         <option value="3">NIE ODBYŁA SIĘ</option>
-                                                         <option value="4">ODWOŁANA</option>
-                                                         <option value="5" selected>WWW</option>
-                                                         <option value="6">ODWOŁANA WWW</option>
-                                                     </select>
-                                                   {% else %}
-                                                     <select name="status" style="font-size:12px;">
-                                                         <option value="1" selected>UMÓWIONA</option>
-                                                         <option value="2">ODBYŁA SIĘ</option>
-                                                         <option value="3">NIE ODBYŁA SIĘ</option>
-                                                         <option value="4">ODWOŁANA</option>
-                                                         <option value="5">WWW</option>
-                                                         <option value="6">ODWOŁANA WWW</option>
-                                                     </select>
-                                                   {% endif %}
+                                                    <form method="post" action="{% url 'update_visit_status' visit_f.id %}">
+                                                        {% csrf_token %}
+                                                        {% if visit_f.status == 3 %}
+                                                            <span>ODBYŁA SIĘ</span>
+                                                        {% elif visit_f.status == 4 %}
+                                                            <span>NIE ODBYŁA SIĘ</span>
+                                                        {% else %}
+                                                            <select name="status_f" style="font-size: 12px;" onchange="this.form.submit()">
+                                                                {% for stv_f in status_visit %}
+                                                                    <option value="{{ stv_f.id }}" {% if stv_f.id == visit_f.status %} selected {% endif %}>{{ stv_f.status_name|upper }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        {% endif %}
+                                                        <input type="hidden" name="visit_id_f" value="{{ visit_f.id }}">
+                                                    </form>
                                                </td>
                                                <td>{{ visit_f.visit}}</td>
                                             {% endif %}
