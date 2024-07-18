@@ -27,7 +27,7 @@ from .forms import RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
 from .models import News, Patient, DoctorSchedule, FizSchedule, NoteTemplates, FilesModel, Visits, ReversList, \
-    StatusVisit
+    StatusVisit, Visits_No
 
 register = template.Library()
 
@@ -266,7 +266,7 @@ def patients_files(request, pk):
     ########### end templates notes of doctor ################
 
     if 'submit' in request.POST:
-        ################  upload patient files ###################
+    ################  upload patient files ###################
         if request.method == 'POST':
             form = uploadFilesForm(request.POST, request.FILES)
             files = request.FILES.getlist('files')
@@ -319,48 +319,38 @@ def patients_files(request, pk):
         messages.info(request, 'W aktach pacjenta nie jeszcze plików')
 
     #################### end upload patient files ###################################################
-
+    user_id = patient
     # get patient visites active and cancel
-    visits_akt = Visits.objects.select_related('purposevisit').filter(patient=pk).order_by('-id').values('patient',
-                                                                                                         'purpose_visit__purpose_name',
-                                                                                                         'purpose_visit_id',
-                                                                                                         'visit',
-                                                                                                         'status',
-                                                                                                         'office',
-                                                                                                         'time',
-                                                                                                         'date')
-    visits_can = Visits.objects.select_related('purposevisit').filter(
-        Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient',
-                                                                         'purpose_visit__purpose_name',
-                                                                         'purpose_visit_id',
-                                                                         'visit',
-                                                                         'status',
-                                                                         'office',
-                                                                         'time',
-                                                                         'date')
 
-    # get patient visites fiz active and cancel
-    visits_akt_f = Visits.objects.select_related('purposevisit').filter(patient=pk).order_by('-id').values('patient',
-                                                                                                           'purpose_visit__purpose_name',
-                                                                                                           'purpose_visit_id',
-                                                                                                           'visit',
-                                                                                                           'status',
-                                                                                                           'office',
-                                                                                                           'time',
-                                                                                                           'date')
-    visits_can_f = Visits.objects.select_related('purposevisit').filter(
-        Q(patient=pk) & ~Q(status__in=[1, 2, 5])).order_by('-id').values('patient', 'purpose_visit__purpose_name',
-                                                                         'purpose_visit_id', 'visit', 'status',
-                                                                         'office', 'time',
-                                                                         'date')
-    # visits_count = Visits.objects.filter(patient_id=pk).count()
-    # visit_f_count = Visits_f.objects.filter(patient_id=pk).count()
-    # total_count = visits_count + visit_f_count
+    visits_akt = Visits.objects.select_related('purposevisit', 'status').filter(
+        patient=user_id,
+        status__id__in=[1,3,5]  # Dostosuj te nazwy statusów do swojej bazy danych
+    ).order_by(
+        '-id'
+    ).values(
+        'patient',
+        'purpose_visit__purpose_name',
+        'purpose_visit_id',
+        'visit',
+        'status__status_name',
+        'office',
+        'time',
+        'date'
+    )
+
+    visits_can = Visits_No.objects.select_related('purposevisit', 'status').filter(
+        Q(patient=user_id) & ~Q(status__in=[1, 3, 5])).order_by('-id').values('patient',
+                                                                              'purpose_visit__purpose_name',
+                                                                              'purpose_visit_id',
+                                                                              'visit',
+                                                                              'status__status_name',
+                                                                              'office',
+                                                                              'time',
+                                                                              'date')
 
     return render(request, 'vita/panel/patient_details.html',
                   {'patient': patient, 'form': form, 'all_files': all_files, 'templates': templates,
-                   'visits_akt': visits_akt, 'visits_can': visits_can, 'visits_akt_f': visits_akt_f,
-                   'visits_can_f': visits_can_f, 'today': today})
+                   'visits_akt': visits_akt, 'visits_can': visits_can, 'today': today})
 
 
 def create_patient(request):
@@ -635,27 +625,66 @@ def update_visit_status(request, visit_id):
 
     if request.method == 'POST':
         if 'status' in request.POST and 'visit_id' in request.POST:
-            new_status_id = request.POST.get('status')
+            new_status_id = int(request.POST.get('status'))
             visit_id = request.POST.get('visit_id')
 
-            visit = get_object_or_404(Visits, id=visit_id)
-            visit.status_id = new_status_id
-            visit.save()
+            if new_status_id in [2, 4]:
+                visit_no = Visits_No.objects.create(
+                    id=visit.id,
+                    patient=visit.patient,
+                    date=visit.date,
+                    time=visit.time,
+                    cancel=1,
+                    office=visit.office,
+                    purpose_visit_id=visit.purpose_visit_id,
+                    status_id=new_status_id
+                )
+                visit.delete()  # Usunięcie wizyty z tabeli Visits
+                if new_status_id == 2:
+                    status_name = 'Odwołana'
+                elif new_status_id == 4:
+                    status_name = 'Nie odbyła się'
+                messages.success(request, f'Wizyta została przeniesiona do tabeli wizyty odwołane jako {status_name}.')
+            else:
+                # Aktualizacja statusu wizyty
+                visit.status_id = new_status_id
+                visit.save()
+                messages.success(request, 'Status wizyty został zaktualizowany.')
 
             return redirect('panel', date=visit.date)
 
         elif 'status_f' in request.POST and 'visit_id_f' in request.POST:
-            new_status_id_f = request.POST.get('status_f')
+            new_status_id_f = int(request.POST.get('status_f'))
             visit_id_f = request.POST.get('visit_id_f')
 
-            visit_f = get_object_or_404(Visits, id=visit_id_f)
-            visit_f.status_id = new_status_id_f
-            visit_f.save()
+            if new_status_id_f in [2, 4]:
+                visit_f = get_object_or_404(Visits, id=visit_id_f)
+                visit_no = Visits_No.objects.create(
+                    id=visit_f.id,
+                    patient=visit_f.patient,
+                    date=visit_f.date,
+                    time=visit_f.time,
+                    cancel=1,
+                    office=visit_f.office,
+                    purpose_visit_id=visit_f.purpose_visit_id,
+                    status_id=new_status_id_f
+                )
+                visit_f.delete()  # Usunięcie wizyty z tabeli Visits
+                if new_status_id_f == 2:
+                    status_name = 'Odwołana'
+                elif new_status_id_f == 4:
+                    status_name = 'Nie odbyła się'
+                messages.success(request, f'Wizyta została przeniesiona do tabeli wizyty odwołane jako {status_name}.')
+            else:
+                # Aktualizacja statusu wizyty
+                visit_f = get_object_or_404(Visits, id=visit_id_f)
+                visit_f.status_id = new_status_id_f
+                visit_f.save()
+                messages.success(request, 'Status wizyty został zaktualizowany.')
 
             return redirect('panel', date=visit_f.date)
 
     return render(request, 'vita/panel/panel.html', {'visit': visit})
-
 
 def delete_visit(request, visit_id):
     visit = get_object_or_404(Visits, id=visit_id)
@@ -822,14 +851,14 @@ def new_visit(request):
 
 @login_required()
 def appointments(request):
-    visits_akt = Visits.objects.filter(status__in=[1, 5]).order_by('date', 'time')  # Przykładowy queryset
+    user_id = request.user.id
+    visits_akt = Visits.objects.filter(patient=user_id,status__in=[1, 5]).order_by('date', 'time')  # Przykładowy queryset
 
-    # Dodajemy numerację ręcznie do każdego obiektu wizyty z odpowiednim statusem
     counter = 0
     for visit in visits_akt:
         if visit.status in [1, 5]:
             counter += 1
-            visit.lp_number = counter  # Tworzymy nowe pole lp_number w obiekcie wizyty
+            visit.lp_number = counter
 
     context = {
         'visits_akt': visits_akt,
@@ -839,13 +868,29 @@ def appointments(request):
 
 
 @login_required
-def cancel_appointment(request, pk):
-    obj = get_object_or_404(Visits, id=pk)
-    status_visit = StatusVisit.objects.get(status_name='odwołana www')
-    obj.status = status_visit
-    obj.cancel = 1
-    obj.save()
-    messages.success(request, 'Wizyta została odwołana.')
+def cancel_appointment(request, visit_id):
+    if request.method == 'POST' and 'visit_id' in request.POST:
+        post_visit_id = request.POST['visit_id']
+
+        if post_visit_id == str(visit_id):
+            visit = get_object_or_404(Visits, id=visit_id)
+            Visits_No.objects.create(
+                id=visit.id,
+                patient=visit.patient,
+                date=visit.date,
+                time=visit.time,
+                cancel=1,
+                office=visit.office,
+                purpose_visit_id=visit.purpose_visit_id,
+                status_id=6  # Zmiana statusu na 6
+            )
+            visit.delete()  # Usunięcie wizyty z tabeli Visits
+            messages.success(request, 'Wizyta została odwołana.')
+        else:
+            messages.error(request, 'Nieprawidłowy ID wizyty.')
+    else:
+        messages.error(request, 'Brak ID wizyty w żądaniu.')
+
     return redirect('appointments')
 
 
@@ -854,16 +899,23 @@ def history(request):
     if request.user.is_authenticated:
         user_id = request.user.id
 
-        visits_akt_list = Visits.objects.select_related('purposevisit', 'status').filter(patient=user_id,
-                                                                                         status__status_name='3').order_by(
-            '-id').values(
-            'patient', 'purpose_visit__purpose_name',
-            'purpose_visit_id', 'visit',
-            'status__status_name',  # Używamy status__status_name do odwołania się do nazwy statusu
+        visits_akt_list = Visits.objects.select_related('purposevisit', 'status').filter(
+            patient=user_id,
+            status__id__in=[3]  # Dostosuj te nazwy statusów do swojej bazy danych
+        ).order_by(
+            '-id'
+        ).values(
+            'patient',
+            'purpose_visit__purpose_name',
+            'purpose_visit_id',
+            'visit',
+            'status__status_name',
             'office',
-            'time', 'date')
+            'time',
+            'date'
+        )
 
-        visits_can_list = Visits.objects.select_related('purposevisit', 'status').filter(
+        visits_can_list = Visits_No.objects.select_related('purposevisit', 'status').filter(
             Q(patient=user_id) & ~Q(status__in=[1, 3, 5])).order_by('-id').values('patient',
                                                                                   'purpose_visit__purpose_name',
                                                                                   'purpose_visit_id',
@@ -1276,7 +1328,7 @@ def pause_visit(request):
         form = vform.save(commit=False)
         form.date = request.POST['date']
         form.time = request.POST['time']
-        form.status = '0'
+        form.status_id = 0
         form.visit = '0'
         form.office = request.POST['office']
         form.purpose_visit_id = '5'

@@ -60,7 +60,7 @@ urlpatterns = [
     path('upcoming_appointments', views.upcoming_appointments, name='upcoming_appointments'),
 
     # path('appointments/', views.appointments, name='appointments'),
-    path('appointments/cancel/<int:pk>/', views.cancel_appointment, name='cancel_appointment'),
+    path('appointments/cancel/<int:visit_id>/', views.cancel_appointment, name='cancel_appointment'),
 
 
 

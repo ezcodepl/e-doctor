@@ -103,7 +103,7 @@
                                          <td class="text-bold-500"></td>
                                          <td></td>
                                          <td></td>
-                                         <td class="text-bold-500">{{visit.prupose_visit__purpose_name}}</td>
+                                         <td class="text-bold-500">{{visit.purpose_visit__purpose_name}}</td>
                                          <td>
                                            <div class="d-flex flex-row">
 
@@ -183,7 +183,7 @@
                                     {% if visit_f %}
                                        <tr>
                                          <td>{{ hour_f }}</td>
-                                            {% if visit_f.status == '0' %}
+                                            {% if visit_f.status == 0 %}
                                                <td>-</td>
                                                <td>przerwa</td>
                                                <td>-</td>

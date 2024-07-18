@@ -52,6 +52,8 @@
                                             <td>
                                                 <form action="{% url 'cancel_appointment' visit.id %}" method="post" style="display:inline;">
                                                     {% csrf_token %}
+                                                    <input type="hidden" name="visit_id" value="{{ visit.id }}">
+                                                    <input type="hidden" name="office" value="{{visit.office}}" />
                                                     <input type="submit" class="btn btn-sm btn-danger" value="odwołaj" />
                                                 </form>
                                             </td>

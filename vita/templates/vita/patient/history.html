@@ -96,7 +96,7 @@
                         <th>Status</th>
                         <th>Cel wizyty</th>
                         <th>Gabinet</th>
-                        <th>Nr</th>
+
                     </tr>
                     </thead>
                     <tbody class="text-danger">
@@ -109,7 +109,7 @@
                         <td>{{ w.status__status_name }}</td>
                         <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
                         <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
-                        <td>{{ w.visit }}</td>
+
                     </tr>
                     {% endfor %}
                     </tbody>

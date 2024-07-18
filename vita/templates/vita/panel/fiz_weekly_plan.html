@@ -58,12 +58,12 @@
 
                                 {% if day.visits|get_item:hour %}
                                     {% with visit=day.visits|get_item:hour %}
-                                        {% if visit.prupose_visit == "przerwa" %}
+                                        {% if visit.purpose_visit == "przerwa" %}
                                            <td>-</td>
                                          {% else %}
                                            <td class="text-bold-500 text-sm" ><a href="/panel/patients/{{visit.id_patient}}">{{ visit.patient_first_name }} {{ visit.patient_last_name }}</a></td>
                                           {% endif %}
-                                        {% if visit.prupose_visit == "przerwa" %}
+                                        {% if visit.purpose_visit == "przerwa" %}
                                            <td>przerwa</td>
                                          {% else %}
                                             <td>
