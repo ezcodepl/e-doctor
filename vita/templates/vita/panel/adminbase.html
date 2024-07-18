@@ -355,6 +355,17 @@
     });
 });
     </script>
+<script>
+    // Skrypt JavaScript do znikania komunikatu po kilku sekundach
+    document.addEventListener('DOMContentLoaded', function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.remove();
+            }, 5000); // Znikanie po 5 sekundach (5000 milisekund)
+        });
+    });
+</script>
 </body>
 
 </html>

@@ -38,7 +38,7 @@
                     <tbody class="text-success">
                     {% for w in visits_akt %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <td>{{ visits_akt.start_index|add:forloop.counter0 }}</td>
                         <td>{{ w.date|date:"Y-m-d" }}</td>
                         <td>{{ w.time }}</td>
                         <td class="col">{{ w.status__status_name }}</td>
@@ -89,7 +89,7 @@
                 <table class="table table-sm">
                     <thead>
                     <tr>
-                        <th></th>
+
                         <th>Lp.</th>
                         <th>Data</th>
                         <th>Godz.</th>
@@ -102,8 +102,8 @@
                     <tbody class="text-danger">
                     {% for w in visits_can %}
                     <tr>
-                        <td><input type="checkbox"/></td>
-                        <td>{{ forloop.counter }}</td>
+
+                        <td>{{ visits_can.start_index|add:forloop.counter0 }}</td>
                         <td>{{ w.date|date:"Y-m-d" }}</td>
                         <td>{{ w.time }}</td>
                         <td>{{ w.status__status_name }}</td>

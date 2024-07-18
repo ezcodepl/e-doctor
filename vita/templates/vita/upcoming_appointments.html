@@ -44,17 +44,37 @@
                                                               </div>
                                                               <div class="modal-body">
                                                                 <!-- Treść modalu -->
-                                                                {% if user.is_authenticated %}
+
                                                                     <p>Posiadasz konto pacjenta. Zaloguj się.</p>
                                                                     <a href="/login" class="btn btn-primary">Zaloguj się</a>
-                                                                {% else %}
-                                                                    <p>Nie posiadasz konta pacjenta na naszej stronie.</p>
+
+                                                                    <p class="pt-3">Nie posiadasz konta pacjenta na naszej stronie.</p>
                                                                     <p>Możesz je utworzyć teraz, to zajmie tylko chwilę.</p>
                                                                     <a href="/register" class="btn btn-success">Załóż konto</a>
 
-                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, zadzwoń do naszego gabinetu.</p>
+                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, a chesz umówić się na wizytę telefonicznie zadzwoń do naszego gabinetu.</p>
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <div class="flex">
+
+                                                                                <div class="p-2">
+                                                                                    <h6 class="fw-bold"> <i class="bi bi-phone flex-shrink-0"></i> Telefon stacjonarny:</h6>
+                                                                                    <p>+48 94 341 14 63</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="flex">
+
+                                                                                <div class="p-2">
+                                                                                    <h6 class="fw-bold"> <i class="bi bi-phone flex-shrink-0"></i> Telefon kom.:</h6>
+                                                                                    <p>+48 600 034 005</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                     <a href="/#contact" class="btn btn-info">Kontakt</a>
-                                                                {% endif %}
+
                                                               </div>
                                                             </div>
                                                           </div>
@@ -110,18 +130,38 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                               </div>
                                                               <div class="modal-body">
-                                                                <!-- Treść modalu -->
-                                                                {% if user.is_authenticated %}
+                                                               <!-- Treść modalu -->
+
                                                                     <p>Posiadasz konto pacjenta. Zaloguj się.</p>
                                                                     <a href="/login" class="btn btn-primary">Zaloguj się</a>
-                                                                {% else %}
-                                                                    <p>Nie posiadasz konta pacjenta na naszej stronie.</p>
-                                                                    <p>Możesz je utworzyć teraz, to zajmie tylko chwilę.</p>
+
+                                                                    <p class="pt-3">Jeżeli nie posiadasz konta pacjenta na naszej stronie,
+                                                                    możesz je utworzyć teraz, to zajmie tylko chwilę.</p>
                                                                     <a href="/register" class="btn btn-success">Załóż konto</a>
 
-                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, zadzwoń do naszego gabinetu.</p>
+                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, a chesz umówić się na wizytę telefonicznie zadzwoń do naszego gabinetu.</p>
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <div class="flex">
+
+                                                                                <div class="p-2">
+                                                                                    <h6 class="fw-bold"> <i class="bi bi-phone flex-shrink-0"></i> Telefon stacjonarny:</h6>
+                                                                                    <p>+48 94 341 14 63</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="flex">
+
+                                                                                <div class="p-2">
+                                                                                    <h6 class="fw-bold"> <i class="bi bi-phone flex-shrink-0"></i> Telefon kom.:</h6>
+                                                                                    <p>+48 600 034 005</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                     <a href="/#contact" class="btn btn-info">Kontakt</a>
-                                                                {% endif %}
+
                                                               </div>
                                                             </div>
                                                           </div>

@@ -901,10 +901,8 @@ def history(request):
 
         visits_akt_list = Visits.objects.select_related('purposevisit', 'status').filter(
             patient=user_id,
-            status__id__in=[3]  # Dostosuj te nazwy statusów do swojej bazy danych
-        ).order_by(
-            '-id'
-        ).values(
+            status__id__in=[3]
+        ).order_by('-id').values(
             'patient',
             'purpose_visit__purpose_name',
             'purpose_visit_id',
@@ -916,22 +914,26 @@ def history(request):
         )
 
         visits_can_list = Visits_No.objects.select_related('purposevisit', 'status').filter(
-            Q(patient=user_id) & ~Q(status__in=[1, 3, 5])).order_by('-id').values('patient',
-                                                                                  'purpose_visit__purpose_name',
-                                                                                  'purpose_visit_id',
-                                                                                  'visit',
-                                                                                  'status__status_name',
-                                                                                  # Używamy status__status_name do odwołania się do nazwy statusu
-                                                                                  'office',
-                                                                                  'time',
-                                                                                  'date')
+            Q(patient=user_id) & ~Q(status__in=[1, 3, 5])
+        ).order_by('-id').values(
+            'patient',
+            'purpose_visit__purpose_name',
+            'purpose_visit_id',
+            'visit',
+            'status__status_name',
+            'office',
+            'time',
+            'date'
+        )
 
         items_per_page_akt = request.GET.get('items_per_page_akt', 10)
         items_per_page_can = request.GET.get('items_per_page_can', 10)
+
         try:
             items_per_page_akt = int(items_per_page_akt)
         except ValueError:
             items_per_page_akt = 10
+
         try:
             items_per_page_can = int(items_per_page_can)
         except ValueError:
@@ -939,6 +941,17 @@ def history(request):
 
         akt_page = request.GET.get('akt_page', 1)
         can_page = request.GET.get('can_page', 1)
+
+        try:
+            akt_page = int(akt_page)
+        except ValueError:
+            akt_page = 1
+
+        try:
+            can_page = int(can_page)
+        except ValueError:
+            can_page = 1
+
         paginator_akt = Paginator(visits_akt_list, items_per_page_akt)
         paginator_can = Paginator(visits_can_list, items_per_page_can)
 
@@ -965,6 +978,7 @@ def history(request):
         'items_per_page_akt': items_per_page_akt,
         'items_per_page_can': items_per_page_can,
     }
+
     return render(request, "vita/patient/history.html", context)
 
 
