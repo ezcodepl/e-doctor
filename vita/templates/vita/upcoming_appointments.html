@@ -30,7 +30,36 @@
                                                     <td>{{ forloop.counter }}.</td>
                                                     <td>{{ slot.date }}</td>
                                                     <td>{{ slot.time }}</td>
-                                                    <td><a role="button" class="btn btn-success" href="#">Umów się na wizytę</a></td>
+                                                    <td>
+                                                        <button type="button" class="btn" style="background:#9cdae6;" data-bs-toggle="modal" data-bs-target="#appointmentModal">
+                                                            Umów się na wizytę
+                                                        </button>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+                                                          <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                              <div class="modal-header bg-info">
+                                                                <h5 class="modal-title" id="appointmentModalLabel">Umów się na wizytę</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                              </div>
+                                                              <div class="modal-body">
+                                                                <!-- Treść modalu -->
+                                                                {% if user.is_authenticated %}
+                                                                    <p>Posiadasz konto pacjenta. Zaloguj się.</p>
+                                                                    <a href="/login" class="btn btn-primary">Zaloguj się</a>
+                                                                {% else %}
+                                                                    <p>Nie posiadasz konta pacjenta na naszej stronie.</p>
+                                                                    <p>Możesz je utworzyć teraz, to zajmie tylko chwilę.</p>
+                                                                    <a href="/register" class="btn btn-success">Załóż konto</a>
+
+                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, zadzwoń do naszego gabinetu.</p>
+                                                                    <a href="/#contact" class="btn btn-info">Kontakt</a>
+                                                                {% endif %}
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         {% else %}
@@ -68,7 +97,36 @@
                                                     <td>{{ forloop.counter }}.</td>
                                                     <td>{{ slot.date }}</td>
                                                     <td>{{ slot.time }}</td>
-                                                    <td><a role="button" class="btn btn-success" href="#">Umów się na wizytę</a></td>
+                                                    <td>
+                                                          <button type="button" class="btn" style="background:#9cdae6;" data-bs-toggle="modal" data-bs-target="#appointmentModal_f">
+                                                            Umów się na wizytę
+                                                        </button>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="appointmentModal_f" tabindex="-1" aria-labelledby="appointmentModalLabel_f" aria-hidden="true">
+                                                          <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                              <div class="modal-header bg-info">
+                                                                <h5 class="modal-title" id="appointmentModalLabel_f">Umów się na wizytę</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                              </div>
+                                                              <div class="modal-body">
+                                                                <!-- Treść modalu -->
+                                                                {% if user.is_authenticated %}
+                                                                    <p>Posiadasz konto pacjenta. Zaloguj się.</p>
+                                                                    <a href="/login" class="btn btn-primary">Zaloguj się</a>
+                                                                {% else %}
+                                                                    <p>Nie posiadasz konta pacjenta na naszej stronie.</p>
+                                                                    <p>Możesz je utworzyć teraz, to zajmie tylko chwilę.</p>
+                                                                    <a href="/register" class="btn btn-success">Załóż konto</a>
+
+                                                                    <p class="pt-3">Jeżeli nie chcesz zakładać konta pacjenta na naszej stronie, zadzwoń do naszego gabinetu.</p>
+                                                                    <a href="/#contact" class="btn btn-info">Kontakt</a>
+                                                                {% endif %}
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         {% else %}
