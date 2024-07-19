@@ -1858,7 +1858,7 @@ def doctors_weekly_plan(request, offset=0, num_days=7):
                     'patient_last_name': matching_visit.patient.user.last_name,
                     'purpose_visit': matching_visit.purpose_visit.purpose_name,
                     'status': matching_visit.status,
-                    'id_patient': matching_visit.patient_id,
+                    'id_patient': matching_visit.patient.id_patient,
                 }
             else:
                 visits_dict[hour] = None

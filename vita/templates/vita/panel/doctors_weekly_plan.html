@@ -43,6 +43,7 @@
     <tbody>
         <tr>
             {% for day in week_days|slice:":3" %}
+
                 <td style="border:1px solid;vertical-align: text-top;">
                     <table class="table table-sm valign-top bg-light">
                         <thead>
@@ -61,7 +62,9 @@
                                         {% if visit.purpose_visit == "przerwa" %}
                                            <td>-</td>
                                          {% else %}
-                                           <td class="text-bold-500 text-sm" ><a href="/panel/patients/{{visit.id_patient}}">{{ visit.patient_first_name }} {{ visit.patient_last_name }}</a></td>
+
+                                           <td class="text-bold-500 text-sm" ><a href="/panel/patients/{{visit.id_patient}}">
+                                               {{ visit.patient_first_name }} {{ visit.patient_last_name }}</a></td>
                                           {% endif %}
 
                                         {% if visit.purpose_visit == "przerwa" %}
