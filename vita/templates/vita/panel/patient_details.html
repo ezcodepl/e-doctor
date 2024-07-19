@@ -166,7 +166,7 @@
                                         <select class="form-select" name="template_patient" id="element_select">
                                             <option value="">------</option>
                                             {% for template in templates %}
-                                                <option>{{template.contents}}</option>
+                                                <option value="{{template.contents}}">{{template.name}}</option>
                                             {% endfor %}
                                         </select>
                                  </div>
@@ -188,24 +188,28 @@
                                     });
 
                                 </script>
-                                 <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        var selectElement = document.getElementById('element_select');
-                                        var textareaElement = document.getElementById('my_textarea');
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    var selectElement = document.getElementById('element_select');
+                                    var textareaElement = document.getElementById('my_textarea');
 
-                                        selectElement.addEventListener('change', function() {
-                                            var selectedElement = selectElement.options[selectElement.selectedIndex].text;
+                                    selectElement.addEventListener('change', function() {
+                                        // Pobierz wartość wybranego elementu <option> (atrybut value)
+                                        var selectedValue = selectElement.options[selectElement.selectedIndex].value;
 
-                                            // Dodaj przecinek i nowy element po obecnym tekście
-                                            var newContent = textareaElement.value + (textareaElement.value.trim() !== '' ? ', ' : '') + selectedElement;
+                                        // Pobierz obecną zawartość textarea
+                                        var currentContent = textareaElement.value;
 
-                                            // Ustaw nową zawartość w obszarze tekstowym
-                                            textareaElement.value = newContent;
+                                        // Dodaj przecinek i nową wartość, jeśli obecna zawartość nie jest pusta
+                                        var newContent = currentContent.trim() !== '' ? currentContent + ', ' + selectedValue : selectedValue;
 
-                                            // Zaktualizuj także zawartość TinyMCE
-                                            tinymce.get('my_textarea').setContent(newContent);
-                                        });
+                                        // Ustaw nową zawartość w obszarze tekstowym
+                                        textareaElement.value = newContent;
+
+                                        // Zaktualizuj także zawartość TinyMCE
+                                        tinymce.get('my_textarea').setContent(newContent);
                                     });
+                                });
                                 </script>
                             </div>
                         </div>
