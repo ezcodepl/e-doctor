@@ -64,7 +64,7 @@ ROOT_URLCONF = 'pyvit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -161,7 +161,13 @@ RECAPTCHA_PUBLIC_KEY = '6LddA3kgAAAAAPf1mAJmEc7Ku0cssbD5QMha09NT'
 RECAPTCHA_PRIVATE_KEY = '6LddA3kgAAAAAJY-2-Q0J3QX83DFJwFR1hXqmN8q'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
-SESSION_COOKIE_AGE = 900
+
+# Długość sesji dla opcji "Zapamiętaj mnie" (np. 30 dni)
+REMEMBER_ME_DURATION = 2592000  # 30 dni w sekundach
+
+# Inne ustawienia sesji
+SESSION_COOKIE_AGE = 1209600  # Domyślna długość sesji bez "Zapamiętaj mnie" (2 tygodnie)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Sesja wygasa po zamknięciu przeglądarki, jeśli "Zapamiętaj mnie" nie jest zaznaczone
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'gmail.com' # mail service smtp

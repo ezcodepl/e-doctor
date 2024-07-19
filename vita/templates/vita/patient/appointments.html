@@ -13,7 +13,7 @@
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
-                                    <tr class="bg-light">
+                                    <tr class="bg-light border">
                                         <th>Lp.</th>
                                         <th>Data</th>
                                         <th>Godz.</th>
@@ -29,9 +29,9 @@
 
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td {% if visit.office == 1 %} style="background:#D1E5E8;" {% else %} style="background:#e5e8d1;" {% endif %} >{{ visit.date|date:"Y-m-d" }}</td>
-                                            <td {% if visit.office == 1 %} style="background:#D1E5E8;" {% else %} style="background:#e5e8d1;" {% endif %} >{{ visit.time }}</td>
-                                            <td class="col" {% if visit.office == 1 %} style="background:#D1E5E8;" {% else %} style="background:#e5e8d1;" {% endif %} >
+                                            <td>{{ visit.date|date:"Y-m-d" }}</td>
+                                            <td>{{ visit.time }}</td>
+                                            <td class="col">
                                                 {% if visit.status == 1 %}
                                                     umówiona
                                                 {% elif visit.status == 3 %}
@@ -40,8 +40,8 @@
                                                     www
                                                 {% endif %}
                                             </td>
-                                            <td class="text-bold-500" {% if visit.office == 1 %} style="background:#D1E5E8;" {% else %} style="background:#e5e8d1;" {% endif %} >{{ visit.purpose_visit.purpose_name }}</td>
-                                            <td {% if visit.office == 1 %} style="background:#D1E5E8;" {% else %} style="background:#e5e8d1;" {% endif %} >
+                                            <td class="text-bold-500">{{ visit.purpose_visit.purpose_name }}</td>
+                                            <td>
                                                 {% if visit.office == 1 %}
                                                     lekarski
                                                 {% else %}
@@ -54,7 +54,7 @@
                                                     {% csrf_token %}
                                                     <input type="hidden" name="visit_id" value="{{ visit.id }}">
                                                     <input type="hidden" name="office" value="{{visit.office}}" />
-                                                    <input type="submit" class="btn btn-sm btn-danger" value="odwołaj" />
+                                                    <input type="submit" class="btn btn-sm btn-danger" value="odwołaj wizytę" />
                                                 </form>
                                             </td>
                                         </tr>

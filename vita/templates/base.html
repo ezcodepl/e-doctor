@@ -76,7 +76,7 @@
                         <li class="py-2"><a href="patient/history"><i class="bi bi-card-list hover-icon"></i> Historia wizyt</a></li> 
                         <li class="py-2"><a href="patient/profile"><i class="bi bi-person-circle hover-icon"></i> Moje dane</a></li>
                          {% if user.username == 'lekarz' %}
-                           <li class="py-2"><a href="/panel/terminarz"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
+                           <li class="py-2"><a href="/panel/{{today|date:'Y-m-d'}}"><i class="bi bi-gear hover-icon"></i> Administracja</a></li>
                         {% endif %}
                         <li class="py-2"><a href="logout" style="color: firebrick;"><i class="bi bi-power hover-icon" style="color: firebrick;"></i> Wyloguj</a></li> 
                       </ul>

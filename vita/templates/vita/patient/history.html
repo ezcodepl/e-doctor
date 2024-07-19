@@ -25,7 +25,7 @@
             <div class="table-responsive">
                 <table class="table table-sm">
                     <thead>
-                    <tr>
+                    <tr class="bg-light border">
                         <th>Lp.</th>
                         <th>Data</th>
                         <th>Godz.</th>
@@ -42,7 +42,7 @@
                         <td>{{ w.date|date:"Y-m-d" }}</td>
                         <td>{{ w.time }}</td>
                         <td class="col">{{ w.status__status_name }}</td>
-                        <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
+                        <td class="text-bold-500">{{ w.purpose_visit__purpose_name }}</td>
                         <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
                         <td>{{ w.visit }}</td>
                     </tr>
@@ -88,7 +88,7 @@
             <div class="table-responsive">
                 <table class="table table-sm">
                     <thead>
-                    <tr>
+                    <tr class="bg-light border">
 
                         <th>Lp.</th>
                         <th>Data</th>
@@ -107,7 +107,7 @@
                         <td>{{ w.date|date:"Y-m-d" }}</td>
                         <td>{{ w.time }}</td>
                         <td>{{ w.status__status_name }}</td>
-                        <td class="text-bold-500">{{ w.prupose_visit__purpose_name }}</td>
+                        <td class="text-bold-500">{{ w.purpose_visit__purpose_name }}</td>
                         <td>{% if w.office == 1 %} lekarski {% else %} fizykoterapii {% endif %}</td>
 
                     </tr>

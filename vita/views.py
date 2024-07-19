@@ -14,15 +14,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.generic import TemplateView
 
+from pyvit import settings
 from .forms import RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
@@ -44,7 +47,11 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 
 
 def home(request):
-    return render(request, "vita/home.html")
+    today_date = datetime.now().date()
+    context = {
+        'today': today_date,
+    }
+    return render(request, "vita/home.html", context)
 
 
 def docschedule(request):
@@ -1053,12 +1060,19 @@ def login_request(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                if username == 'admin':
-                    return redirect("/admin")
-                elif username == 'lekarz':
-                    return redirect(f'/panel/{today}')
+                if 'remember_me' in request.POST and request.POST['remember_me']:
+                    request.session.set_expiry(settings.REMEMBER_ME_DURATION)
+
+                    if username == 'admin':
+                        return redirect("/admin")
+                    elif username == 'lekarz':
+                        return redirect(f'/panel/{today}')
+                    else:
+                        return redirect("/")
                 else:
-                    return redirect("/")
+                    request.session.set_expiry(0)
+                return redirect('/')
+
             else:
                 messages.error(request, "Nieprawidłowa nazwa użytkownika lub hasło.")
         else:
@@ -1067,6 +1081,17 @@ def login_request(request):
 
     return render(request, "vita/login.html", {"login_form": form})
 
+logger = logging.getLogger(__name__)
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'vita/patient/password_change_form.html'
+
+    def get_success_url(self):
+        # Możesz tu określić dowolny URL, na który użytkownik zostanie przekierowany po zmianie hasła
+        return reverse('password_change_done')
+
+class PasswordChangeDoneView(TemplateView):
+    template_name = 'vita/patient/password_change_done.html'
 
 def logout_request(request):
     logout(request)
@@ -1092,10 +1117,12 @@ def profile(request):
 
         u_form = UserUpdateForm(instance=request.user)
         pe_form = PatientUpdateExtendForm(instance=request.user.patient)
+    today_date = datetime.now().date()
 
     context = {
         'u_form': u_form,
-        'pe_form': pe_form
+        'pe_form': pe_form,
+        'today' : today_date
     }
 
     return render(request, 'vita/patient/profile.html', context)

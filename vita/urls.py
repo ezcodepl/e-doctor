@@ -1,10 +1,12 @@
 from django.urls import path
+from django.views.generic import TemplateView
+
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from datetime import date, datetime
 
-from .views import ResetPasswordView
+from .views import ResetPasswordView, CustomPasswordChangeView, PasswordChangeDoneView
 from django.contrib.auth import views as auth_views
 
 
@@ -45,13 +47,16 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='vita/login.html'), name='login'),
 
     path("register", views.register_user, name="register_user"),
-    path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+    path('patient/password-reset/', ResetPasswordView.as_view(), name='password_reset'),
+    path('patient/password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
                       template_name='vita/patient/password_reset_confirm.html'),
                        name='password_reset_confirm'),
-    path('password-reset-complete/',
-         auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),
+    path('patient/password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(template_name='patient/password_reset_complete.html'),
          name='password_reset_complete'),
+
+    path('password_change/', CustomPasswordChangeView.as_view(), name='password_change'),
+    path('password_change/done/', PasswordChangeDoneView.as_view(), name='password_change_done'),
 
     path("patient/profile", views.profile, name="profile"),
     path('patient/new-visit', views.new_visit, name='new_visit'),

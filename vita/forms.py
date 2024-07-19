@@ -1,5 +1,7 @@
 from datetime import timezone, timedelta, datetime
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Div, HTML
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -63,6 +65,15 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name', 'email', 'username']
 
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('first_name', css_class='p-3'),
+            Field('last_name', css_class='p-3'),
+            Field('email', css_class='p-3'),
+            Field('username', css_class='p-3'),
+        )
 
 
 
@@ -96,17 +107,30 @@ class PatientUpdateForm(forms.ModelForm):
         model = Patient
         fields = ['city','street','post_code','phone','pesel','sms']
 
+    def __init__(self, *args, **kwargs):
+        super(PatientUpdateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('street', css_class='p-3'),
+            Field('post_code', css_class='p-3'),
+            Field('city', css_class='p-3'),
+            Field('phone', css_class='p-3'),
+            Field('pesel', css_class='p-3'),
+        )
+
 class PatientUpdateExtendForm(forms.ModelForm):
 
     street = forms.CharField(required=True, label='Adres')
     post_code = forms.CharField(required=True, label='Kod pocztowy')
     city = forms.CharField(required=True, label='Miejscowość')
     phone = forms.CharField(required=True, label='Telefon')
-    sms = forms.BooleanField(required=False, label='Powiadomienie SMS')
+    #sms = forms.BooleanField(required=False, label='Powiadomienie SMS')
     pesel = forms.CharField(label='PESEL')
     class Meta:
         model = Patient
-        fields = ['city', 'street', 'post_code', 'phone', 'pesel', 'sms']
+        fields = ['city', 'street', 'post_code', 'phone', 'pesel']
+
+
 
 class DoctorsScheduleForm(forms.ModelForm):
     class Meta:
