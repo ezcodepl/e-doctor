@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from datetime import date, datetime
 
-from .views import ResetPasswordView, CustomPasswordChangeView, PasswordChangeDoneView
+from .views import ResetPasswordView, CustomPasswordChangeView, PasswordChangeDoneView, activate
 from django.contrib.auth import views as auth_views
 
 

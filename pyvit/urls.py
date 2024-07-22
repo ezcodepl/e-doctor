@@ -19,10 +19,12 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 from datetime import date, datetime
 
+from django.views.generic import TemplateView
+
 from vita import views
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
     patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits, reserve_list, \
-    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status, delete_visit
+    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status, delete_visit, activate
 from django.contrib.auth import views as auth_views
 
 
@@ -66,6 +68,9 @@ urlpatterns = [
 
     path('update_visit_status/<int:visit_id>/', update_visit_status, name='update_visit_status'),
     path('panel/delete_visit/<int:visit_id>/', delete_visit, name='delete_visit'),
+
+    path('activate/<uidb64>/<token>/', activate, name='activate'),
+    path('account_activation_sent/', TemplateView.as_view(template_name='vita/account_activation_sent.html'), name='account_activation_sent'),
 
 
 

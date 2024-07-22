@@ -14,14 +14,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.storage import FileSystemStorage
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
@@ -360,18 +366,91 @@ def patients_files(request, pk):
                    'visits_akt': visits_akt, 'visits_can': visits_can, 'today': today})
 
 
+# def create_patient(request):
+#     today = datetime.now()
+#     if request.method == "POST":
+#         cform = RegisterUserForm(request.POST)
+#         cp_form = PatientRegisterForm(request.POST)
+#         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
+#         last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+#         select_form = request.POST.get('select_form')
+#
+#         if cform.is_valid() and cp_form.is_valid():
+#             if int(select_form) == 1:
+#                 last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+#                 c_form = cform.save(commit=False)
+#                 first_name = str(request.POST.get('first_name')).capitalize()
+#                 last_name = str(request.POST.get('last_name')).capitalize()
+#                 c_form.first_name = first_name
+#                 c_form.last_name = last_name
+#                 c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
+#                 c_form.password = make_password(BaseUserManager().make_random_password())
+#                 c_form.emial = 'stacjonarny@megavita.pl'
+#                 c_form.save()
+#
+#                 # set next id_patient number
+#                 if len(last_id_patient) < 1:
+#                     next_id_patient = 1
+#                 else:
+#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
+#
+#                 p_form_obj = cp_form.save(commit=False)
+#                 p_form_obj.user_id = last_user_id
+#                 p_form_obj.id_patient = next_id_patient
+#                 p_form_obj.save()
+#                 messages.success(request, (
+#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+#                 return redirect('/panel/patients')
+#             else:
+#                 form = RegisterUserForm(request.POST)
+#                 pp_form = PatientRegisterForm(request.POST)
+#
+#                 if form.is_valid() and pp_form.is_valid():
+#                     form.save()
+#                     username = form.cleaned_data['username']
+#                     password = form.cleaned_data['password1']
+#                     user = authenticate(username=username, password=password)
+#
+#                     # set next id_patient number
+#                 if last_id_patient[0]['id_patient'] is None:
+#                     next_id_patient = 1
+#                 else:
+#                     next_id_patient = last_id_patient[0]['id_patient'] + 1
+#
+#                 pp_form_obj = pp_form.save(commit=False)
+#                 pp_form_obj.user_id = last_user_id
+#                 pp_form_obj.id_patient = next_id_patient
+#
+#                 pp_form_obj.save()
+#                 messages.success(request, (
+#                     f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+#                 return redirect('/panel/patients')
+#
+#         else:
+#             cform = RegisterUserForm()
+#             cp_form = PatientRegisterForm()
+#             form = RegisterUserForm()
+#             pp_form = PatientRegisterForm()
+#     else:
+#         cform = RegisterUserForm()
+#         cp_form = PatientRegisterForm()
+#         form = RegisterUserForm()
+#         pp_form = PatientRegisterForm()
+#     x = f'stacjonarny{random.sample(range(999), 1)[0]}'
+#     user_x = x
+#     return render(request, 'vita/panel/create_patient.html',
+#                   {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x,
+#                    'today': today})
 def create_patient(request):
     today = datetime.now()
     if request.method == "POST":
         cform = RegisterUserForm(request.POST)
         cp_form = PatientRegisterForm(request.POST)
-        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]  # check id_patient
-        last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]
         select_form = request.POST.get('select_form')
 
         if cform.is_valid() and cp_form.is_valid():
             if int(select_form) == 1:
-                last_user_id = User.objects.order_by('-id').values('id')[:1]  # check user_id
                 c_form = cform.save(commit=False)
                 first_name = str(request.POST.get('first_name')).capitalize()
                 last_name = str(request.POST.get('last_name')).capitalize()
@@ -379,47 +458,64 @@ def create_patient(request):
                 c_form.last_name = last_name
                 c_form.username = f'stacjonarny{random.sample(range(999), 1)[0]}'
                 c_form.password = make_password(BaseUserManager().make_random_password())
-                c_form.emial = 'stacjonarny@megavita.pl'
+                c_form.email = 'stacjonarny@megavita.pl'
+                c_form.is_active = False  # Konto nieaktywne do momentu aktywacji przez email
                 c_form.save()
 
-                # set next id_patient number
-                if len(last_id_patient) < 1:
-                    next_id_patient = 1
-                else:
-                    next_id_patient = last_id_patient[0]['id_patient'] + 1
+                # Generowanie tokenu aktywacyjnego
+                current_site = get_current_site(request)
+                mail_subject = 'Aktywuj swoje konto.'
+                message = render_to_string('account_activation_email.html', {
+                    'user': c_form,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(c_form.pk)),
+                    'token': default_token_generator.make_token(c_form),
+                })
+                email = EmailMessage(mail_subject, message, to=[c_form.email])
+                email.send()
+
+                next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
 
                 p_form_obj = cp_form.save(commit=False)
-                p_form_obj.user_id = last_user_id
+                p_form_obj.user = c_form
                 p_form_obj.id_patient = next_id_patient
                 p_form_obj.save()
+
                 messages.success(request, (
-                    f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+                    f"Dodano nowego pacjenta: {first_name} {last_name}"))
                 return redirect('/panel/patients')
             else:
                 form = RegisterUserForm(request.POST)
                 pp_form = PatientRegisterForm(request.POST)
 
                 if form.is_valid() and pp_form.is_valid():
-                    form.save()
-                    username = form.cleaned_data['username']
-                    password = form.cleaned_data['password1']
-                    user = authenticate(username=username, password=password)
+                    user = form.save(commit=False)
+                    user.is_active = False  # Konto nieaktywne do momentu aktywacji przez email
+                    user.save()
 
-                    # set next id_patient number
-                if last_id_patient[0]['id_patient'] is None:
-                    next_id_patient = 1
-                else:
-                    next_id_patient = last_id_patient[0]['id_patient'] + 1
+                    # Generowanie tokenu aktywacyjnego
+                    current_site = get_current_site(request)
+                    mail_subject = 'Aktywuj swoje konto.'
+                    message = render_to_string('account_activation_email.html', {
+                        'user': user,
+                        'domain': current_site.domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': default_token_generator.make_token(user),
+                    })
+                    to_email = form.cleaned_data.get('email')
+                    email = EmailMessage(mail_subject, message, to=[to_email])
+                    email.send()
 
-                pp_form_obj = pp_form.save(commit=False)
-                pp_form_obj.user_id = last_user_id
-                pp_form_obj.id_patient = next_id_patient
+                    next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
 
-                pp_form_obj.save()
-                messages.success(request, (
-                    f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
-                return redirect('/panel/patients')
+                    pp_form_obj = pp_form.save(commit=False)
+                    pp_form_obj.user = user
+                    pp_form_obj.id_patient = next_id_patient
+                    pp_form_obj.save()
 
+                    messages.success(request, (
+                        f"Dodano nowego pacjenta: {request.POST.get('first_name')} {request.POST.get('last_name')}"))
+                    return redirect('/panel/patients')
         else:
             cform = RegisterUserForm()
             cp_form = PatientRegisterForm()
@@ -430,12 +526,11 @@ def create_patient(request):
         cp_form = PatientRegisterForm()
         form = RegisterUserForm()
         pp_form = PatientRegisterForm()
-    x = f'stacjonarny{random.sample(range(999), 1)[0]}'
-    user_x = x
+
+    user_x = f'stacjonarny{random.sample(range(999), 1)[0]}'
     return render(request, 'vita/panel/create_patient.html',
                   {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x,
                    'today': today})
-
 
 def update_patient(request, pk):
     today = datetime.now()
@@ -1011,44 +1106,95 @@ def krioterapia(request):
     return render(request, "vita/krioterapia.html")
 
 
+# def register_user(request):
+#     if request.method == "POST":
+#         form = RegisterUserForm(request.POST)
+#         pp_form = PatientRegisterForm(request.POST)
+#         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')  # check id_patient
+#
+#         if form.is_valid() and pp_form.is_valid():
+#             form.save()  # save user form
+#
+#             # login user
+#             username = form.cleaned_data['username']
+#             password = form.cleaned_data['password1']
+#             user = authenticate(username=username, password=password)
+#             login(request, user)
+#
+#             # set next id_patient number
+#             if len(last_id_patient) < 1:
+#                 next_id_patient = 1
+#             else:
+#                 next_id_patient = last_id_patient[0]['id_patient'] + 1
+#                 print(next_id_patient)
+#                 print(last_id_patient[0]['id_patient'] + 1)
+#
+#             pp_form_obj = pp_form.save(commit=False)
+#             pp_form_obj.user = request.user
+#             pp_form_obj.id_patient = next_id_patient
+#
+#             pp_form_obj.save()
+#             # messages.success(request, ("Registration Successful!"))
+#             return redirect('patient/profile')
+#     else:
+#         form = RegisterUserForm()
+#         pp_form = PatientRegisterForm()
+#
+#     return render(request, 'vita/register.html', {
+#         'form': form, 'pp_form': pp_form
+#     })
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return redirect('home')
+    else:
+        return render(request, 'vita/account_activation_invalid.html')
 def register_user(request):
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
-        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')  # check id_patient
+        last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]
 
         if form.is_valid() and pp_form.is_valid():
-            form.save()  # save user form
+            user = form.save(commit=False)
+            user.is_active = False  # Konto nieaktywne do momentu aktywacji przez email
+            user.save()
 
-            # login user
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(username=username, password=password)
-            login(request, user)
+            # Generowanie tokenu aktywacyjnego
+            current_site = get_current_site(request)
+            mail_subject = 'Aktywuj swoje konto.'
+            message = render_to_string('vita/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
 
-            # set next id_patient number
-            if len(last_id_patient) < 1:
-                next_id_patient = 1
-            else:
-                next_id_patient = last_id_patient[0]['id_patient'] + 1
-                print(next_id_patient)
-                print(last_id_patient[0]['id_patient'] + 1)
+            # Ustawienie numeru id_patient
+            next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
 
             pp_form_obj = pp_form.save(commit=False)
-            pp_form_obj.user = request.user
+            pp_form_obj.user = user
             pp_form_obj.id_patient = next_id_patient
-
             pp_form_obj.save()
-            # messages.success(request, ("Registration Successful!"))
-            return redirect('patient/profile')
+
+            return redirect('account_activation_sent')
     else:
         form = RegisterUserForm()
         pp_form = PatientRegisterForm()
 
-    return render(request, 'vita/register.html', {
-        'form': form, 'pp_form': pp_form
-    })
-
+    return render(request, 'vita/register.html', {'form': form, 'pp_form': pp_form})
 
 def login_request(request):
     if request.method == "POST":
