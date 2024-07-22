@@ -1157,13 +1157,54 @@ def activate(request, uidb64, token):
         return redirect('home')
     else:
         return render(request, 'vita/account_activation_invalid.html')
+# def register_user(request):
+#     if request.method == "POST":
+#         form = RegisterUserForm(request.POST)
+#         pp_form = PatientRegisterForm(request.POST)
+#         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]
+#
+#         if form.is_valid() and pp_form.is_valid():
+#             user = form.save(commit=False)
+#             user.is_active = False  # Konto nieaktywne do momentu aktywacji przez email
+#             user.save()
+#
+#             # Generowanie tokenu aktywacyjnego
+#             current_site = get_current_site(request)
+#             mail_subject = 'Aktywuj swoje konto.'
+#             message = render_to_string('vita/account_activation_email.html', {
+#                 'user': user,
+#                 'domain': current_site.domain,
+#                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#                 'token': default_token_generator.make_token(user),
+#             })
+#             to_email = form.cleaned_data.get('email')
+#             email = EmailMessage(mail_subject, message, to=[to_email])
+#             email.send()
+#
+#             # Ustawienie numeru id_patient
+#             next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
+#
+#             pp_form_obj = pp_form.save(commit=False)
+#             pp_form_obj.user = user
+#             pp_form_obj.id_patient = next_id_patient
+#             pp_form_obj.save()
+#
+#             return redirect('account_activation_sent')
+#     else:
+#         form = RegisterUserForm()
+#         pp_form = PatientRegisterForm()
+#
+#     return render(request, 'vita/register.html', {'form': form, 'pp_form': pp_form})
 def register_user(request):
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         pp_form = PatientRegisterForm(request.POST)
         last_id_patient = Patient.objects.order_by('-id_patient').values('id_patient')[:1]
+        terms_accepted = request.POST.get('terms_accepted')
 
-        if form.is_valid() and pp_form.is_valid():
+        if not terms_accepted:
+            messages.error(request, "Musisz zaakceptować regulamin, aby utworzyć konto.")
+        elif form.is_valid() and pp_form.is_valid():
             user = form.save(commit=False)
             user.is_active = False  # Konto nieaktywne do momentu aktywacji przez email
             user.save()
@@ -1195,7 +1236,6 @@ def register_user(request):
         pp_form = PatientRegisterForm()
 
     return render(request, 'vita/register.html', {'form': form, 'pp_form': pp_form})
-
 def login_request(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)

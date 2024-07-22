@@ -15,6 +15,21 @@ from .models import Patient, DoctorSchedule, FizSchedule, News, NoteTemplates, F
 
 # Create your forms here.
 
+# class RegisterUserForm(UserCreationForm):
+#     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+#     first_name = forms.CharField(required=True, max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
+#     last_name = forms.CharField(required=True, max_length=50, label='Nazwisko', widget=forms.TextInput(attrs={'class': 'form-control'}))
+#
+#     class Meta:
+#         model = User
+#         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+#
+#     def __init__(self, *args, **kwargs):
+#         super(RegisterUserForm, self).__init__(*args, **kwargs)
+#
+#         self.fields['username'].widget.attrs['class'] = 'form-control'
+#         self.fields['password1'].widget.attrs['class'] = 'form-control'
+#         self.fields['password2'].widget.attrs['class'] = 'form-control'
 class RegisterUserForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     first_name = forms.CharField(required=True, max_length=50, label='Imię', widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -26,11 +41,9 @@ class RegisterUserForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegisterUserForm, self).__init__(*args, **kwargs)
-
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['class'] = 'form-control'
-
 class PatientRegisterForm(forms.ModelForm):
     street = forms.CharField(required=True, label='Adres')
     post_code = forms.CharField(required=True, label='Kod pocztowy')
