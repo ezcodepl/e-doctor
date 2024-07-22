@@ -170,9 +170,9 @@ SESSION_COOKIE_AGE = 1209600  # Domyślna długość sesji bez "Zapamiętaj mnie
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Sesja wygasa po zamknięciu przeglądarki, jeśli "Zapamiętaj mnie" nie jest zaznaczone
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'gmail.com' # mail service smtp
-EMAIL_HOST_USER = 'powtrash2024@gmail.com' # email id
-EMAIL_HOST_PASSWORD = 'Powiatowysmietnik2024#' #password
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io' # mail service smtp
+EMAIL_HOST_USER = '528e7caa493d5d' # email id
+EMAIL_HOST_PASSWORD = 'f8b66b3c651a7e' #password
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -191,7 +191,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'your_app_name': {  # Zastąp 'your_app_name' nazwą swojej aplikacji
+        'vita': {  # Zastąp 'your_app_name' nazwą swojej aplikacji
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

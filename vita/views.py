@@ -38,7 +38,7 @@ register = template.Library()
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'vita/patient/password_reset.html'
     email_template_name = 'vita/patient/password_reset_email.html'
-    subject_template_name = 'vita/patient/password_reset_subject'
+    #subject_template_name = 'vita/patient/password_reset_subject'
     success_message = "Wysłaliśmy Ci instrukcje dotyczące ustawienia hasła, " \
                       "jeśli istnieje konto z podanym przez Ciebie adresem e-mail, powinieneś je otrzymać wkrótce. " \
                       " Jeśli nie otrzymasz e-maila, " \

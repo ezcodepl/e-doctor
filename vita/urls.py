@@ -52,7 +52,7 @@ urlpatterns = [
                       template_name='vita/patient/password_reset_confirm.html'),
                        name='password_reset_confirm'),
     path('patient/password-reset-complete/',
-         auth_views.PasswordResetCompleteView.as_view(template_name='patient/password_reset_complete.html'),
+         auth_views.PasswordResetCompleteView.as_view(template_name='vita/patient/password_reset_complete.html'),
          name='password_reset_complete'),
 
     path('password_change/', CustomPasswordChangeView.as_view(), name='password_change'),
