@@ -1222,6 +1222,16 @@ def register_user(request):
             email = EmailMessage(mail_subject, message, to=[to_email])
             email.send()
 
+            # Sprawdzenie czy istnieje użytkownik admin
+            try:
+                admin_user = User.objects.get(username='admin')
+                # Dodanie admina jako pacjenta jeśli nie istnieje
+                if not Patient.objects.filter(user=admin_user).exists():
+                    admin_patient = Patient(user=admin_user, id_patient=admin_user.id)
+                    admin_patient.save()
+            except User.DoesNotExist:
+                pass
+
             # Ustawienie numeru id_patient
             next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
 
