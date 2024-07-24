@@ -1355,10 +1355,17 @@ def create_visit(request):
                   {'cform': cform, 'cp_form': cp_form, 'form': form, 'pp_form': pp_form, 'user_x': user_x, 'vd': vdate,
                    'vt': vtime, 'vo': vo, 'persons': persons})
 
+
 def create_new_visit(request):
     full_path = request.get_full_path()
     current_path = full_path[full_path.index('/', 1):]
     get_date = current_path.replace('/', '')
+
+    # Define office names based on their numbers
+    office_names = {
+        '1': 'lekarski',
+        '2': 'fizykoterapii'
+    }
 
     if request.method == 'POST':
         cform = RegisterUserForm(request.POST)
@@ -1387,7 +1394,7 @@ def create_new_visit(request):
                 vv_form.date = request.POST['date']
                 vv_form.time = request.POST['time']
                 vv_form.status_id = 1
-                check_visit_nr = Visits.objects.filter(patient_id=pid).values().last()  # check visist number
+                check_visit_nr = Visits.objects.filter(patient_id=pid).values().last()  # check visit number
                 if check_visit_nr:
                     visits_count = Visits.objects.filter(patient_id=pid).count()
                     total_count = visits_count
@@ -1411,7 +1418,7 @@ def create_new_visit(request):
                     existing_visit_data = {
                         'date': existing_visit.date,
                         'time': existing_visit.time,
-                        'office': existing_visit.office,
+                        'office': office_names.get(existing_visit.office, 'Nieznany gabinet'),
                         'patient_name': f"{existing_visit.patient.user.first_name} {existing_visit.patient.user.last_name}"
                     }
                     return render(request, 'vita/panel/create_visit.html', {
@@ -1419,6 +1426,25 @@ def create_new_visit(request):
                     })
 
                 vv_form.save()
+
+                # Send confirmation email
+                user = request.user
+                email_subject = 'Potwierdzenie zaplanowanej wizyty w gabinecie MegaVita'
+                email_body = render_to_string('vita/panel/email_template.html', {
+                    'user': user,
+                    'visit_date': request.POST['date'],
+                    'visit_time': request.POST['time'],
+                    'office_type': office_names.get(request.POST['office'], 'Nieznany gabinet')
+                })
+                email = EmailMessage(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                )
+                email.content_subtype = 'html'  # Set the content type to HTML
+                email.send()
+
             else:
                 print(cform.errors)
                 print(cp_form.errors)
@@ -1465,7 +1491,7 @@ def create_new_visit(request):
                         existing_visit_data = {
                             'date': existing_visit.date,
                             'time': existing_visit.time,
-                            'office': existing_visit.office,
+                            'office': office_names.get(existing_visit.office, 'Nieznany gabinet'),
                             'patient_name': f"{existing_visit.patient.user.first_name} {existing_visit.patient.user.last_name}"
                         }
                         return render(request, 'vita/panel/create_visit.html', {
@@ -1475,10 +1501,28 @@ def create_new_visit(request):
 
                     vv_form.patient_id = next_id_patient
                     vv_form.save()
+
+                    # Send confirmation email
+                    user = User.objects.get(id=last_user_id[0]['id'])
+                    email_subject = 'Potwierdzenie zaplanowanej wizyty w gabinecie MegaVita'
+                    email_body = render_to_string('vita/panel/email_template.html', {
+                        'user': user,
+                        'visit_date': request.POST['date'],
+                        'visit_time': request.POST['time'],
+                        'office_type': office_names.get(request.POST['office'], 'Nieznany gabinet')
+                    })
+                    email = EmailMessage(
+                        email_subject,
+                        email_body,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
+                    )
+                    email.content_subtype = 'html'  # Set the content type to HTML
+                    email.send()
                 else:
                     print(v_form.errors)
     else:
-        print("Wystąpił problem z przetwarzaniem danych formularza, bład w linii 1268 views.py")
+        print("Wystąpił problem z przetwarzaniem danych formularza, błąd w linii 1268 views.py")
 
     return redirect(f'/panel/{request.POST["date"]}')
 
