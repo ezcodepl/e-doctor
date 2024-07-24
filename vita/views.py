@@ -19,9 +19,9 @@ from django.contrib.auth.views import PasswordResetView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.storage import FileSystemStorage
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -32,6 +32,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from pyvit import settings
+from . import models
 from .forms import RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
@@ -1540,109 +1541,6 @@ def day_view(request, year, month, day):
 
 
 @login_required()
-# def doctor_visits(request, offset=0, num_days=14):
-#     today = datetime.today()
-#     week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
-#     days_of_week = []
-#
-#     for i in range(num_days):
-#         current_day = week_start + timedelta(days=i)
-#         if current_day.weekday() < 5 and current_day >= today and DoctorSchedule.objects.filter(
-#                 date=current_day).exists():
-#             days_of_week.append(current_day)
-#
-#     schedule_table = []
-#
-#     for i in range(0, num_days, 7):
-#         week_schedule = []
-#         for j in range(7):
-#             if i + j < len(days_of_week):
-#                 day = days_of_week[i + j]
-#                 day_schedule = {
-#                     'date': day,
-#                     'schedule': []
-#                 }
-#
-#                 # Pobierz godziny pracy z FizSchedule dla danego dnia
-#                 fiz_schedule = DoctorSchedule.objects.get(date=day)
-#
-#                 try:
-#                     # Przetwórz godziny pracy w polu work_hours
-#                     work_hours_str = fiz_schedule.work_hours
-#                     start_time_str, end_time_str = work_hours_str.split('-')
-#                     start_time = datetime.strptime(start_time_str, '%H:%M')
-#                     end_time = datetime.strptime(end_time_str, '%H:%M')
-#
-#                     current_time = start_time
-#                     while current_time <= end_time:
-#                         time_str = current_time.strftime("%H:%M")
-#                         has_visit = Visits.objects.filter(date=day, time=time_str, office='1').exists()
-#                         day_schedule['schedule'].append({
-#                             'time': time_str,
-#                             'header': current_time.strftime("%H:%M"),
-#                             'has_visit': has_visit
-#                         })
-#                         current_time += timedelta(minutes=30)
-#
-#                 except ValueError as e:
-#                     messages.error(request, f"Błąd podczas przetwarzania godzin pracy dla dnia {day}: {e}")
-#
-#                 week_schedule.append(day_schedule)
-#
-#         schedule_table.append(week_schedule)
-#
-#     available_slots = [
-#         (f"{day_schedule['date']} {time_slot['time']}", f"{day_schedule['date']} {time_slot['time']}")
-#         for week_schedule in schedule_table
-#         for day_schedule in week_schedule
-#         for time_slot in day_schedule['schedule']
-#         if not time_slot['has_visit']
-#     ]
-#
-#     if request.method == 'POST':
-#         form = FizVisitsForm(request.POST)
-#
-#         if form.is_valid():
-#             for sel in request.POST.getlist('sel_visit'):
-#                 sel_visit = sel.split(' ')
-#
-#                 existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id,
-#                                                        office='2').first()
-#                 existing_schedule = DoctorSchedule.objects.filter(date=sel_visit[0]).first()
-#
-#                 if existing_schedule is None:
-#                     messages.warning(request, f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz ")
-#                 else:
-#                     if existing_visit is None:
-#                         status_visit = StatusVisit.objects.get(status_name='www')
-#                         s_form = Visits(date=sel_visit[0], time=sel_visit[1], status=status_visit, visit='1',
-#                                         office='1',
-#                                         pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
-#                         s_form.save()
-#                         messages.success(request,
-#                                          f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} ")
-#                     else:
-#                         messages.warning(request,
-#                                          f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana ")
-#
-#             return redirect('/patient/appointments')
-#         else:
-#             print("Formularz nie jest poprawny:", form.errors)
-#     else:
-#         form = DoctorVisitsForm()
-#
-#     day_type = DoctorSchedule.objects.all().values()
-#
-#     context = {
-#         'schedule_table': schedule_table,
-#         'visits': Visits.objects.filter(office='1'),  # Filtruj wizyty dla fizykoterapii
-#         'current_week_offset': offset,
-#         'form': form,
-#         'today': today,
-#         'day_type': day_type
-#     }
-#
-#     return render(request, 'vita/patient/doctor_visits.html', context)
 def doctor_visits(request, offset=0, num_days=14):
     today = datetime.today()
     week_start = today - timedelta(days=today.weekday()) + timedelta(weeks=offset * 2)
@@ -1650,8 +1548,7 @@ def doctor_visits(request, offset=0, num_days=14):
 
     for i in range(num_days):
         current_day = week_start + timedelta(days=i)
-        if current_day.weekday() < 5 and current_day >= today and DoctorSchedule.objects.filter(
-                date=current_day).exists():
+        if current_day.weekday() < 5 and current_day >= today and DoctorSchedule.objects.filter(date=current_day).exists():
             days_of_week.append(current_day)
 
     schedule_table = []
@@ -1706,31 +1603,58 @@ def doctor_visits(request, offset=0, num_days=14):
         form = DoctorVisitsForm(request.POST)
 
         if form.is_valid():
-            # Uzyskaj aktualną liczbę wizyt pacjenta
-            user_visits = Visits.objects.filter(patient_id=request.user.id).count()
-            visit_number = user_visits + 1  # Zacznij od następnego numeru wizyty
+            selected_visits = request.POST.getlist('sel_visit')
 
-            for sel in request.POST.getlist('sel_visit'):
+            for sel in selected_visits:
                 sel_visit = sel.split(' ')
+                visit_date, visit_time = sel_visit
 
-                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id,
-                                                       office='1').first()
-                existing_schedule = DoctorSchedule.objects.filter(date=sel_visit[0]).first()
+                existing_visit = Visits.objects.filter(date=visit_date, time=visit_time, patient_id=request.user.id, office='1').first()
+                existing_schedule = DoctorSchedule.objects.filter(date=visit_date).first()
 
                 if existing_schedule is None:
-                    messages.warning(request, f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz ")
+                    messages.warning(request, f"Na dzień: {visit_date} nie został jeszcze ustalony terminarz ")
                 else:
                     if existing_visit is None:
+                        # Generowanie globalnego numeru wizyty
+                        max_visit_number = Visits.objects.aggregate(max_visit_number=Max('visit'))['max_visit_number']
+                        visit_number = 1 if max_visit_number is None else int(max_visit_number) + 1
+
                         status_visit = StatusVisit.objects.get(status_name='www')
-                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status=status_visit, visit=str(visit_number),
-                                        office='1', pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
+                        s_form = Visits(
+                            date=visit_date,
+                            time=visit_time,
+                            status=status_visit,
+                            visit=str(visit_number),  # Użyj globalnego numeru wizyty
+                            office='1',
+                            pay='0',
+                            cancel='0',
+                            purpose_visit_id='2',
+                            patient_id=request.user.id
+                        )
                         s_form.save()
-                        messages.success(request,
-                                         f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} ")
-                        visit_number += 1  # Zwiększ numerację dla następnej wizyty
+
+                        # Wysyłanie e-maila z potwierdzeniem wizyty
+                        user = request.user
+                        email_subject = 'Potwierdzenie zaplanowanej wizyty w gabinecie MegaVita'
+                        email_body = render_to_string('vita/panel/email_template.html', {
+                            'user': user,
+                            'visit_date': visit_date,
+                            'visit_time': visit_time,
+                            'office_type': 'lekarski',
+                        })
+                        email = EmailMessage(
+                            email_subject,
+                            email_body,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [user.email],
+                        )
+                        email.content_subtype = 'html'  # Ustawienie typu zawartości na HTML
+                        email.send()
+
+                        messages.success(request, f"Dodano nową wizytę w dniu: {visit_date} o godzinie {visit_time}")
                     else:
-                        messages.warning(request,
-                                         f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana ")
+                        messages.warning(request, f"Wizyta o dacie: {visit_date} i godzinie {visit_time} jest już dodana")
 
             return redirect('/patient/appointments')
         else:
@@ -1742,7 +1666,7 @@ def doctor_visits(request, offset=0, num_days=14):
 
     context = {
         'schedule_table': schedule_table,
-        'visits': Visits.objects.filter(office='1'),  # Filtruj wizyty dla fizykoterapii
+        'visits': Visits.objects.filter(office='1'),  # Filtruj wizyty dla lekarza
         'current_week_offset': offset,
         'form': form,
         'today': today,
@@ -1814,31 +1738,58 @@ def fiz_visits(request, offset=0, num_days=14):
         form = FizVisitsForm(request.POST)
 
         if form.is_valid():
-            # Uzyskaj aktualną liczbę wizyt pacjenta
-            user_visits = Visits.objects.filter(patient_id=request.user.id).count()
-            visit_number = user_visits + 1  # Zacznij od następnego numeru wizyty
+            selected_visits = request.POST.getlist('sel_visit')
 
-            for sel in request.POST.getlist('sel_visit'):
+            for sel in selected_visits:
                 sel_visit = sel.split(' ')
+                visit_date, visit_time = sel_visit
 
-                existing_visit = Visits.objects.filter(date=sel_visit[0], time=sel_visit[1], patient_id=request.user.id,
-                                                       office='2').first()
-                existing_schedule = FizSchedule.objects.filter(date=sel_visit[0]).first()
+                existing_visit = Visits.objects.filter(date=visit_date, time=visit_time, patient_id=request.user.id, office='2').first()
+                existing_schedule = FizSchedule.objects.filter(date=visit_date).first()
 
                 if existing_schedule is None:
-                    messages.warning(request, f"Na dzień: {sel_visit[0]} nie został jeszcze ustalony terminarz ")
+                    messages.warning(request, f"Na dzień: {visit_date} nie został jeszcze ustalony terminarz ")
                 else:
                     if existing_visit is None:
+                        # Generowanie globalnego numeru wizyty
+                        max_visit_number = Visits.objects.aggregate(max_visit_number=Max('visit'))['max_visit_number']
+                        visit_number = 1 if max_visit_number is None else int(max_visit_number) + 1
+
                         status_visit = StatusVisit.objects.get(status_name='www')
-                        s_form = Visits(date=sel_visit[0], time=sel_visit[1], status=status_visit, visit=str(visit_number),
-                                        office='2', pay='0', cancel='0', purpose_visit_id='2', patient_id=request.user.id)
+                        s_form = Visits(
+                            date=visit_date,
+                            time=visit_time,
+                            status=status_visit,
+                            visit=str(visit_number),  # Użyj globalnego numeru wizyty
+                            office='2',
+                            pay='0',
+                            cancel='0',
+                            purpose_visit_id='2',
+                            patient_id=request.user.id
+                        )
                         s_form.save()
-                        messages.success(request,
-                                         f"Dodano nową wizytę w dniu: {sel_visit[0]} o godzinie {sel_visit[1]} ")
-                        visit_number += 1  # Zwiększ numerację dla następnej wizyty
+
+                        # Wysyłanie e-maila z potwierdzeniem wizyty
+                        user = request.user
+                        email_subject = 'Potwierdzenie wizyty'
+                        email_body = render_to_string('vita/panel/email_template.html', {
+                            'user': user,
+                            'visit_date': visit_date,
+                            'visit_time': visit_time,
+                            'office_type': 'fizykoterapii',
+                        })
+                        email = EmailMessage(
+                            email_subject,
+                            email_body,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [user.email],
+                        )
+                        email.content_subtype = 'html'  # Ustawienie typu zawartości na HTML
+                        email.send()
+
+                        messages.success(request, f"Dodano nową wizytę w dniu: {visit_date} o godzinie {visit_time}")
                     else:
-                        messages.warning(request,
-                                         f"Wizyta o dacie: {sel_visit[0]} i godzinie {sel_visit[1]} jest już dodana ")
+                        messages.warning(request, f"Wizyta o dacie: {visit_date} i godzinie {visit_time} jest już dodana")
 
             return redirect('/patient/appointments')
         else:
@@ -1858,7 +1809,6 @@ def fiz_visits(request, offset=0, num_days=14):
     }
 
     return render(request, 'vita/patient/fiz_visits.html', context)
-
 
 def reserve_list(request):
     is_empty = not ReversList.objects.exists()

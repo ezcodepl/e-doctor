@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potwierdzenie Wizyty</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #32AFC7;
+            text-align: center;
+        }
+        .details {
+            margin: 20px 0;
+        }
+        .details p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer p {
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Potwierdzenie Wizyty</h1>
+        <div class="details">
+            <p>Szanowny/a <b>{{ user.first_name }} {{ user.last_name }}</b>,</p>
+            <p>Potwierdzamy, że Twoja wizyta została zaplanowana na:</p>
+            <p><strong>Data:</strong> {{ visit_date }}</p>
+            <p><strong>Godzina:</strong> {{ visit_time }}</p>
+            <p><strong>Gabinet:</strong> {{ office_type }}</p>
+
+            <p>Jeśli potrzebujesz zmienić termin wizyty lub masz inne pytania, skontaktuj się z nami lub zaloguj się na swoje konto pacjenta <a href="https://megavita.pl">www.megavita.pl</a></p>
+            <p>Dziękujemy za umówienie wizyty!</p>
+        </div>
+        <div class="footer">
+            <p><b>MegaVita</b></p>
+            <p>ul. Stefana Batorego 3</p>
+            <p>75-660 Koszalin</p>
+            <p>telefon: +48 94341 14 63 lub +48 600 034 005  | e-mail: wlstp@wp.pl</p>
+        </div>
+    </div>
+</body>
+</html>

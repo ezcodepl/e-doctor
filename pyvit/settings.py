@@ -176,6 +176,7 @@ EMAIL_HOST_USER = '528e7caa493d5d' # email id
 EMAIL_HOST_PASSWORD = 'f8b66b3c651a7e' #password
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'megavita@gmail.com'
 
 
 LOGGING = {
