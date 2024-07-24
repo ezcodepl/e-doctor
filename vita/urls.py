@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from datetime import date, datetime
 
-from .views import ResetPasswordView, CustomPasswordChangeView, PasswordChangeDoneView, activate
+from .views import ResetPasswordView, CustomPasswordChangeView, PasswordChangeDoneView, activate, create_backup_view
 from django.contrib.auth import views as auth_views
 
 
@@ -32,6 +32,11 @@ urlpatterns = [
     path('panel/create_reserve_list', views.create_reserve_list, name='create_reserve_list'),
     path('panel/doctors_weekly_plan/', views.doctors_weekly_plan, name='doctors_weekly_plan'),
     path('panel/fiz_weekly_plan/', views.fiz_weekly_plan, name='fiz_weekly_plan'),
+
+    # settings urls
+    path('panel/settings/', views.settings, name='settings'),
+
+    path('admin/create_backup/', create_backup_view, name='create_backup'),
 
 
 

@@ -3,11 +3,14 @@ import datetime
 import logging
 import os
 import random
+import shutil
+import subprocess
 from calendar import monthrange
 from datetime import date, datetime, timedelta
 
 from django import template
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required
@@ -22,7 +25,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Max
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -2284,3 +2287,66 @@ def upcoming_appointments(request):
 
     return render(request, 'vita/upcoming_appointments.html', context)
 
+
+# section settings
+def settings(request):
+    context = {
+
+    }
+    return render(request, 'vita/panel/settings.html', context)
+
+# section backup
+# Ścieżki do ważnych katalogów
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BACKUP_DIR = os.path.join(BASE_DIR, 'backups')
+
+
+@staff_member_required
+def create_backup_view(request):
+    if request.method == 'POST':
+        try:
+            # Uruchom skrypt tworzenia kopii zapasowej
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            backup_filename = f'backup_{timestamp}.zip'
+            backup_filepath = os.path.join(BASE_DIR, backup_filename)
+
+            if not os.path.exists(BACKUP_DIR):
+                os.makedirs(BACKUP_DIR)
+
+            backup_database()
+            backup_files()
+            shutil.make_archive(backup_filepath.replace('.zip', ''), 'zip', BACKUP_DIR)
+            shutil.rmtree(BACKUP_DIR)
+
+            return HttpResponse(f'Backup created: {backup_filename}')
+        except Exception as e:
+            return HttpResponse(f'Error creating backup: {e}')
+    return render(request, 'admin/create_backup.html')
+
+
+def backup_database():
+    db_engine = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
+    db_name = os.getenv('DB_NAME', 'db.sqlite3')
+    db_user = os.getenv('DB_USER', '')
+    db_password = os.getenv('DB_PASSWORD', '')
+    db_host = os.getenv('DB_HOST', '')
+    db_port = os.getenv('DB_PORT', '')
+
+    if db_engine == 'django.db.backends.postgresql':
+        # Backup PostgreSQL
+        dump_command = f'pg_dump -U {db_user} -h {db_host} -p {db_port} -F c {db_name} > {os.path.join(BACKUP_DIR, "db_backup.sql")}'
+    elif db_engine == 'django.db.backends.mysql':
+        # Backup MySQL
+        dump_command = f'mysqldump -u {db_user} -p{db_password} -h {db_host} -P {db_port} {db_name} > {os.path.join(BACKUP_DIR, "db_backup.sql")}'
+    else:
+        # Backup SQLite
+        dump_command = f'cp {os.path.join(BASE_DIR, db_name)} {os.path.join(BACKUP_DIR, "db_backup.sqlite3")}'
+
+    subprocess.run(dump_command, shell=True, check=True)
+
+
+def backup_files():
+    shutil.copytree(BASE_DIR, os.path.join(BACKUP_DIR, 'project_files'),
+                    ignore=shutil.ignore_patterns('*.pyc', 'tmp*', 'backups'))
+
+#######################################################################################################################
