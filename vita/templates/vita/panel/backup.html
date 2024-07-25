@@ -5,18 +5,18 @@
         <div class="page-title">
             <div class="row mb-2">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>Ustawienia aplikacji</h3>
+                    <h3>Ustawienia aplikacji - Kopie zapasowe</h3>
                 </div>
             </div>
 
                <div class="d-flex flex-row mb-3">
                     <div class="p-3">
-                        <i class="fas fa-home text-info"></i>
-                        <span class="p-1"><a href="/panel/settings">Home</a></span>
+                        <i class="fas fa-home"></i>
+                         <span class="p-1"><a href="/panel/settings">Home</a></span>
                     </div>
                     <div class="p-3">
-                        <i class="fas fa-hdd"></i>
-                        <span class="p-1"><a href="/panel/backup">Kopie zapasowe</a></span>
+                        <i class="fas fa-hdd text-info" ></i>
+                        <span class="p-1">Kopie zapasowe</span>
                     </div>
                     <div class="p-3">
                         <i class="fas fa-paint-brush"></i>
@@ -45,5 +45,36 @@
                 </div>
 
         </div>
+        <section class="section">
+            <div class="row" id="basic-table">
+              <div class="col-12 col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Lista kopii zapasowych</h4>
+                  </div>
+                  <div class="card-content">
+                      <div class="p-4"><a href="/panel/create_backup" role="button" class="btn btn-success">Utwórz kopię zapasową</a> </div>
+                      <div class="p-4 col-8">
+                        <div class="table-responsive">
+                        <table class="table table-sm">
+                          <thead>
+                            <tr class="bg-light">
+                                <th>Nr</th>
+                                <th class="col-2">Data kopii</th>
+                                <th>Nazwa</th>
+                                <th>Ścieżka</th>
+                                <th>Akcja</th>
+
+                            </tr>
+                          </thead>
+                        </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        </section>
+
     </div>
 {% endblock %}

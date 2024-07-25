@@ -139,6 +139,8 @@ STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_URL = '/vita/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'vita/media')
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 LOGIN_URL= '/login/'
 
 # Default primary key field type

@@ -10,7 +10,6 @@ from datetime import date, datetime, timedelta
 
 from django import template
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required
@@ -22,20 +21,18 @@ from django.contrib.auth.views import PasswordResetView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.storage import FileSystemStorage
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Max
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from pyvit import settings
-from . import models
 from .forms import RegisterUserForm, UserUpdateForm, PatientRegisterForm, \
     DoctorsScheduleForm, FizScheduleForm, NewsForm, NoteTemplatesForm, uploadFilesForm, PatientUpdateExtendForm, \
     VisitForm, DoctorVisitsForm, ReserveForm, FizVisitsForm
@@ -2295,58 +2292,77 @@ def settings(request):
     }
     return render(request, 'vita/panel/settings.html', context)
 
-# section backup
+# section backups
+# Inicjalizacja klienta Docker
+
 # Ścieżki do ważnych katalogów
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BACKUP_DIR = os.path.join(BASE_DIR, 'backups')
+BACKUP_DIR = os.path.join(BASE_DIR, 'vita', 'backups')
+SQL_BACKUP_DIR = os.path.join(BACKUP_DIR, 'sql')
 
 
-@staff_member_required
-def create_backup_view(request):
-    if request.method == 'POST':
-        try:
-            # Uruchom skrypt tworzenia kopii zapasowej
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            backup_filename = f'backup_{timestamp}.zip'
-            backup_filepath = os.path.join(BASE_DIR, backup_filename)
+def backup(request):
+    context = {
 
-            if not os.path.exists(BACKUP_DIR):
-                os.makedirs(BACKUP_DIR)
-
-            backup_database()
-            backup_files()
-            shutil.make_archive(backup_filepath.replace('.zip', ''), 'zip', BACKUP_DIR)
-            shutil.rmtree(BACKUP_DIR)
-
-            return HttpResponse(f'Backup created: {backup_filename}')
-        except Exception as e:
-            return HttpResponse(f'Error creating backup: {e}')
-    return render(request, 'admin/create_backup.html')
-
-
-def backup_database():
-    db_engine = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
-    db_name = os.getenv('DB_NAME', 'db.sqlite3')
-    db_user = os.getenv('DB_USER', '')
-    db_password = os.getenv('DB_PASSWORD', '')
-    db_host = os.getenv('DB_HOST', '')
-    db_port = os.getenv('DB_PORT', '')
-
-    if db_engine == 'django.db.backends.postgresql':
-        # Backup PostgreSQL
-        dump_command = f'pg_dump -U {db_user} -h {db_host} -p {db_port} -F c {db_name} > {os.path.join(BACKUP_DIR, "db_backup.sql")}'
-    elif db_engine == 'django.db.backends.mysql':
-        # Backup MySQL
-        dump_command = f'mysqldump -u {db_user} -p{db_password} -h {db_host} -P {db_port} {db_name} > {os.path.join(BACKUP_DIR, "db_backup.sql")}'
-    else:
-        # Backup SQLite
-        dump_command = f'cp {os.path.join(BASE_DIR, db_name)} {os.path.join(BACKUP_DIR, "db_backup.sqlite3")}'
-
-    subprocess.run(dump_command, shell=True, check=True)
-
-
-def backup_files():
-    shutil.copytree(BASE_DIR, os.path.join(BACKUP_DIR, 'project_files'),
-                    ignore=shutil.ignore_patterns('*.pyc', 'tmp*', 'backups'))
-
+    }
+    return render(request, 'vita/panel/backup.html', context)
+# @login_required()
+# def create_backup_view(request):
+#     if request.method == 'POST':
+#         try:
+#             # Tworzenie kopii zapasowej
+#             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+#             backup_filename = f'backup_{timestamp}.zip'
+#             backup_filepath = os.path.join(BACKUP_DIR, backup_filename)
+#
+#             if not os.path.exists(SQL_BACKUP_DIR):
+#                 os.makedirs(SQL_BACKUP_DIR)
+#
+#             backup_sql_filename = f'backup_sql_{timestamp}.sql'
+#             backup_sql_filepath = os.path.join(SQL_BACKUP_DIR, backup_sql_filename)
+#
+#             # Wykonaj kopię zapasową bazy danych
+#             dump_database(backup_sql_filepath)
+#
+#             # Wykonaj kopię zapasową plików
+#             backup_files()
+#
+#             # Spakuj pliki kopii zapasowej
+#             shutil.make_archive(backup_filepath.replace('.zip', ''), 'zip', BASE_DIR)
+#
+#             return HttpResponse(f'Backup created: {backup_filename}')
+#         except Exception as e:
+#             return HttpResponse(f'Error creating backup: {e}')
+#     return render(request, 'vita/panel/create_backup.html')
+#
+# def dump_database(backup_sql_filepath):
+#     db_container_name = 'e-doctor-db-1'
+#     web_container_name = 'e-doctor-web-1'
+#     sql_container_path = f'/tmp/{os.path.basename(backup_sql_filepath)}'
+#
+#     # Wykonaj dump bazy danych w kontenerze bazy danych
+#     dump_command = f'docker exec {db_container_name} pg_dump -U postgres -d test -F c -f {sql_container_path}'
+#     subprocess.run(dump_command, shell=True, check=True)
+#
+#     # Skopiuj plik dumpa z kontenera bazy danych do kontenera z aplikacją
+#     copy_to_web_command = f'docker cp {db_container_name}:{sql_container_path} {web_container_name}:{sql_container_path}'
+#     subprocess.run(copy_to_web_command, shell=True, check=True)
+#
+#     # Usuń plik tymczasowy z kontenera bazy danych
+#     clean_command = f'docker exec {db_container_name} rm {sql_container_path}'
+#     subprocess.run(clean_command, shell=True, check=True)
+#
+#     # Skopiuj plik dumpa z kontenera aplikacji do lokalnego katalogu
+#     copy_from_web_command = f'docker exec {web_container_name} cp {sql_container_path} {backup_sql_filepath}'
+#     subprocess.run(copy_from_web_command, shell=True, check=True)
+#
+#     # Usuń plik tymczasowy z kontenera aplikacji
+#     clean_web_command = f'docker exec {web_container_name} rm {sql_container_path}'
+#     subprocess.run(clean_web_command, shell=True, check=True)
+#
+# def backup_files():
+#     project_backup_dir = os.path.join(BACKUP_DIR, 'project_files')
+#     if os.path.exists(project_backup_dir):
+#         shutil.rmtree(project_backup_dir)
+#     shutil.copytree(BASE_DIR, project_backup_dir, ignore=shutil.ignore_patterns('*.pyc', 'tmp*', 'backups'))
 #######################################################################################################################
