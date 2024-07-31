@@ -11,9 +11,17 @@
         </div>
         <section class="section">
             <div class="card">
-<!--                                <div class="card-header">-->
-<!--                                    <h4 class="card-title">Example Content</h4>-->
-<!--                                </div>-->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="container">
+                        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            {{ message }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
                 <script>
                     function swapConfig(x) {
                     var radioName = document.getElementsByName(x.name);

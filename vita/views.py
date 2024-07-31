@@ -496,8 +496,8 @@ def create_patient(request):
 
                     # Generowanie tokenu aktywacyjnego
                     current_site = get_current_site(request)
-                    mail_subject = 'Aktywuj swoje konto.'
-                    message = render_to_string('account_activation_email.html', {
+                    mail_subject = 'Aktywuj swoje konto w MegaVita.'
+                    message = render_to_string('vita/account_activation_email.html', {
                         'user': user,
                         'domain': current_site.domain,
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -505,6 +505,7 @@ def create_patient(request):
                     })
                     to_email = form.cleaned_data.get('email')
                     email = EmailMessage(mail_subject, message, to=[to_email])
+                    email.content_subtype = 'html'
                     email.send()
 
                     next_id_patient = 1 if len(last_id_patient) < 1 else last_id_patient[0]['id_patient'] + 1
