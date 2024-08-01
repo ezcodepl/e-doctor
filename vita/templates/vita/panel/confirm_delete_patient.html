@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Potwierdzenie usunięcia pacjenta</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Potwierdzenie usunięcia pacjenta</h2>
+
+        <p>Czy na pewno chcesz usunąć pacjenta <strong>{{ pfn }} {{ pln }}</strong> z miejscowości <strong>{{ patient.city }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Usuń</button>
+            <a href="{% url 'patients_list' %}" class="btn btn-secondary">Anuluj</a>
+        </form>
+    </div>
+</body>
+</html>

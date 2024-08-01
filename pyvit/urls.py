@@ -24,7 +24,8 @@ from django.views.generic import TemplateView
 from vita import views
 from vita.views import panel, delete_news, update_news, edit_news, edit_templates, update_templates, delete_templates, \
     patients_files, delete_patient_files, update_patient, create_visit, pause_visit, doctor_visits, reserve_list, \
-    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status, delete_visit, activate
+    doctors_weekly_plan, fiz_weekly_plan, fiz_visits, update_visit_status, delete_visit, activate, delete_patient, \
+    confirm_delete_patient
 from django.contrib.auth import views as auth_views
 
 
@@ -57,6 +58,8 @@ urlpatterns = [
     path('panel/patients/<int:pk>', patients_files, name="patients_files"),
     path('panel/patients/<int:pk>/delete', delete_patient_files, name="delete_patient_files"),
     path('panel/patients/<int:pk>/updates', update_patient, name="update_patient"),
+    path('panel/patients/<int:pk>/', delete_patient, name='delete_patient'),
+    path('panel/patients/<int:pk>/delete/', confirm_delete_patient, name='confirm_delete_patient'),
 
     path('patient/doctor_visits/', doctor_visits, name='doctor_visits'),
     path('patient/doctor_visits/<int:offset>/', doctor_visits, name='doctor_visits'),
